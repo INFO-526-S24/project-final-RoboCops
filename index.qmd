@@ -2,7 +2,7 @@
 title: "Project Title"
 subtitle: "INFO 526 - Project Final"
 author: 
-  - name: "Team name - Team member 1, Team member 2,..."
+  - name: "RoboCops - Peter Yeh, Sachin Pandurang Patil, Arun Koundinya Parasa, Surajit Pal, Christian Ortmann, Valérie Naa Dei Okine"
     affiliations:
       - name: "School of Information, University of Arizona"
 description: "Project description"

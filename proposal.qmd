@@ -2,7 +2,7 @@
 title: "Proposal title"
 subtitle: "Proposal"
 author: 
-  - name: "Team Name - Team member 1, Team member 2,..."
+  - name: "RoboCops - Peter Yeh, Sachin Pandurang Patil, Arun Koundinya Parasa, Surajit Pal, Christian Ortmann, Valérie Naa Dei Okine"
     affiliations:
       - name: "School of Information, University of Arizona"
 description: "Project description"
@@ -21,19 +21,169 @@ execute:
 ```{r}
 #| label: load-pkgs
 #| message: false
-library(tidyverse)
+#| echo: false
+pacman::p_load(kableExtra)
+
 ```
 
+## Introduction
+
+
+## Why the Police Killings dataset?
+
+
+## Analysis Goals
+
+
 ## Dataset
+### Main Dataset
 
 ```{r}
 #| label: load-dataset
 #| message: false
+
+# Load in the datasets
+fatality <- read.csv("data/PoliceKillingsUS.csv", na.strings = "")
+median_income <- read.csv("data/MedianHouseholdIncome2015.csv")
+poverty_perc <- read.csv("data/PercentagePeopleBelowPovertyLevel.csv")
+hs_perc <- read.csv("data/PercentOver25CompletedHighSchool.csv")
+race_perc <- read.csv("data/ShareRaceByCity.csv")
+
 ```
 
-A brief description of your dataset including its provenance, dimensions, etc. as well as the reason why you chose this dataset.
+The PoliceKilllingsUS.csv is a dataset sourced from Kaggle using the following
+link:
 
-Make sure to load the data and use inline code for some of this information.
+<a href=https://www.kaggle.com/datasets/kwullum/fatal-police-shootings-in-the-us/data>Fatal Police Shootings in the US</a>
+
+The .csv contains data between 2015 and 2017 and was compiled by The Washington
+Post. The dataset is comprised of 14 variables and 2535 shootings. An in depth
+description of the variables can be seen in the following table:
+
+```{r}
+#| label: dataset-table
+#| echo: false
+#| message: false
+
+# Create columns for data
+fatality_var <- colnames(fatality)
+
+fatality_desc <- c("Data ID",
+                   "Name of deceased",
+                   "Date of shooting",
+                   "Means of death",
+                   "Weapon/Tool",
+                   "Age of deceased",
+                   "Gender of deceased",
+                   "Race of deceased",
+                   "City",
+                   "State",
+                   "Sign of mental illness during incident",
+                   "Deceased's threat level",
+                   "Method to evade police",
+                   "Reports of police with body camera")
+
+fatality_type <- c("numeric",
+                   "character",
+                   "date",
+                   "categorical",
+                   "categorical",
+                   "numeric",
+                   "logical",
+                   "categorical",
+                   "categorical",
+                   "categorical",
+                   "logical",
+                   "categorical",
+                   "categorical",
+                   "logical")
+
+fatality_values <- c("2535 entries",
+                     "Names",
+                     "dd/mm/yy from 2015-2017",
+                     "shot, shot and tasered",
+                     "69 categories",
+                     "6-91 years old",
+                     "F/M",
+                     "A, B, H, N, O, W, None",
+                     "1417 cities",
+                     "State 2 letter abbreviations and DC",
+                     "True/False",
+                     "attack, other, undetermined",
+                     "Car, Foot, Not fleeing, Other",
+                     "True/False")
+
+# Bind the vectors into a dataframe
+fatality_table <- as.data.frame(cbind(fatality_var,
+                                      fatality_desc,
+                                      fatality_type,
+                                     fatality_values))
+colnames(fatality_table) <- c("Variable", "Description", "Data Type", "Values")
+row.names(fatality_table) <- seq(1:14)
+
+# Generate a nice table with kable
+my_table <- kable(fatality_table, "html") %>%
+  kable_styling(full_width = FALSE)
+
+# Display the table
+my_table
+
+```
+
+#### Data Cleaning/Wrangling
+
+### Census Dataset
+In addition to the dataset containing the fatal police shooting, there are four
+additional 2015 census datasets each containing over 29000 observations:
+MedianHouseholdIncome2015.csv, PercentagePeopleBelowPovertyLevel.csv,
+PercentOver25CompletedHighSchool.csv, and ShareRaceByCity.csv.
+
+```{r}
+#| label: census-table
+#| echo: false
+#| message: false
+
+# Create columns for data
+census_data <- c("PercentOver25CompletedHighSchool.csv",
+                 "MedianHouseholdIncome2015.csv",
+                 "PercentagePeopleBelowPovertyLevel.csv",
+                 "ShareRaceByCity.csv")
+
+census_desc <- c("Contains the percentage of highschool graduates for cities",
+                 "Contains the median income for cities",
+                 "Contains the percentage of the population below poverty for cities",
+                 "Contains the demographics for cities")
+
+census_n <- c(nrow(hs_perc),
+              nrow(median_income),
+              nrow(poverty_perc),
+              nrow(race_perc))
+
+# Bind the vectors into a dataframe
+census_table <- as.data.frame(cbind(census_data, census_desc, census_n))
+colnames(census_table) <- c("Data", "Description", "Number of Cities")
+row.names(census_table) <- seq(1:4)
+
+# Generate a nice table with kable
+my_table <- kable(census_table, "html") %>%
+  kable_styling(full_width = FALSE)
+
+# Display the table
+my_table
+
+```
+
+Each census dataset contains two common columns: `Geographic.Area` and `City`.
+City` is coded in such a way that the column contains the name of the city and a
+classifier (city, town, CDP, etc.).
+
+In addition to these two columns, each dataset contains information regarding
+the city's demographic information: percent of highschool graduates,
+median income, poverty rate, and proportion of races
+(white, black, native american, asian, hispanic). Each of these values are
+numeric.
+
+#### Data Cleaning/Wrangling
 
 ## Questions
 
@@ -42,3 +192,60 @@ The two questions you want to answer.
 ## Analysis plan
 
 -   A plan for answering each of the questions including the variables involved, variables to be created (if any), external data to be merged in (if any).
+
+## Timeline
+
+```{r}
+#| label: timeline-table
+#| echo: false
+#| message: false
+
+# Create vectors to represent the tasks
+tasks <- c("Proposal-For Peer Review",
+           "Peer Review",
+           "Proposal-Updated",
+           "Proposal-Final")
+
+# Create vector to represent status
+status <- c("",
+            "",
+            "",
+            "")
+
+# Create vector to represent ownership
+member <- c("All",
+            "All",
+            "All",
+            "All")
+
+# Create vector to represent the deadline
+due <- c("April 1",
+         "April 1",
+         "April 8",
+         "April 15")
+
+# Create vector to represent priority
+priority <- c("High",
+              "High",
+              "Medium",
+              "Low")
+
+# Create vector to represent description
+description <- c("Write proposal for peer review",
+                 "Write up peer reviews for other groups",
+                 "Update proposal using peer feedback",
+                 "Update proposal using instructor feedback")
+
+# Bind the columns
+table_2 <- as.table(cbind(tasks, status, member, due, priority, description))
+colnames(table_2) <- c("Task Name", "Status", "Assignee",
+                       "Due", "Priority", "Summary")
+row.names(table_2) <- seq(1:nrow(table_2))
+
+# Generate a nice table with kable
+timeline_table <- kable(table_2, "html") %>%
+  kable_styling(full_width = FALSE)
+
+# Display the table
+timeline_table
+```

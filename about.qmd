@@ -4,12 +4,16 @@ format: html
 editor: visual
 ---
 
-This project was developed by **\[Team Name\]** For [INFO 526 - Data Analysis & Visualization](https://datavizaz.org/) at the University of Arizona, taught by Dr. Greg Chism. The team is comprised of the following team members.
+This project was developed by **RoboCops** For [INFO 526 - Data Analysis & Visualization](https://datavizaz.org/) at the University of Arizona, taught by Dr. Greg Chism. The team is comprised of the following team members.
 
--   Team member 1: One sentence description of Team member 1 (e.g., year, major, etc.).
+-   Peter Yeh: 3$^{rd}$ Year Statistics and Data Science: Statistical Informatics Ph. D. student.
 
--   Team member 2: One sentence description of Team member 2 (e.g., year, major, etc.).
+-   Sachin Pandurang Patil: 2$^{nd}$ Year Information Science with specialization in Machine Learning, MS Student.
 
--   Team member 3: One sentence description of Team member 3 (e.g., year, major, etc.).
+-   Arun Koundinya Parasa: 2$^{nd}$ Year Information Science with specialization in Machine Learning, MS Student.
 
--   Team member 4: One sentence description of Team member 4 (e.g., year, major, etc.).
+-   Surajit Pal: 2$^{nd}$ Year Information Science with specialization in Machine Learning, MS Student.
+
+-   Christian Ortmann: 1$^{st}$ Year MS Data Science, CS researcher in the School of Mining and Mineral Resources
+
+-   Valérie Naa Dei Okine: 1$^{st}$ Year Information Science with specialization in Data Science, MS Student
