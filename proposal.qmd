@@ -180,6 +180,10 @@ In addition to these two columns, each dataset contains information regarding th
 
 The two questions you want to answer.
 
+1.  How do socioeconomic factors such as median income, poverty rates, and educational relate with incidents of police use of force across different geographic areas?
+
+2.  To what extent do racial demographics, including the proportions of White, Black, Hispanic, Asian, and Native American residents, correlate with incidents of police use of force within communities?
+
 ## Analysis plan
 
 -   A plan for answering each of the questions including the variables involved, variables to be created (if any), external data to be merged in (if any).
