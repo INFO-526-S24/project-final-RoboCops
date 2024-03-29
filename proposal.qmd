@@ -28,14 +28,16 @@ pacman::p_load(kableExtra)
 
 ## Introduction
 
-
 ## Why the Police Killings dataset?
-
 
 ## Analysis Goals
 
+Our analysis aims to understand the dataset on police killings, extending its scope beyond the original focus tracked by the Washington Post. We plan to include socio-economic factors like housing income, poverty rates, and population demographics. While initially associated with the Black Lives Matter movement, our goal is to explore how socio-economic factors intersect with incidents of police violence.
+
+By incorporating these additional factors, we hope to uncover correlations and patterns that provide insight into the broader societal context surrounding police use of force. Through data visualization and analysis, we aim to contribute to a deeper understanding of these issues and support evidence-based policy-making for promoting equity and justice
 
 ## Dataset
+
 ### Main Dataset
 
 ```{r}
@@ -51,14 +53,11 @@ race_perc <- read.csv("data/ShareRaceByCity.csv")
 
 ```
 
-The PoliceKilllingsUS.csv is a dataset sourced from Kaggle using the following
-link:
+The PoliceKilllingsUS.csv is a dataset sourced from Kaggle using the following link:
 
 <a href=https://www.kaggle.com/datasets/kwullum/fatal-police-shootings-in-the-us/data>Fatal Police Shootings in the US</a>
 
-The .csv contains data between 2015 and 2017 and was compiled by The Washington
-Post. The dataset is comprised of 14 variables and 2535 shootings. An in depth
-description of the variables can be seen in the following table:
+The .csv contains data between 2015 and 2017 and was compiled by The Washington Post. The dataset is comprised of 14 variables and 2535 shootings. An in depth description of the variables can be seen in the following table:
 
 ```{r}
 #| label: dataset-table
@@ -133,10 +132,8 @@ my_table
 #### Data Cleaning/Wrangling
 
 ### Census Dataset
-In addition to the dataset containing the fatal police shooting, there are four
-additional 2015 census datasets each containing over 29000 observations:
-MedianHouseholdIncome2015.csv, PercentagePeopleBelowPovertyLevel.csv,
-PercentOver25CompletedHighSchool.csv, and ShareRaceByCity.csv.
+
+In addition to the dataset containing the fatal police shooting, there are four additional 2015 census datasets each containing over 29000 observations: MedianHouseholdIncome2015.csv, PercentagePeopleBelowPovertyLevel.csv, PercentOver25CompletedHighSchool.csv, and ShareRaceByCity.csv.
 
 ```{r}
 #| label: census-table
@@ -173,15 +170,9 @@ my_table
 
 ```
 
-Each census dataset contains two common columns: `Geographic.Area` and `City`.
-City` is coded in such a way that the column contains the name of the city and a
-classifier (city, town, CDP, etc.).
+Each census dataset contains two common columns: `Geographic.Area` and `City`. City\` is coded in such a way that the column contains the name of the city and a classifier (city, town, CDP, etc.).
 
-In addition to these two columns, each dataset contains information regarding
-the city's demographic information: percent of highschool graduates,
-median income, poverty rate, and proportion of races
-(white, black, native american, asian, hispanic). Each of these values are
-numeric.
+In addition to these two columns, each dataset contains information regarding the city's demographic information: percent of highschool graduates, median income, poverty rate, and proportion of races (white, black, native american, asian, hispanic). Each of these values are numeric.
 
 #### Data Cleaning/Wrangling
 
