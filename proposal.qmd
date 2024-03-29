@@ -191,14 +191,26 @@ The two questions you want to answer.
 ## Analysis plan
 
 -   Question 1:
+
+    -   By answering how poverty levels relate w.r.t policing killing in each state
+
+    -   We overlay this w.r.t police instrutment usage
+
     -   Plot 1: Regression x = percent HS/ median income, y  = count of police killings grouped by city and race, can overlay lines with race
+
     -   Plot 2: half-eye plot (need more variables for regression)
+
     -   Plot 3: Bar Plot Comparing Socioeconomic Indicators
+
 -   Question 2:
-    -   Plot 1: Leaflet plot, bar how crimes have changed in five years
-    -   Plot 2: Leafetlet plot of crimes w.r.t. Population of each state { Crime Intensity }
-    -   Plot 2: focus on certain cities/states and overlay
-    -   Plot 3: Heatmap of Police Use of Force Incidents by Racial Demographics
+
+    -   ss
+    -   ss
+
+    -   Plot 1: Leaflet plot, how police shooting have changed in five years
+    -   Plot 2: Leafetlet plot of police shooting w.r.t. Population of each state { Shooting Intensity = #Policeshootings/Population }
+    -   Plot 3: focus on certain cities/states and overlay
+    -   Plot 4: Heatmap of Police Use of Force Incidents by Racial Demographics
 
 ## Timeline
 
