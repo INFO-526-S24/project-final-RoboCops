@@ -2,9 +2,9 @@
 title: "Proposal title"
 subtitle: "Proposal"
 author: 
-  - name: "RoboCops - Peter Yeh, Sachin Pandurang Patil, Arun Koundinya Parasa, Surajit Pal, Christian Ortmann, Valérie Naa Dei Okine"
+  - name: "RoboCops - Peter , Sachin , Arun , Surajit , Christian , Valérie"
     affiliations:
-      - name: "School of Information, University of Arizona"
+  - name: "School of Information, University of Arizona"
 description: "Project description"
 format:
   html:
@@ -190,7 +190,15 @@ The two questions you want to answer.
 
 ## Analysis plan
 
--   A plan for answering each of the questions including the variables involved, variables to be created (if any), external data to be merged in (if any).
+-   Question 1:
+    -   Plot 1: Regression x = percent HS/ median income, y  = count of police killings grouped by city and race, can overlay lines with race
+    -   Plot 2: half-eye plot (need more variables for regression)
+    -   Plot 3: Bar Plot Comparing Socioeconomic Indicators
+-   Question 2:
+    -   Plot 1: Leaflet plot, bar how crimes have changed in five years
+    -   Plot 2: Leafetlet plot of crimes w.r.t. Population of each state { Crime Intensity }
+    -   Plot 2: focus on certain cities/states and overlay
+    -   Plot 3: Heatmap of Police Use of Force Incidents by Racial Demographics
 
 ## Timeline
 
