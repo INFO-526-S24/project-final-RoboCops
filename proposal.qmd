@@ -28,7 +28,11 @@ pacman::p_load(kableExtra)
 
 ## Introduction
 
+The police shooting data set is sourced from a Kaggle dataset, originally created by Karolina Wullum. The data was originally logged by The Washington Post after the Black Lives Matter movement was born out of the shooting of Michael Brown in 2014. The data set contains information on fatal shootings that occurred from 2015 to 2016 and highlights information on the victims as well as the demographics of the city they were shot in. The goal of this project is to contextualize police shootings to further understand how and why these unfortunate situations occur.
+
 ## Why the Police Killings dataset?
+
+Police shootings are a sad reality of policing practices that back decades. While many are justified to protect the lives of innocent civilians, there has been an uptick in recent years of police shooting people whom they perceive to be a threat in the heat of the moment, but are proven innocent after the fact. These shootings can often be hard to analyze because there are many psychological factors that come into play when an officer decides to discharge their weapon, such as their training, the perceived threat, and even an officer's internalized prejudice. Without further information on the psyche of a police officer, the reason why they discharge their weapon cannot be determined. However, their actions and surroundings can be analyzed to provide insight into how and why a shooting occurs.
 
 ## Analysis Goals
 
