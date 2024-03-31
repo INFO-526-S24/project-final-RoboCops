@@ -236,21 +236,21 @@ The two questions you want to answer.
 
     ### Data sets and Variables to be used 
 
-    **Supplementary Datasets**
+    #### **Supplementary Datasets**
 
-    `PercentagePeopleBelowPovertyLevel.csv` : The median income for cities .
+    **PercentPeopleBelowPovertyLevel.csv:** The median income for cities .
 
-    `PercentOver25CompletedHighSchool.csv`: The percentage of individuals 25 years and older that are highschool graduates for cities
+    **PercentOver25CompletedHighSchool.csv:** The percentage of individuals 25 years and older that are highschool graduates for cities
 
-    `ShareRaceByCity.csv`: Contains the demographics for cities
+    **ShareRaceByCity:** Contains the demographics for cities
 
-    **Primary Dataset (Fatal Police Shooting):**
+    #### **Primary Dataset (Fatal Police Shooting):**
 
     **Used Variables:**
 
-    `manner_of_death`: Manner of death. of victims (shot or tasered)
+    **manner_of_death:** Manner of death. of victims (shot or tasered)
 
-    `threat_level`: The level of threat the victim posed (Attack, Other, Undetermined)
+    **threat_level:** The level of threat the victim posed (Attack, Other, Undetermined)
 
     ### Variables to be created 
 
@@ -278,21 +278,21 @@ The two questions you want to answer.
 
     Overall, these visualizations will provide valuable insights into whether police use of force is driven by deliberate choices or influenced by inherent biases or chance factors related to crime.
 
-    ### Variables to be used 
+    ### Datasets and Variables to be used 
 
-    **Supplementary Datasets:**
+    #### **Supplementary Datasets:**
 
-    Yet to be determined
+    **ShareRaceByCity:** Contains the demographics for cities
 
-    **Primary Dataset ( Fatal Police Shootings):**
+    #### **Primary Dataset ( Fatal Police Shootings):**
 
     **Variables to be used:**
 
-    `race`: The race of the victim of the police shooting
+    **race:** The race of the victim of the police shooting
 
-    `manner_of-death`: The manner in which victims lost their lives (shot, tasered, etc)
+    **manner_of_death:** The manner in which victims lost their lives (shot, tasered, etc)
 
-    `city:` The city or community where the shooting occured.
+    **city:** The city or community where the shooting occured.
 
     ### Variables to be created 
 
