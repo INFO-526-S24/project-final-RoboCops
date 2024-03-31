@@ -2,7 +2,7 @@
 title: "Proposal title"
 subtitle: "Proposal"
 author: 
-  - name: "RoboCops - Peter , Sachin , Arun , Surajit , Christian , Valérie"
+  - name: "RoboCops - Peter, Sachin, Arun,Surajit, Christian, Valerie"
     affiliations:
   - name: "School of Information, University of Arizona"
 description: "Project description"
