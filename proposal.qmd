@@ -282,6 +282,18 @@ The two questions you want to answer.
 
     **Supplementary Datasets:**
 
+    Yet to be determined
+
+    **Primary Dataset ( Fatal Police Shootings):**
+
+    **Variables to be used:**
+
+    `race`: The race of the victim of the police shooting
+
+    `manner_of-death`: The manner in which victims lost their lives (shot, tasered, etc)
+
+    `city:` The city or community where the shooting occured.
+
     ### Variables to be created 
 
     Yet to be determined
