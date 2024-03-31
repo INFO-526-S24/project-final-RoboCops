@@ -4,3 +4,11 @@
 .Ruserdata
 
 /.quarto/
+.DS_Store
+_site/
+site_libs/
+_freeze/
+_site/index.html
+_site/proposal.html
+_site/search.json
+_extra/
