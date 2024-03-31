@@ -1,11 +1,11 @@
 ---
-title: "Proposal title"
-subtitle: "Proposal"
+title: "RoboCops"
+subtitle: "Analysis of Fatal Police Shootings"
 author: 
   - name: "RoboCops - Peter, Sachin, Arun,Surajit, Christian, Valerie"
     affiliations:
   - name: "School of Information, University of Arizona"
-description: "Project description"
+description: "This project aims to comprehensively analyze fatal police shootings in the United States, delving into the underlying factors and motivations driving these tragic events."
 format:
   html:
     code-tools: true
