@@ -22,13 +22,14 @@ execute:
 #| label: load-pkgs
 #| message: false
 #| echo: false
-pacman::p_load(kableExtra)
+pacman::p_load(kableExtra, 
+               plotly)
 
 ```
 
 ## Introduction
 
-The police shooting data set is sourced from a Kaggle dataset, originally created by Karolina Wullum. The data was originally logged by The Washington Post after the Black Lives Matter movement was born out of the shooting of Michael Brown in 2014. The data set contains information on fatal shootings that occurred from 2015 to 2016 and highlights information on the victims as well as the demographics of the city they were shot in. The goal of this project is to contextualize police shootings to further understand how and why these unfortunate situations occur.
+The police shooting data set is sourced from a Kaggle dataset, originally created by Karolina Wullum. The data was originally logged by The Washington Post after the Black Lives Matter movement was born out of the shooting of Michael Brown in 2014. The data set contains information on fatal shootings that occurred from 2015 to 2017 and highlights information on the victims as well as the demographics of the city they were shot in. The goal of this project is to contextualize police shootings to further understand how and why these unfortunate situations occur.
 
 ## Why the Police Killings dataset?
 
