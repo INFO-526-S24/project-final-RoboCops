@@ -212,6 +212,8 @@ The two questions you want to answer.
 
 ## Analysis plan
 
+## **Question 1**
+
 1.  How do socioeconomic factors such as median income, poverty rates, and educational relate with incidents of police use of force across different geographic areas?:
 
     ### Approach
@@ -254,7 +256,9 @@ The two questions you want to answer.
 
     Yet to be determined
 
-2.  To what extent do racial demographics, including the proportions of White, Black, Hispanic, Asian, and Native American residents, correlate with incidents of police use of force within communities?
+## Question 2
+
+1.  To what extent do racial demographics, including the proportions of White, Black, Hispanic, Asian, and Native American residents, correlate with incidents of police use of force within communities?
 
     ### Approach
 
@@ -275,6 +279,8 @@ The two questions you want to answer.
     Overall, these visualizations will provide valuable insights into whether police use of force is driven by deliberate choices or influenced by inherent biases or chance factors related to crime.
 
     ### Variables to be used 
+
+    **Supplementary Datasets:**
 
     ### Variables to be created 
 
