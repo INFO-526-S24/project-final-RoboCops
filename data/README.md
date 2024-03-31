@@ -74,7 +74,7 @@
 
 -   **ShareRaceByCity.csv**: The .csv contains the demographics for 29268 cities.
  
-# Codebook for Census Datasets
+# Codebook for City Census Datasets
 
 ## Variable Names and Descriptions:
 
@@ -119,3 +119,69 @@
 -   **share_asian**: numeric
 
 -   **share_hispanic**: numeric
+
+# Codebook for State Census Datasets
+
+## Variable Names and Descriptions:
+
+-   **STATE**: state
+
+-   **POPESTIMATE2010**: estimated population of state in 2010
+
+-   **POPESTIMATE2011**: estimated population of state in 2011
+
+-   **POPESTIMATE2012**: estimated population of state in 2012
+
+-   **POPESTIMATE2013**: estimated population of state in 2013
+
+-   **POPESTIMATE2014**: estimated population of state in 2014
+
+-   **POPESTIMATE2015**: estimated population of state in 2015
+
+-   **POPESTIMATE2016**: estimated population of state in 2016
+
+-   **POPESTIMATE2017**: estimated population of state in 2017
+
+-   **POPESTIMATE2018**: estimated population of state in 2018
+
+-   **POPESTIMATE2019**: estimated population of state in 2019
+
+-   **POPESTIMATE2020**: estimated population of state in 2020
+
+-   **POPESTIMATE2021**: estimated population of state in 2021
+
+-   **POPESTIMATE2022**: estimated population of state in 2022
+
+-   **POPESTIMATE2023**: estimated population of state in 2023
+
+## Data Types:
+
+-   **STATE**: character
+
+-   **POPESTIMATE2010**: numeric
+
+-   **POPESTIMATE2011**: numeric
+
+-   **POPESTIMATE2012**: numeric
+
+-   **POPESTIMATE2013**: numeric
+
+-   **POPESTIMATE2014**: numeric
+
+-   **POPESTIMATE2015**: numeric
+
+-   **POPESTIMATE2016**: numeric
+
+-   **POPESTIMATE2017**: numeric
+
+-   **POPESTIMATE2018**: numeric
+
+-   **POPESTIMATE2019**: numeric
+
+-   **POPESTIMATE2020**: numeric
+
+-   **POPESTIMATE2021**: numeric
+
+-   **POPESTIMATE2022**: numeric
+
+-   **POPESTIMATE2023**: numeric
