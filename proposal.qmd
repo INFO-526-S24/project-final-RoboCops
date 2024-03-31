@@ -252,21 +252,33 @@ The two questions you want to answer.
 
     ### Variables to be created 
 
+    Yet to be determined
+
 2.  To what extent do racial demographics, including the proportions of White, Black, Hispanic, Asian, and Native American residents, correlate with incidents of police use of force within communities?
 
     ### Approach
 
     For this segment of our analysis, we aim to investigate whether police have a higher propensity to use force against specific racial groups. This investigation is divided into two parts to comprehensively understand the dynamics at play. Firstly, we will examine the severity of police actions relative to population changes over time. This analysis will be overlaid with racial population composition to discern any patterns or disparities. In the second part, we will explore whether the use of specific instruments by police varies across racial groups and age demographics. In the absence of specific data, we will prorate the racial population distribution even for incidents of police killings to facilitate comprehension.
 
+    ### Visualizations
+
+    #### Plot 1
+
     To visually represent our findings, we propose using leaflet or ggmap plots alongside column plots. These plots will introduce a new variable, "Shooting Intensity," calculated as the ratio of Police Shootings to Population over time. Further, we will zoom into select major states, incorporating racial distribution as an additional factor.
 
+    #### Plot 2
+
     For the second plot, we will utilize heatmaps and stacked bar plots to illustrate the impact of specific instruments concerning Shooting Intensity across racial groups and age distributions. This approach will provide a comprehensive visualization of the relationship between racial and age demographics in police killings.
+
+    #### Interpretation of Plots 
 
     Overall, these visualizations will provide valuable insights into whether police use of force is driven by deliberate choices or influenced by inherent biases or chance factors related to crime.
 
     ### Variables to be used 
 
     ### Variables to be created 
+
+    Yet to be determined
 
 ## Timeline
 
