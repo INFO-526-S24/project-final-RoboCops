@@ -41,30 +41,30 @@
 
 -   **date**: date
 
--   **manner_of_death**: categorical
+-   **manner_of_death**: character
 
--   **armed**: categorical
+-   **armed**: character
 
 -   **age**: numeric
 
 -   **gender**: logical
 
--   **race**: categorical
+-   **race**: character
 
--   **city**: categorical
+-   **city**: character
 
--   **state**: categorical
+-   **state**: character
 
 -   **sign_of_mental_illness**: logical
 
--   **threat_level**: categorical
+-   **threat_level**: character
 
--   **flee**: categorical
+-   **flee**: character
 
 -   **body_camera**: logical
 
 
-# Supplementary Data
+# Codebook for City Census Datasets
 
 -   **MedianHouseholdIncome2015.csv**: The .csv contains the median income for 29322 cities.
 
@@ -73,8 +73,6 @@
 -   **PercentagePeopleBelowPovertyLevel.csv**: The .csv contains the percentage of the population below poverty for 29329 cities.
 
 -   **ShareRaceByCity.csv**: The .csv contains the demographics for 29268 cities.
- 
-# Codebook for City Census Datasets
 
 ## Variable Names and Descriptions:
 
@@ -100,7 +98,7 @@
 
 ## Data Types:
 
--   **Geographic.Area**: categorical
+-   **Geographic.Area**: character
 
 -   **City**: character
 
@@ -120,7 +118,41 @@
 
 -   **share_hispanic**: numeric
 
-# Codebook for State Census Datasets
+# Codebook for City Population Dataset
+
+-   **us-cities-top-1k-multi-year.csv**: The .csv contains populations of the 1000 largest US cities from 2014 to 2018.
+
+## Variable Names and Descriptions:
+
+-   **City**: city
+
+-   **State**: state
+
+-   **Population**: population of the city
+
+-   **lat**: latitude
+
+-   **lon**: longitude
+
+-   **year**: year of data collection
+
+## Data Types:
+
+-   **City**: character
+
+-   **State**: character
+
+-   **Population**: numeric
+
+-   **lat**: numeric
+
+-   **lon**: numeric
+
+-   **year**: numeric
+
+# Codebook for State Population Dataset
+
+-   **Population_Estimate_data_Statewise_2010-2023.csv**: The .csv contains statewise population estimates from 2010-2023 for all fifty states, the District of Colombia, and Puerto Rico
 
 ## Variable Names and Descriptions:
 
