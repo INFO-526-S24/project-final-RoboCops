@@ -1,11 +1,11 @@
 ---
-title: "Proposal title"
-subtitle: "Proposal"
+title: "RoboCops"
+subtitle: "Analysis of Fatal Police Shootings"
 author: 
-  - name: "RoboCops - Peter , Sachin , Arun , Surajit , Christian , Valérie"
+  - name: "RoboCops - Peter, Sachin, Arun,Surajit, Christian, Valerie"
     affiliations:
   - name: "School of Information, University of Arizona"
-description: "Project description"
+description: "This project aims to comprehensively analyze fatal police shootings in the United States, delving into the underlying factors and motivations driving these tragic events."
 format:
   html:
     code-tools: true
@@ -22,6 +22,7 @@ execute:
 #| label: load-pkgs
 #| message: false
 #| echo: false
+#| output: false
 pacman::p_load(kableExtra, 
                plotly)
 
@@ -264,25 +265,91 @@ The two questions you want to answer.
 
 ## Analysis plan
 
-1.  How do socioeconomic factors such as median income, poverty rates, and edsucational relate with incidents of police use of force across different geographic areas?:
+## **Question 1**
+
+1.  How do socioeconomic factors such as median income, poverty rates, and educational relate with incidents of police use of force across different geographic areas?:
+
+    ### Approach
 
     In this part of our analysis, we aim to investigate whether police use of force is influenced by fundamental societal inequalities. This investigation is divided into two parts. Firstly, we will explore the relationship between the severity of police use of force and the level of poverty in communities. To do this, we will utilize the `PercentagePeopleBelowPovertyLevel.csv` dataset, which provides insights into poverty rates across different areas. Secondly, we will examine any potential correlation between socio-economic status, particularly income & educational levels, and incidents of police killings. This approach will offer valuable insights into the broader relationship between socio-economic factors and police use of force.
 
+    ### Visualizations
+
+    #### Plot 1
+
     To visually represent our findings, we propose using bar plots or column plots. These plots will display the distribution of threat levels perceived by police officers, categorized by poverty rate brackets or educational attainment levels. Annotations will be included where applicable to provide additional context and highlight significant observations.
+
+    #### Plot 2
 
     For the second plot, we will employ regression analysis and half-eye plots for regressed variables. This approach will allow us to visualize the relationship between income levels and incidents of police killings more comprehensively. Additionally, we will create a bar plot comparing incidents of police killings across different income and poverty brackets. This comparative analysis will provide a clearer understanding of any potential correlations between socio-economic factors and police use of force.
 
+    #### Interpretation of Plots
+
     Overall, these visualizations will help us gain insights into the complex interplay between socio-economic factors and incidents of police use of force. By exploring these relationships, we aim to contribute to a deeper understanding of the underlying societal dynamics driving police interactions and identify potential avenues for addressing systemic inequalities.
 
-2.  To what extent do racial demographics, including the proportions of White, Black, Hispanic, Asian, and Native American residents, correlate with incidents of police use of force within communities?:
+    ### Data sets and Variables to be used 
+
+    #### **Supplementary Datasets**
+
+    **PercentPeopleBelowPovertyLevel.csv:** The median income for cities .
+
+    **PercentOver25CompletedHighSchool.csv:** The percentage of individuals 25 years and older that are highschool graduates for cities
+
+    **ShareRaceByCity:** Contains the demographics for cities
+
+    #### **Primary Dataset (Fatal Police Shooting):**
+
+    **Used Variables:**
+
+    **manner_of_death:** Manner of death. of victims (shot or tasered)
+
+    **threat_level:** The level of threat the victim posed (Attack, Other, Undetermined)
+
+    ### Variables to be created 
+
+    Yet to be determined
+
+## Question 2
+
+1.  To what extent do racial demographics, including the proportions of White, Black, Hispanic, Asian, and Native American residents, correlate with incidents of police use of force within communities?
+
+    ### Approach
 
     For this segment of our analysis, we aim to investigate whether police have a higher propensity to use force against specific racial groups. This investigation is divided into two parts to comprehensively understand the dynamics at play. Firstly, we will examine the severity of police actions relative to population changes over time. This analysis will be overlaid with racial population composition to discern any patterns or disparities. In the second part, we will explore whether the use of specific instruments by police varies across racial groups and age demographics. In the absence of specific data, we will prorate the racial population distribution even for incidents of police killings to facilitate comprehension.
 
+    ### Visualizations
+
+    #### Plot 1
+
     To visually represent our findings, we propose using leaflet or ggmap plots alongside column plots. These plots will introduce a new variable, "Shooting Intensity," calculated as the ratio of Police Shootings to Population over time. Further, we will zoom into select major states, incorporating racial distribution as an additional factor.
+
+    #### Plot 2
 
     For the second plot, we will utilize heatmaps and stacked bar plots to illustrate the impact of specific instruments concerning Shooting Intensity across racial groups and age distributions. This approach will provide a comprehensive visualization of the relationship between racial and age demographics in police killings.
 
+    #### Interpretation of Plots 
+
     Overall, these visualizations will provide valuable insights into whether police use of force is driven by deliberate choices or influenced by inherent biases or chance factors related to crime.
+
+    ### Datasets and Variables to be used 
+
+    #### **Supplementary Datasets:**
+
+    **ShareRaceByCity:** Contains the demographics for cities
+
+    #### **Primary Dataset ( Fatal Police Shootings):**
+
+    **Variables to be used:**
+
+    **race:** The race of the victim of the police shooting
+
+    **manner_of_death:** The manner in which victims lost their lives (shot, tasered, etc)
+
+    **city:** The city or community where the shooting occured.
+
+    ### Variables to be created 
+
+    Yet to be determined
 
 ## Timeline
 
