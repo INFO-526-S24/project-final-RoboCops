@@ -265,7 +265,7 @@ The two questions you want to answer.
 
 ## Analysis plan
 
-## **Question 1**
+### **Question 1**
 
 1.  How do socioeconomic factors such as median income, poverty rates, and educational relate with incidents of police use of force across different geographic areas?:
 
@@ -287,7 +287,7 @@ The two questions you want to answer.
 
     Overall, these visualizations will help us gain insights into the complex interplay between socio-economic factors and incidents of police use of force. By exploring these relationships, we aim to contribute to a deeper understanding of the underlying societal dynamics driving police interactions and identify potential avenues for addressing systemic inequalities.
 
-    ### Data sets and Variables to be used 
+    ### Data sets and Variables to be used
 
     #### **Supplementary Datasets**
 
@@ -305,11 +305,11 @@ The two questions you want to answer.
 
     **threat_level:** The level of threat the victim posed (Attack, Other, Undetermined)
 
-    ### Variables to be created 
+    ### Variables to be created
 
     Yet to be determined
 
-## Question 2
+### **Question 2**
 
 1.  To what extent do racial demographics, including the proportions of White, Black, Hispanic, Asian, and Native American residents, correlate with incidents of police use of force within communities?
 
@@ -327,11 +327,11 @@ The two questions you want to answer.
 
     For the second plot, we will utilize heatmaps and stacked bar plots to illustrate the impact of specific instruments concerning Shooting Intensity across racial groups and age distributions. This approach will provide a comprehensive visualization of the relationship between racial and age demographics in police killings.
 
-    #### Interpretation of Plots 
+    #### Interpretation of Plots
 
     Overall, these visualizations will provide valuable insights into whether police use of force is driven by deliberate choices or influenced by inherent biases or chance factors related to crime.
 
-    ### Datasets and Variables to be used 
+    ### Datasets and Variables to be used
 
     #### **Supplementary Datasets:**
 
@@ -347,9 +347,9 @@ The two questions you want to answer.
 
     **city:** The city or community where the shooting occured.
 
-    ### Variables to be created 
+    ### Variables to be created
 
-    Yet to be determined
+    **shooting Intentisy:** #Police Shootings/ #Population.
 
 ## Timeline
 

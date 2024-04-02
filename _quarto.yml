@@ -2,11 +2,11 @@ project:
   type: website
 
 website:
-  title: Project Title
+  title: "<img src='/images/fatalshootings.jpeg' alt='Stock Symbol' style='width: 2.6em; height: 2.2em; border-radius: 30%;'> <b>Analysis of Fatal Police Shootings</b>"
   navbar:
     right:
       - icon: github
-        href: https://github.com/INFO-526-S24/project-final # Needs to be changed to your project repo
+        href: https://github.com/INFO-526-S24/project-final-RoboCops
     left:
       - text: Project
         href: index.qmd
@@ -23,6 +23,9 @@ format:
       light: flatly
       dark: darkly
     toc: true
+
+  revealjs:
+    theme:  [simple,data/customtheming.scss]
 
 execute:
   freeze: auto
