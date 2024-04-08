@@ -30,7 +30,7 @@ pacman::p_load(kableExtra,
 
 ## Introduction
 
-The police shooting data set is sourced from a Kaggle dataset, originally created by Karolina Wullum. The data was originally logged by The Washington Post after the Black Lives Matter movement was born out of the shooting of Michael Brown in 2014. The data set contains information on fatal shootings that occurred from 2015 to 2017 and highlights information on the victims as well as the demographics of the city they were shot in. The goal of this project is to contextualize police shootings to further understand how and why these unfortunate situations occur.
+The police shooting data set is sourced from a Kaggle dataset, originally created by Karolina Wullum. The data consists of shootings for all fifty states and DC was originally logged by The Washington Post after the Black Lives Matter movement was born out of the shooting of Michael Brown in 2014. The data set contains information on fatal shootings that occurred from 2015 to 2017 and highlights information on the victims as well as the demographics of the city they were shot in. The goal of this project is to contextualize police shootings to further understand how and why these unfortunate situations occur.
 
 ## Why the Police Killings dataset?
 
@@ -289,14 +289,6 @@ The two questions you want to answer.
 
     ### Data sets and Variables to be used 
 
-    #### **Supplementary Datasets**
-
-    **PercentPeopleBelowPovertyLevel.csv:** The median income for cities .
-
-    **PercentOver25CompletedHighSchool.csv:** The percentage of individuals 25 years and older that are highschool graduates for cities
-
-    **ShareRaceByCity:** Contains the demographics for cities
-
     #### **Primary Dataset (Fatal Police Shooting):**
 
     **Used Variables:**
@@ -304,6 +296,14 @@ The two questions you want to answer.
     **manner_of_death:** Manner of death. of victims (shot or tasered)
 
     **threat_level:** The level of threat the victim posed (Attack, Other, Undetermined)
+
+    #### **Supplementary Datasets**
+
+    **PercentPeopleBelowPovertyLevel.csv:** The median income for cities .
+
+    **PercentOver25CompletedHighSchool.csv:** The percentage of individuals 25 years and older that are highschool graduates for cities
+
+    **ShareRaceByCity:** Contains the demographics for cities
 
     ### Variables to be created 
 
@@ -333,10 +333,6 @@ The two questions you want to answer.
 
     ### Datasets and Variables to be used 
 
-    #### **Supplementary Datasets:**
-
-    **ShareRaceByCity:** Contains the demographics for cities
-
     #### **Primary Dataset ( Fatal Police Shootings):**
 
     **Variables to be used:**
@@ -346,6 +342,10 @@ The two questions you want to answer.
     **manner_of_death:** The manner in which victims lost their lives (shot, tasered, etc)
 
     **city:** The city or community where the shooting occured.
+
+    #### **Supplementary Datasets:**
+
+    **ShareRaceByCity:** Contains the demographics for cities
 
     ### Variables to be created 
 
@@ -407,3 +407,10 @@ timeline_table <- kable(table_2, "html") %>%
 # Display the table
 timeline_table
 ```
+
+## References
+
+<a href=https://www.kaggle.com/datasets/kwullum/fatal-police-shootings-in-the-us/data>https://www.kaggle.com/datasets/kwullum/fatal-police-shootings-in-the-us/data</a>
+
+<a href=https://github.com/plotly/datasets/blob/master/us-cities-top-1k-multi-year.csv>https://github.com/plotly/datasets/blob/master/us-cities-top-1k-multi-year.csv</a>
+
