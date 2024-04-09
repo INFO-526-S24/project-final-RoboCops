@@ -1,6 +1,6 @@
 ---
 title: "Project Title"
-subtitle: "INFO 526 - Project Final"
+subtitle: "INFO 526 - Final Project"
 author: 
   - name: "RoboCops - Peter, Sachin, Arun, Surajit, Christian, Valerie"
     affiliations:
