@@ -2,10 +2,10 @@
 title: "Project Title"
 subtitle: "INFO 526 - Project Final"
 author: 
-  - name: "RoboCops - Peter Yeh, Sachin Pandurang Patil, Arun Koundinya Parasa, Surajit Pal, Christian Ortmann, Valérie Naa Dei Okine"
+  - name: "RoboCops - Peter, Sachin, Arun, Surajit, Christian, Valérie"
     affiliations:
       - name: "School of Information, University of Arizona"
-description: "Project description"
+description: "This project aims to comprehensively analyze fatal police shootings in the United States, delving into the underlying factors and motivations driving these tragic events."
 format:
    html:
     code-tools: true
@@ -19,4 +19,8 @@ execute:
 
 ## Abstract
 
-Add project abstract here.
+This project delves into the police shooting dataset sourced from kaggle and compiled by Karolina Wullum.
+
+The objective of this project is to analyze and contextualize police shootings, aiming to understand the underlying reasons and factors contributing to these unfortunate events. While acknowledging the necessity of police interventions for public safety, there has been a concerning trned of unjustified shootings. We seek to expand the analysis beyong individual cases to explore socio economic influences like housing income, poverty rates and population demographics, and uncover correlations and patterns that shed light on the broader societal context.
+
+This will be achieved through the use of data visualizations and in depth-analysis using statistical concepts such as regression analysis to contribute to a deeper understanding of police shootings.
