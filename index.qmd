@@ -17,6 +17,30 @@ execute:
   echo: false
 ---
 
+```{r}
+#| label: load-packages
+#| include: false
+
+# Load packages here
+pacman::p_load(dplyr,
+               ggplot2)
+
+```
+
+```{r}
+#| label: load-dataset
+#| message: false
+
+# Load in the datasets
+fatality <- read.csv("data/PoliceKillingsUS.csv", na.strings = "")
+median_income <- read.csv("data/MedianHouseholdIncome2015.csv")
+poverty_perc <- read.csv("data/PercentagePeopleBelowPovertyLevel.csv")
+hs_perc <- read.csv("data/PercentOver25CompletedHighSchool.csv")
+race_perc <- read.csv("data/ShareRaceByCity.csv")
+city_pop <- read.csv("data/us-cities-top-1k-multi-year.csv")
+state_pop <- read.csv("data/Population_Estimate_data_Statewise_2010-2023.csv")
+```
+
 ## Abstract
 
 This project delves into the police shooting dataset sourced from kaggle and compiled by Karolina Wullum.
@@ -24,3 +48,33 @@ This project delves into the police shooting dataset sourced from kaggle and com
 The objective of this project is to analyze and contextualize police shootings, aiming to understand the underlying reasons and factors contributing to these unfortunate events. While acknowledging the necessity of police interventions for public safety, there has been a concerning trned of unjustified shootings. We seek to expand the analysis beyong individual cases to explore socio economic influences like housing income, poverty rates and population demographics, and uncover correlations and patterns that shed light on the broader societal context.
 
 This will be achieved through the use of data visualizations and in depth-analysis using statistical concepts such as regression analysis to contribute to a deeper understanding of police shootings.
+
+```{r}
+#| label: Q1-plot1
+#| message: false
+
+```
+
+```{r}
+#| label: Q1-plot2a
+#| message: false
+
+```
+
+```{r}
+#| label: Q1-plot2b
+#| message: false
+
+```
+
+```{r}
+#| label: Q2-plot1
+#| message: false
+
+```
+
+```{r}
+#| label: Q2-plot2
+#| message: false
+
+```

@@ -271,13 +271,13 @@ In this part of our analysis, we aim to investigate whether police use of force 
 
 #### **Visualizations**
 
-##### **Plot1**
+##### **Plot 1**
 
 To visually represent our findings, we propose using bar plots or column plots. These plots will display the distribution of threat levels perceived by police officers, categorized by poverty rate brackets or educational attainment levels. Annotations will be included where applicable to provide additional context and highlight significant observations.
 
 ##### **Plot 2**
 
-For the second plot, we will employ regression analysis and half-eye plots for regressed variables. This approach will allow us to visualize the relationship between income levels and incidents of police killings more comprehensively. Additionally, we will create a bar plot comparing incidents of police killings across different income and poverty brackets. This comparative analysis will provide a clearer understanding of any potential correlations between socio-economic factors and police use of force.
+For the second plot, we will employ regression analysis and half-eye plots for regressed variables. This approach will allow us to visualize the relationship between income levels and incidents of police killings more comprehensively. This plot will be compared to plot 1 to provide a clearer understanding of any potential correlations between socio-economic factors and police use of force.
 
 ##### **Interpretation of Plots**
 
@@ -356,10 +356,22 @@ Overall, these visualizations will provide valuable insights into whether police
 tasks <- c("Proposal-For Peer Review",
            "Peer Review",
            "Proposal-Updated",
-           "Proposal-Final")
+           "Proposal-Final",
+           "Question 1: Plot 1",
+           "Question 1: Plot 2",
+           "Question 1: Interpret",
+           "Question 2: Plot 1",
+           "Question 2: Plot 2",
+           "Question 2: Interpretation")
 
 # Create vector to represent status
-status <- c("",
+status <- c("Complete",
+            "Complete",
+            "Complete",
+            "Complete",
+            "",
+            "",
+            "",
             "",
             "",
             "")
@@ -368,25 +380,49 @@ status <- c("",
 member <- c("All",
             "All",
             "All",
-            "All")
+            "All",
+            "Surajit",
+            "Peter",
+            "Christian",
+            "Arun",
+            "Sachin",
+            "Valerie")
 
 # Create vector to represent the deadline
 due <- c("April 1",
          "April 1",
          "April 8",
-         "April 15")
+         "April 15",
+         "April 22",
+         "April 22",
+         "April 22",
+         "April 22",
+         "April 22",
+         "April 22")
 
 # Create vector to represent priority
 priority <- c("High",
               "High",
               "Medium",
-              "Low")
+              "Low",
+              "Medium",
+              "Medium",
+              "Medium",
+              "Medium",
+              "Medium",
+              "Medium")
 
 # Create vector to represent description
 description <- c("Write proposal for peer review",
                  "Write up peer reviews for other groups",
                  "Update proposal using peer feedback",
-                 "Update proposal using instructor feedback")
+                 "Update proposal using instructor feedback",
+                 "Generate plot",
+                 "Generate plot",
+                 "Interpret plots",
+                 "Generate plot",
+                 "Generate plot",
+                 "Interpret plots")
 
 # Bind the columns
 table_2 <- as.table(cbind(tasks, status, member, due, priority, description))
