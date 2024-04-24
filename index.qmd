@@ -41,6 +41,199 @@ city_pop <- read.csv("data/us-cities-top-1k-multi-year.csv")
 state_pop <- read.csv("data/Population_Estimate_data_Statewise_2010-2023.csv")
 ```
 
+```{r}
+#| label: data-setup
+#| message: false
+
+# Recode Fatality NA
+fatality <- fatality |>
+  mutate(
+    race = case_when(
+      race %in% "A" ~ "Asian",
+      race %in% "B" ~ "Black",
+      race %in% "H" ~ "Hispanic",
+      race %in% "N" ~ "Native American",
+      race %in% "O" ~ "Other",
+      race %in% "W" ~ "White",
+      is.na(race) == TRUE ~ "Unknown",
+      TRUE ~ race
+    )
+  )
+
+# Recode non-numeric values as "", remove NA
+median_income <- median_income |>
+  mutate(
+    Median.Income = case_when(
+      Median.Income %in% "-" ~ "",
+      Median.Income %in% "(X)" ~ "",
+      TRUE ~ Median.Income
+    )
+  )
+median_income$Median.Income <- as.numeric(median_income$Median.Income)
+median_income <- na.omit(median_income)
+
+# Concatenate supplementary datasets
+supp_data <- left_join(hs_perc, median_income,
+                       by = c("Geographic.Area" , "City"))
+supp_data <- left_join(supp_data, poverty_perc,
+                       by = c("Geographic.Area" , "City"))
+colnames(race_perc) <- c("Geographic.Area", "City",
+                         "White", "Black", "Native", "Asian", "Hispanic")
+race_perc[,3] <- as.numeric(race_perc[,3])
+race_perc[,4] <- as.numeric(race_perc[,4])
+race_perc[,5] <- as.numeric(race_perc[,5])
+race_perc[,6] <- as.numeric(race_perc[,6])
+race_perc[,7] <- as.numeric(race_perc[,7])
+supp_data <- left_join(supp_data, race_perc)
+colnames(supp_data) <- c("State",
+                         "City",
+                         "HSDegree",
+                         "Median",
+                         "Poverty",
+                         "White",
+                         "Black",
+                         "Native",
+                         "Asian",
+                         "Hispanic")
+
+
+# Adjust the state abbreviations to full name
+state_pop <- state_pop |>
+  mutate(
+    STATE = case_when(
+      STATE %in% "Alabama" ~ "AL",
+      STATE %in% "Alaska" ~ "AK",
+      STATE %in% "Arizona" ~ "AZ",
+      STATE %in% "Arkansas" ~ "AR",
+      STATE %in% "California" ~ "CA",
+      STATE %in% "Colorado" ~ "CO",
+      STATE %in% "Connecticut" ~ "CT",
+      STATE %in% "Delaware" ~ "DE",
+      STATE %in% "District of Columbia" ~ "DC",
+      STATE %in% "Florida" ~ "FL",
+      STATE %in% "Georgia" ~ "GA",
+      STATE %in% "Hawaii" ~ "HI",
+      STATE %in% "Idaho" ~ "ID",
+      STATE %in% "Illinois" ~ "IL",
+      STATE %in% "Indiana" ~ "IN",
+      STATE %in% "Iowa" ~ "IA",
+      STATE %in% "Kansas" ~ "KS",
+      STATE %in% "Kentucky" ~ "KY",
+      STATE %in% "Louisiana" ~ "LA",
+      STATE %in% "Maine" ~ "ME",
+      STATE %in% "Maryland" ~ "MD",
+      STATE %in% "Massachusetts" ~ "MA",
+      STATE %in% "Michigan" ~ "MI",
+      STATE %in% "Minnesota" ~ "MN",
+      STATE %in% "Mississipi" ~ "MS",
+      STATE %in% "Missouri" ~ "MO",
+      STATE %in% "Montana" ~ "MT",
+      STATE %in% "Nebraska" ~ "NE",
+      STATE %in% "Nevada" ~ "NV",
+      STATE %in% "New Hampshire" ~ "NH",
+      STATE %in% "New Jersey" ~ "NJ",
+      STATE %in% "New Mexico" ~ "NM",
+      STATE %in% "New York" ~ "NY",
+      STATE %in% "North Carolina" ~ "NC",
+      STATE %in% "North Dakota" ~ "ND",
+      STATE %in% "Ohio" ~ "OH",
+      STATE %in% "Oklahoma" ~ "OK",
+      STATE %in% "Oregon" ~ "OR",
+      STATE %in% "Pennsylvania" ~ "PA",
+      STATE %in% "Puerto Rico" ~ "PR",
+      STATE %in% "Rhode Island" ~ "RI",
+      STATE %in% "South Carolina" ~ "SC",
+      STATE %in% "South Dakota" ~ "SD",
+      STATE %in% "Tennessee" ~ "TN",
+      STATE %in% "Texas" ~ "TX",
+      STATE %in% "Utah" ~ "UT",
+      STATE %in% "Vermont" ~ "VT",
+      STATE %in% "Virginia" ~ "VA",
+      STATE %in% "Washington" ~ "WA",
+      STATE %in% "West Virginia" ~ "WV",
+      STATE %in% "Wisconsin" ~ "WI",
+      STATE %in% "Wyoming" ~ "WY"
+    )
+  )
+
+# Change colnames for easier matching
+colnames(state_pop) <- c("State", colnames(state_pop[-1]))
+
+# Select State and 2015 column
+state_pop <- state_pop[, c("State", "POPESTIMATE2015")]
+
+# City population modify state
+city_pop <- city_pop |>
+  mutate(
+    State = case_when(
+      State %in% "Alabama" ~ "AL",
+      State %in% "Alaska" ~ "AK",
+      State %in% "Arizona" ~ "AZ",
+      State %in% "Arkansas" ~ "AR",
+      State %in% "California" ~ "CA",
+      State %in% "Colorado" ~ "CO",
+      State %in% "Connecticut" ~ "CT",
+      State %in% "Delaware" ~ "DE",
+      State %in% "District of Columbia" ~ "DC",
+      State %in% "Florida" ~ "FL",
+      State %in% "Georgia" ~ "GA",
+      State %in% "Hawaii" ~ "HI",
+      State %in% "Idaho" ~ "ID",
+      State %in% "Illinois" ~ "IL",
+      State %in% "Indiana" ~ "IN",
+      State %in% "Iowa" ~ "IA",
+      State %in% "Kansas" ~ "KS",
+      State %in% "Kentucky" ~ "KY",
+      State %in% "Louisiana" ~ "LA",
+      State %in% "Maine" ~ "ME",
+      State %in% "Maryland" ~ "MD",
+      State %in% "Massachusetts" ~ "MA",
+      State %in% "Michigan" ~ "MI",
+      State %in% "Minnesota" ~ "MN",
+      State %in% "Mississipi" ~ "MS",
+      State %in% "Missouri" ~ "MO",
+      State %in% "Montana" ~ "MT",
+      State %in% "Nebraska" ~ "NE",
+      State %in% "Nevada" ~ "NV",
+      State %in% "New Hampshire" ~ "NH",
+      State %in% "New Jersey" ~ "NJ",
+      State %in% "New Mexico" ~ "NM",
+      State %in% "New York" ~ "NY",
+      State %in% "North Carolina" ~ "NC",
+      State %in% "North Dakota" ~ "ND",
+      State %in% "Ohio" ~ "OH",
+      State %in% "Oklahoma" ~ "OK",
+      State %in% "Oregon" ~ "OR",
+      State %in% "Pennsylvania" ~ "PA",
+      State %in% "Puerto Rico" ~ "PR",
+      State %in% "Rhode Island" ~ "RI",
+      State %in% "South Carolina" ~ "SC",
+      State %in% "South Dakota" ~ "SD",
+      State %in% "Tennessee" ~ "TN",
+      State %in% "Texas" ~ "TX",
+      State %in% "Utah" ~ "UT",
+      State %in% "Vermont" ~ "VT",
+      State %in% "Virginia" ~ "VA",
+      State %in% "Washington" ~ "WA",
+      State %in% "West Virginia" ~ "WV",
+      State %in% "Wisconsin" ~ "WI",
+      State %in% "Wyoming" ~ "WY"
+    )
+  )
+
+# Filter city population by 2015
+city_pop <- city_pop[which(city_pop$year == 2015),]
+
+# Remove " city" from the Location column
+supp_data$City <- gsub(" city", "", supp_data$City)
+supp_data$City <- gsub(" town", "", supp_data$City)
+supp_data$City <- gsub(" CDP", "", supp_data$City)
+
+# Merge supplementary data and state population data
+supp_data <- left_join(supp_data, city_pop,
+                       by = c("State", "City"))
+```
+
 ## Abstract
 
 This project delves into the police shooting dataset sourced from kaggle and compiled by Karolina Wullum.
@@ -59,6 +252,123 @@ This will be achieved through the use of data visualizations and in depth-analys
 #| label: Q1-plot2a
 #| message: false
 
+# Calculate the populations of each population for each city
+supp_stat <- na.omit(supp_data)
+supp_stat <- supp_stat |>
+  mutate(
+    white_pop <- White * Population / 100,
+    black_pop <- Black * Population / 100,
+    native_pop <- Native * Population / 100,
+    asian_pop <- Asian * Population / 100,
+    hispanic_pop <- Hispanic * Population / 100
+  )
+
+fatality_locations <- fatality[,9:10]
+fatality_locations <- unique(fatality_locations[c("city","state")])
+colnames(fatality_locations) <- c("City", "State")
+
+fatality_subset <- left_join(fatality_locations, supp_stat,
+                             by = c("State", "City"))
+fatality_subset <- na.omit(fatality_subset)
+population_counts <- fatality_subset[,15:19]
+colnames(population_counts) <- c("White", "Black", "Native", "Asian", "Hispanic")
+
+race_counts <- as.data.frame(seq(1:5), ncol = 5)
+for (i in 1:5) {
+  
+}
+
+race_counts <- as.data.frame(sum(population_counts$White),
+                 sum(population_counts$Black),
+                 sum(population_counts$Native),
+                 sum(population_counts$Asian),
+                 sum(population_counts$Hispanic))
+race_counts <- as.data.frame(race_counts)
+
+summary(as.factor(fatality))
+
+# Create dataframe to contain counts of fatalities for each city
+# city_counts <- fatality |>
+#   group_by(state, city, race) |>
+#   count(city)
+# colnames(city_counts) <- c("State", "City", "race", "n")
+
+# Merge supplementary dataset and counts
+# merged_data <- left_join(supp_data, city_counts,
+#                          by = c("State", "City"))
+# merged_data <- na.omit(merged_data)
+
+colnames(median_income) <- c("state", "city", "median")
+median_income$city <- gsub(" city", "", median_income$city)
+median_income$city <- gsub(" town", "", median_income$city)
+median_income$city <- gsub(" CDP", "", median_income$city)
+
+merged_data <- left_join(fatality, median_income,
+                         by = c("state", "city"))
+
+# Generate the density ridge plot (smallest median at the bottom)
+ggplot(merged_data, aes(x = median, y = race)) +
+  geom_density_ridges() +
+  scale_x_continuous(expand = c(0, 0)) +
+  coord_cartesian(clip = "off") +
+  ggtitle("Density Plots of Police Shootings") +
+  xlab("Median Income of City") +
+  ylab("Race")
+
+# Convert columns
+# merged_data$HSDegree <- as.numeric(merged_data$HSDegree)
+# merged_data$Median <- as.numeric(merged_data$Median)
+# merged_data$Poverty <- as.numeric(merged_data$Poverty)
+# merged_data$White <- as.numeric(merged_data$White)
+# merged_data$Black <- as.numeric(merged_data$Black)
+# merged_data$Native <- as.numeric(merged_data$Native)
+# merged_data$Asian <- as.numeric(merged_data$Asian)
+# merged_data$Hispanic <- as.numeric(merged_data$Hispanic)
+# merged_data$Population <- as.numeric(merged_data$Population)
+
+# Generate the regression
+# model <- lm(n ~ Median + Poverty + HSDegree +
+#               White + Black + Native + Asian + Hispanic + Population,
+#             data = merged_data)
+
+# Acquire values
+# model_coef <- coef(model)
+# model_pred <- predict(model)
+# 
+# ggplot(data = merged_data, aes(x = Median, y = n)) +
+#   geom_point() +
+#   geom_smooth(method = "lm",
+#               formula = n ~ Median)
+# 
+# ggplot(data = merged_data, aes(x = Population, y = n)) +
+#   geom_point() +
+#   geom_smooth(method = "lm",
+#               formula = n ~ Population)
+# 
+# ggplot(data = merged_data, aes(x = Black, y = n)) +
+#   geom_point() +
+#   geom_smooth(method = "lm",
+#               formula = n ~ Black)
+# 
+# ggplot(data = merged_data, aes(x = White, y = n)) +
+#   geom_point() +
+#   geom_smooth(method = "lm",
+#               formula = n ~ White)
+# 
+# ggplot(data = merged_data, aes(x = Native, y = n)) +
+#   geom_point() +
+#   geom_smooth(method = "lm",
+#               formula = n ~ Native)
+# 
+# ggplot(data = merged_data, aes(x = Asian, y = n)) +
+#   geom_point() +
+#   geom_smooth(method = "lm",
+#               formula = n ~ Asian)
+# 
+# ggplot(data = merged_data, aes(x = Hispanic, y = n)) +
+#   geom_point() +
+#   geom_smooth(method = "lm",
+#               formula = n ~ Hispanic)
 ```
 
 ```{r}
