@@ -23,7 +23,9 @@ execute:
 
 # Load packages here
 pacman::p_load(dplyr,
-               ggplot2)
+               ggplot2,
+               ggridges,
+               scales)
 
 ```
 
@@ -72,30 +74,14 @@ median_income <- median_income |>
 median_income$Median.Income <- as.numeric(median_income$Median.Income)
 median_income <- na.omit(median_income)
 
-# Concatenate supplementary datasets
-supp_data <- left_join(hs_perc, median_income,
-                       by = c("Geographic.Area" , "City"))
-supp_data <- left_join(supp_data, poverty_perc,
-                       by = c("Geographic.Area" , "City"))
-colnames(race_perc) <- c("Geographic.Area", "City",
-                         "White", "Black", "Native", "Asian", "Hispanic")
+# Clean race data
 race_perc[,3] <- as.numeric(race_perc[,3])
 race_perc[,4] <- as.numeric(race_perc[,4])
 race_perc[,5] <- as.numeric(race_perc[,5])
 race_perc[,6] <- as.numeric(race_perc[,6])
 race_perc[,7] <- as.numeric(race_perc[,7])
-supp_data <- left_join(supp_data, race_perc)
-colnames(supp_data) <- c("State",
-                         "City",
-                         "HSDegree",
-                         "Median",
-                         "Poverty",
-                         "White",
-                         "Black",
-                         "Native",
-                         "Asian",
-                         "Hispanic")
-
+colnames(race_perc) <- c("Geographic.Area", "City",
+                         "White", "Black", "Native", "Asian", "Hispanic")
 
 # Adjust the state abbreviations to full name
 state_pop <- state_pop |>
@@ -224,6 +210,25 @@ city_pop <- city_pop |>
 # Filter city population by 2015
 city_pop <- city_pop[which(city_pop$year == 2015),]
 
+# Concatenate supplementary datasets
+supp_data <- left_join(hs_perc, median_income,
+                       by = c("Geographic.Area" , "City"))
+
+supp_data <- left_join(supp_data, poverty_perc,
+                       by = c("Geographic.Area" , "City"))
+
+supp_data <- left_join(supp_data, race_perc)
+colnames(supp_data) <- c("State",
+                         "City",
+                         "HSDegree",
+                         "Median",
+                         "Poverty",
+                         "White",
+                         "Black",
+                         "Native",
+                         "Asian",
+                         "Hispanic")
+
 # Remove " city" from the Location column
 supp_data$City <- gsub(" city", "", supp_data$City)
 supp_data$City <- gsub(" town", "", supp_data$City)
@@ -283,112 +288,53 @@ supp_stat <- supp_stat |>
     hispanic_pop <- Hispanic * Population / 100
   )
 
-fatality_locations <- fatality[,9:10]
-fatality_locations <- unique(fatality_locations[c("city","state")])
-colnames(fatality_locations) <- c("City", "State")
+# Select specific columns of the supplementary data
+supp_stat <- supp_stat[,c(1, 2, 4, 15:19)]
+colnames(supp_stat) <- c("State", "City", "Median",
+                         "White", "Black", "Native", "Asian", "Hispanic")
 
-fatality_subset <- left_join(fatality_locations, supp_stat,
-                             by = c("State", "City"))
-fatality_subset <- na.omit(fatality_subset)
-population_counts <- fatality_subset[,15:19]
-colnames(population_counts) <- c("White", "Black", "Native", "Asian", "Hispanic")
+# Select specific columns of the fatality data
+fatality_subset <- fatality[,8:10]
+colnames(fatality_subset) <- c("Race", "City", "State")
 
-race_counts <- as.data.frame(seq(1:5), ncol = 5)
-for (i in 1:5) {
-  
-}
+# Merge dataset and remove rows with NAs
+merged_data <- left_join(fatality_subset, supp_stat,
+                         by = c("State", "City"))
+merged_data <- na.omit(merged_data)
 
-race_counts <- as.data.frame(sum(population_counts$White),
-                 sum(population_counts$Black),
-                 sum(population_counts$Native),
-                 sum(population_counts$Asian),
-                 sum(population_counts$Hispanic))
-race_counts <- as.data.frame(race_counts)
+# Acquire counts of race:
+# Asian = 23, Black = 409, Hispanic = 301, Native American = 13, Other = 17,
+# Unknown = 92, White = 466
+race_count <- as.data.frame(summary(as.factor(merged_data$Race)))
 
-summary(as.factor(fatality))
+# Refactor levels according to the total counts
+merged_data$Race <- factor(merged_data$Race,
+                           levels = c("Unknown",
+                                      "Other",
+                                      "Native American",
+                                      "Asian",
+                                      "Hispanic",
+                                      "Black",
+                                      "White"))
 
-# Create dataframe to contain counts of fatalities for each city
-# city_counts <- fatality |>
-#   group_by(state, city, race) |>
-#   count(city)
-# colnames(city_counts) <- c("State", "City", "race", "n")
-
-# Merge supplementary dataset and counts
-# merged_data <- left_join(supp_data, city_counts,
-#                          by = c("State", "City"))
-# merged_data <- na.omit(merged_data)
-
-colnames(median_income) <- c("state", "city", "median")
-median_income$city <- gsub(" city", "", median_income$city)
-median_income$city <- gsub(" town", "", median_income$city)
-median_income$city <- gsub(" CDP", "", median_income$city)
-
-merged_data <- left_join(fatality, median_income,
-                         by = c("state", "city"))
-
-# Generate the density ridge plot (smallest median at the bottom)
-ggplot(merged_data, aes(x = median, y = race)) +
+# Generate the density ridge plot (smallest count at the bottom)
+ggplot(merged_data, aes(x = Median, y = Race)) +
   geom_density_ridges() +
-  scale_x_continuous(expand = c(0, 0)) +
+  scale_x_continuous(expand = c(0, 0),
+                    labels = label_dollar(scale = 1e-3, suffix = "K")) +
   coord_cartesian(clip = "off") +
-  ggtitle("Density Plots of Police Shootings") +
+  geom_text(aes(x = 125000, y = 1.2, label = "13")) +
+  geom_text(aes(x = 125000, y = 2.2, label = "17")) +
+  geom_text(aes(x = 125000, y = 3.2, label = "23")) +
+  geom_text(aes(x = 125000, y = 4.2, label = "92")) +
+  geom_text(aes(x = 125000, y = 5.2, label = "301")) +
+  geom_text(aes(x = 125000, y = 6.2, label = "409")) +
+  geom_text(aes(x = 125000, y = 7.2, label = "466")) +
+  labs(title = "Density Plots of Police Shootings",
+       subtitle = "Ordered by descending counts") +
   xlab("Median Income of City") +
-  ylab("Race")
-
-# Convert columns
-# merged_data$HSDegree <- as.numeric(merged_data$HSDegree)
-# merged_data$Median <- as.numeric(merged_data$Median)
-# merged_data$Poverty <- as.numeric(merged_data$Poverty)
-# merged_data$White <- as.numeric(merged_data$White)
-# merged_data$Black <- as.numeric(merged_data$Black)
-# merged_data$Native <- as.numeric(merged_data$Native)
-# merged_data$Asian <- as.numeric(merged_data$Asian)
-# merged_data$Hispanic <- as.numeric(merged_data$Hispanic)
-# merged_data$Population <- as.numeric(merged_data$Population)
-
-# Generate the regression
-# model <- lm(n ~ Median + Poverty + HSDegree +
-#               White + Black + Native + Asian + Hispanic + Population,
-#             data = merged_data)
-
-# Acquire values
-# model_coef <- coef(model)
-# model_pred <- predict(model)
-# 
-# ggplot(data = merged_data, aes(x = Median, y = n)) +
-#   geom_point() +
-#   geom_smooth(method = "lm",
-#               formula = n ~ Median)
-# 
-# ggplot(data = merged_data, aes(x = Population, y = n)) +
-#   geom_point() +
-#   geom_smooth(method = "lm",
-#               formula = n ~ Population)
-# 
-# ggplot(data = merged_data, aes(x = Black, y = n)) +
-#   geom_point() +
-#   geom_smooth(method = "lm",
-#               formula = n ~ Black)
-# 
-# ggplot(data = merged_data, aes(x = White, y = n)) +
-#   geom_point() +
-#   geom_smooth(method = "lm",
-#               formula = n ~ White)
-# 
-# ggplot(data = merged_data, aes(x = Native, y = n)) +
-#   geom_point() +
-#   geom_smooth(method = "lm",
-#               formula = n ~ Native)
-# 
-# ggplot(data = merged_data, aes(x = Asian, y = n)) +
-#   geom_point() +
-#   geom_smooth(method = "lm",
-#               formula = n ~ Asian)
-# 
-# ggplot(data = merged_data, aes(x = Hispanic, y = n)) +
-#   geom_point() +
-#   geom_smooth(method = "lm",
-#               formula = n ~ Hispanic)
+  ylab("Race") +
+  theme_minimal()
 ```
 
 ### Plot 2b
@@ -396,6 +342,47 @@ ggplot(merged_data, aes(x = median, y = race)) +
 ```{r}
 #| label: Q1-plot2b
 #| message: false
+
+# Find the race populations
+# White = 135231935, Black = 30170898, Native = 1827873, Asian = 12570851,
+# Hispanic = 51034800
+race_pop <- merged_data |>
+  distinct(State, City, .keep_all = TRUE)
+race_total <- as.data.frame(colSums(race_pop[,5:9]))
+
+# Proportion shot for each race:
+# Asian: 23/12570851 * 100 = 1.82963e-04
+# Black: 409/30170898 * 100 = 1.355611e-03
+# Hispanic: 301/51034800 * 100 = 5.897936e-04
+# Native: 13/1827873 * 100 = 7.112091e-04
+# White: 466/135231935 * 100 = 3.445932e-04
+
+# Refactor levels according to the proportions
+merged_data$Race <- factor(merged_data$Race,
+                           levels = c("Unknown",
+                                      "Other",
+                                      "Asian",
+                                      "White",
+                                      "Hispanic",
+                                      "Native American",
+                                      "Black"))
+
+# Generate the density ridge plot (smallest proportion at the bottom)
+ggplot(merged_data, aes(x = Median, y = Race)) +
+  geom_density_ridges() +
+  scale_x_continuous(expand = c(0, 0),
+                    labels = label_dollar(scale = 1e-3, suffix = "K")) +
+  coord_cartesian(clip = "off") +
+  geom_text(aes(x = 125000, y = 3.2, label = "0.0002%")) +
+  geom_text(aes(x = 125000, y = 4.2, label = "0.0003%")) +
+  geom_text(aes(x = 125000, y = 5.2, label = "0.0006%")) +
+  geom_text(aes(x = 125000, y = 6.2, label = "0.0007%")) +
+  geom_text(aes(x = 125000, y = 7.2, label = "0.0014%")) +
+  labs(title = "Density Plots of Police Shootings",
+       subtitle = "Ordered by descending proportion within race") +
+  xlab("Median Income of City") +
+  ylab("Race") +
+  theme_minimal()
 
 ```
 
