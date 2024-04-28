@@ -28,7 +28,9 @@ pacman::p_load(dplyr,
                scales,
                patchwork,
                stringr,
-               grep)
+               grep,
+               kableExtra,
+               plotly)
 
 ```
 
@@ -284,11 +286,122 @@ Police shootings are a sad reality of policing practices that date back decades.
 
 The police shooting data set is sourced from a Kaggle dataset originally created by Karolina Wullum. The dataset consists of shootings from all fifty states and DC, and is supplemented with informations on demographics including as median household income, distribution of race, city population, percent of people below poverty line, and percent of people over 25 who completed high school.
 
-This analysis aims to understand the dataset on police killings, extending its scope beyond the original focus tracked by the Washington Post. Socioeconomic factors like housing income, poverty rates, and population demographics will be used to understand and contextualize any patterns that appear. The goal is to explore how socioeconomic factors can play into incidents of police violence.
+This analysis aims to understand the dataset on police killings, extending its scope beyond the original focus tracked by the Washington Post. Socioeconomic factors like housing income, poverty rates, and population demographics will be used to understand and contextualize any patterns that appear. The goal is to explore how socioeconomic factors can play into incidents of police violence. The following table represents the variables relevant to the analysis.
+
+```{r}
+#| label: dataset-table
+#| echo: false
+#| message: false
+
+# Create columns for data
+fatality_var <- colnames(fatality)
+
+fatality_desc <- c("Data ID",
+                   "Name of deceased",
+                   "Date of shooting",
+                   "Means of death",
+                   "Weapon/Tool",
+                   "Age of deceased",
+                   "Gender of deceased",
+                   "Race of deceased",
+                   "City",
+                   "State",
+                   "Sign of mental illness during incident",
+                   "Deceased's threat level",
+                   "Method to evade police",
+                   "Reports of police with body camera")
+
+fatality_type <- c("numeric",
+                   "character",
+                   "date",
+                   "categorical",
+                   "categorical",
+                   "numeric",
+                   "logical",
+                   "categorical",
+                   "categorical",
+                   "categorical",
+                   "logical",
+                   "categorical",
+                   "categorical",
+                   "logical")
+
+fatality_values <- c("2535 entries",
+                     "Names",
+                     "dd/mm/yy from 2015-2017",
+                     "shot, shot and tasered",
+                     "69 categories",
+                     "6-91 years old",
+                     "F/M",
+                     "A, B, H, N, O, W, Unknown",
+                     "1417 cities",
+                     "State 2 letter abbreviations and DC",
+                     "True/False",
+                     "attack, other, undetermined",
+                     "Car, Foot, Not fleeing, Other",
+                     "True/False")
+
+# Bind the vectors into a dataframe
+fatality_table <- as.data.frame(cbind(fatality_var,
+                                      fatality_desc,
+                                      fatality_type,
+                                     fatality_values))
+colnames(fatality_table) <- c("Variable", "Description", "Data Type", "Values")
+row.names(fatality_table) <- seq(1:14)
+
+# Generate a nice table with kable
+my_table <- kable(fatality_table, "html") %>%
+  kable_styling(full_width = FALSE)
+
+# Display the table
+my_table
+
+```
+
+Additionally, six .csv files are utilized to provide supplemental demographic data such as poverty levels, percent high school graduates, city and state population, race percentage by city, and median household income.
+
+```{r}
+
+#| label: census-table
+#| echo: false
+#| message: false
+
+# Create columns for data
+census_data <- c("PercentOver25CompletedHighSchool.csv",
+                 "MedianHouseholdIncome2015.csv",
+                 "PercentagePeopleBelowPovertyLevel.csv",
+                 "ShareRaceByCity.csv", 
+                 "Population_Estimate_data_Statewise_2010-2023.csv", 
+                 "us-cities-top-1k-multi-year.csv")
+
+census_desc <- c("Contains the percentage of individuals 25 years and older that are highschool graduates for cities",
+                 "Contains the median income for cities",
+                 "Contains the percentage of the population below poverty for cities",
+                 "Contains the demographics for cities", 
+                 "Contains state populations", 
+                 "Contains populations of the top 1000 largest cities in the US")
+
+census_n <- c(nrow(hs_perc),
+              nrow(median_income),
+              nrow(poverty_perc),
+              nrow(race_perc), 
+              nrow(state_pop), 
+              nrow(city_pop))
+
+# Bind the vectors into a dataframe
+census_table <- as.data.frame(cbind(census_data, census_desc, census_n))
+colnames(census_table) <- c("Data", "Description", "Number of Rows")
+row.names(census_table) <- seq(1:6)
+
+# Generate a nice table with kable
+my_table <- kable(census_table, "html") %>%
+  kable_styling(full_width = FALSE)
+
+my_table
+
+```
 
 By incorporating these additional factors, correlations and patterns can be uncovered that provide insight into the broader societal context surrounding police use of force. Through data visualization and analysis, contributions to a deeper understanding of these issues and support evidence-based policy-making for promoting equity and justice.
-
-(\^above needs significant rewordin to fit the rubric requirements. Avoid 1st person...)
 
 ## Question 1
 
@@ -522,6 +635,9 @@ ggplot(merged_data, aes(x = Median, y = Race)) +
 ```
 
 ### Discussion
+The above visualizations focus on the distribution of shootings across three demographic categories: median income, percent high school graduates, and poverty level. Plot 1 take takes this further by breaking down the shootings by threat level across poverty level and percent high school graduates. Looking further at Plot 1, two major observations can be made: cities with greater than 75% high school graduates and poverty levels between 18-25% experience the most shootings with roughly half of all incidents showing a threat level of "Attack", meaning the shooting officer felt their safety was at risk. Additionally, most shootings had a threat level of "Attack" or "Other", and a minority of the shootings are undetermined, meaning most officers recorded a reason for discharing their weapon. These observations suggest that cities with more high school edcuated individuals and a  poverty level that is twice the US average will experience more shootings. One explanation for this is very large US cities like New York City and Chicago. These cities have large populations and a large wage gap between class levels, so the high school graduate percentage is supplemented by higher income classes and the poverty level is driven up by lower income classes, and because of the sheer size of these large cities, there are more cases of shootings, even if the rate per count of population is the same as other cities. 
+
+Plot 2a breaks down these incidents by raw count of victims in each race population, and Plot 2b takes these raw counts and converts them to overall percent of victims per total population of each race. These plots show these representations across the median income of each city where the shooting occured. From these plots, a few insights can be gained. First, most shootings occur in cities where the median income is roughly between $40k - $50k per year, with more shootings at the higher end of that range. Second, out of all races in a given city, white people are shot the most, with the highest raw count. However, when compared to the overal population of each race, black are shot the most, at 0.0014% of the black population being shot, the equivalent of 1 in every 7,143 black people being shot by the police. In contrast, white people have a 0.003% chance of being shot by the police, or 1 in every 333,334 white people. That means that black people are 47 times more likely to be shot by police, a striking statistic. Finally, the last major observation that can be made is that most native Americans are shot in cities where the median income is roughly $45k per year, based on the large spike at the $45k mark. 
 
 ## Question 2
 
