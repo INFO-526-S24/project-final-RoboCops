@@ -409,7 +409,9 @@ By incorporating these additional factors, correlations and patterns can be unco
 
 ### Description of Analysis
 
+For the density ridge plots, the population for each race was calculated from the supplemental datasets by multiplying the 2015 city population estimate with the estimated racial proportion of the city and divided by 100. The police shooting dataset, median income dataset, and the cities race estimates were concatenated according to city and state. The merged data was then subsetted to only include incidents with a median income and race estimates. The first ridge plot, which is organized by the total count of fatalities by race, refactorized the race levels according to the total counts and used a geom_density_ridge() with the median income as the horizontal axis and the race as the vertical axis.
 
+The second density ridge plot, which is organized by the race's relative proportion of fatalities (ie the number of fatalities divided by the estimated race's total population). The race's population estimate was calculated by summing the estimated race's population for all cities included in the subsetted data. The data race levels were refactorized according to the proportions with Other and Unknown set to the bottom of the plot. Other and Unknown were set to the bottom of the plot since the interest of this analysis is focused on the potential difference in incidence when race is considered.
 
 ### Plot 1
 
