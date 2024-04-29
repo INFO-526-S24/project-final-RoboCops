@@ -863,7 +863,7 @@ ggplot() +
                aes(x = long, y = lat,group=group), fill = "#e69e91",
                color = "white", linewidth = 0.2) +
   expand_limits(x = merge_2015_alaska$long, y = merge_2015_alaska$lat) +
-  geom_label_repel(data = alaska_label, aes(x = long, y = lat, label = paste(STATE,":\n",round(intensity_2015,1))), size = 15) +
+  geom_label_repel(data = alaska_label, aes(x = long, y = lat, label = paste(STATE,":\n",round(intensity_2015,1))), size = 20) +
   theme_void() +
   theme(legend.position = "none") + 
   coord_cartesian(xlim = c(-180, 0), ylim = c(0, 90)) -> plot1
@@ -875,7 +875,7 @@ ggplot() +
            color = "white", linewidth = 0.2) +
   scale_fill_gradient(low = "#fee5d9", high = "#a50f15", na.value = "grey50",
                       name = "Intensity") +
-  geom_label_repel(data = label_data %>% filter(intensity_2015 > 3), aes(x = long, y = lat, label = paste(STATE,":\n",round(intensity_2015,1))), size = 15) +
+  geom_label_repel(data = label_data %>% filter(intensity_2015 > 3), aes(x = long, y = lat, label = paste(STATE,":\n",round(intensity_2015,1))), size = 20) +
   expand_limits(x = merge_2015_us$long, y = merge_2015_us$lat) +
   labs(title = "Shooting Intensity by State : 2015",
        subtitle = "Per Million of Population",
@@ -927,7 +927,7 @@ ggplot() +
                aes(x = long, y = lat,group=group), fill = "#a50f15",
                color = "white", size = 0.2) +
   expand_limits(x = merge_2016_alaska$long, y = merge_2016_alaska$lat) +
-  geom_label_repel(data = alaska_label, aes(x = long, y = lat, label = paste(STATE,":\n",round(intensity_2016,1))), size = 15) +
+  geom_label_repel(data = alaska_label, aes(x = long, y = lat, label = paste(STATE,":\n",round(intensity_2016,1))), size = 20) +
   theme_void() +
   theme(legend.position = "none") + 
   coord_cartesian(xlim = c(-180, 0), ylim = c(0, 90)) -> plot2
@@ -940,7 +940,7 @@ ggplot() +
                color = "white", size = 0.2) +
   scale_fill_gradient(low = "#fee5d9", high = "#a50f15", na.value = "grey50",
                       name = "Intensity") +
-  geom_label_repel(data = label_data %>% filter(intensity_2016 > 3), aes(x = long, y = lat, label = paste(STATE,":\n",round(intensity_2016,1))), size = 15) +
+  geom_label_repel(data = label_data %>% filter(intensity_2016 > 3), aes(x = long, y = lat, label = paste(STATE,":\n",round(intensity_2016,1))), size = 20) +
   expand_limits(x = merge_2016_us$long, y = merge_2016_us$lat) +
   labs(title = "Shooting Intensity by State : 2016",
        subtitle = "Per Million of Population",
@@ -994,7 +994,7 @@ ggplot() +
                aes(x = long, y = lat,group=group), fill = "#a50f15",
                color = "white", size = 0.2) +
   expand_limits(x = merge_2017_alaska$long, y = merge_2017_alaska$lat) +
-  geom_label_repel(data = alaska_label, aes(x = long, y = lat, label = paste(STATE,":\n",round(intensity_2017_up,1))), size = 15) +
+  geom_label_repel(data = alaska_label, aes(x = long, y = lat, label = paste(STATE,":\n",round(intensity_2017_up,1))), size = 20) +
   theme_void() +
   theme(legend.position = "none") + 
   coord_cartesian(xlim = c(-180, 0), ylim = c(0, 90)) -> plot3
@@ -1007,7 +1007,7 @@ ggplot() +
                color = "white", size = 0.2) +
   scale_fill_gradient(low = "#fee5d9", high = "#a50f15", na.value = "grey50",
                       name = "Intensity") +
-  geom_label_repel(data = label_data %>% filter(intensity_2017_up > 3), aes(x = long, y = lat, label = paste(STATE,"\n",round(intensity_2017_up,1))), size = 15) +
+  geom_label_repel(data = label_data %>% filter(intensity_2017_up > 3), aes(x = long, y = lat, label = paste(STATE,"\n",round(intensity_2017_up,1))), size = 20) +
   expand_limits(x = merge_2017_us$long, y = merge_2017_us$lat) +
   labs(title = "Shooting Intensity by State : 2017",
        subtitle = "Per Million of Population",
