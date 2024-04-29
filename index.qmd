@@ -1084,6 +1084,277 @@ animation::saveGIF(
 ```{r}
 #| label: Q2-plot2
 #| message: false
+#| eval: false
+
+
+fatality <- read.csv("data/PoliceKillingsUS.csv", na.strings = "")
+median_income <- read.csv("data/MedianHouseholdIncome2015.csv")
+poverty_perc <- read.csv("data/PercentagePeopleBelowPovertyLevel.csv")
+hs_perc <- read.csv("data/PercentOver25CompletedHighSchool.csv")
+race_perc <- read.csv("data/ShareRaceByCity.csv")
+city_pop <- read.csv("data/us-cities-top-1k-multi-year.csv")
+state_pop <- read.csv("data/Population_Estimate_data_Statewise_2010-2023.csv")
+
+
+state_abbreviations <- c(
+  "Alabama" = "AL", "Alaska" = "AK", "Arizona" = "AZ", "Arkansas" = "AR",
+  "California" = "CA", "Colorado" = "CO", "Connecticut" = "CT", "Delaware" = "DE",
+  "District of Columbia" = "DC", "Florida" = "FL", "Georgia" = "GA", "Hawaii" = "HI",
+  "Idaho" = "ID", "Illinois" = "IL", "Indiana" = "IN", "Iowa" = "IA", "Kansas" = "KS",
+  "Kentucky" = "KY", "Louisiana" = "LA", "Maine" = "ME", "Maryland" = "MD", "Massachusetts" = "MA",
+  "Michigan" = "MI", "Minnesota" = "MN", "Mississippi" = "MS", "Missouri" = "MO", "Montana" = "MT",
+  "Nebraska" = "NE", "Nevada" = "NV", "New Hampshire" = "NH", "New Jersey" = "NJ", "New Mexico" = "NM",
+  "New York" = "NY", "North Carolina" = "NC", "North Dakota" = "ND", "Ohio" = "OH", "Oklahoma" = "OK",
+  "Oregon" = "OR", "Pennsylvania" = "PA", "Rhode Island" = "RI", "South Carolina" = "SC", "South Dakota" = "SD",
+  "Tennessee" = "TN", "Texas" = "TX", "Utah" = "UT", "Vermont" = "VT", "Virginia" = "VA", "Washington" = "WA",
+  "West Virginia" = "WV", "Wisconsin" = "WI", "Wyoming" = "WY", "Puerto Rico" = "PR"
+)
+
+state_abbreviations_df <- data.frame(STATE = names(state_abbreviations), state = state_abbreviations, row.names = NULL)
+
+
+fatality_summaries_year <-
+  fatality |> 
+  mutate(
+    year = year(as.Date(fatality$date,format = "%d/%m/%y"))
+  ) |>
+  group_by(state,year) |>
+  summarise(fatalities_count = n() , .groups = "drop")
+
+
+state_pop_updated <- 
+  merge(state_pop,state_abbreviations_df) |>
+  pivot_longer(
+    cols = starts_with("POP"),
+    names_to = "year",
+    values_to = "popuplation"
+  ) |> 
+  mutate(
+    year = case_when(
+      year == "POPESTIMATE2010" ~ year(as.Date("01/01/10",format="%d/%m/%y")),
+      year == "POPESTIMATE2011" ~ year(as.Date("01/01/11",format="%d/%m/%y")),
+      year == "POPESTIMATE2012" ~ year(as.Date("01/01/12",format="%d/%m/%y")),
+      year == "POPESTIMATE2013" ~ year(as.Date("01/01/13",format="%d/%m/%y")),
+      year == "POPESTIMATE2014" ~ year(as.Date("01/01/14",format="%d/%m/%y")),
+      year == "POPESTIMATE2015" ~ year(as.Date("01/01/15",format="%d/%m/%y")),
+      year == "POPESTIMATE2016" ~ year(as.Date("01/01/16",format="%d/%m/%y")),
+      year == "POPESTIMATE2017" ~ year(as.Date("01/01/17",format="%d/%m/%y")),
+      year == "POPESTIMATE2018" ~ year(as.Date("01/01/18",format="%d/%m/%y")),
+      year == "POPESTIMATE2019" ~ year(as.Date("01/01/19",format="%d/%m/%y")),
+      year == "POPESTIMATE2020" ~ year(as.Date("01/01/20",format="%d/%m/%y")),
+      year == "POPESTIMATE2021" ~ year(as.Date("01/01/21",format="%d/%m/%y")),
+      year == "POPESTIMATE2022" ~ year(as.Date("01/01/22",format="%d/%m/%y")),
+      year == "POPESTIMATE2023" ~ year(as.Date("01/01/23",format="%d/%m/%y")),
+    )
+  )
+
+fatalities_population <- merge(fatality_summaries_year,state_pop_updated)
+
+
+
+city_fatality_summaries_year <-
+  fatality |> 
+  mutate(
+    year = year(as.Date(fatality$date,format = "%d/%m/%y"))
+  ) |>
+  group_by(state,city,year) |>
+  summarise(fatalities_count = n() , .groups = "drop")
+
+city_fatality_summaries_year1 <- subset(city_fatality_summaries_year, city_fatality_summaries_year$year == 2015)
+
+city_fatality_summaries_year2 <- subset(city_fatality_summaries_year, city_fatality_summaries_year$year == 2016)
+
+fatality_summaries_year <- rbind(city_fatality_summaries_year1,city_fatality_summaries_year2)
+
+rm(city_fatality_summaries_year1,city_fatality_summaries_year2)
+
+city_fatalities_population <- merge(city_fatality_summaries_year,city_pop,by.x = c("city","year"),by.y = c("City","year"))
+
+city_fatalities_population |>
+  mutate(
+    intensity = (fatalities_count/Population)*1000000,
+    region = tolower(State)
+  ) |>
+  filter(
+    year == 2015,
+    lon > -150
+  ) |>
+  arrange(desc(intensity)) |> 
+  distinct(city, .keep_all = TRUE) -> city_fatalities_population_2015
+
+city_fatalities_population |>
+  mutate(
+    intensity = (fatalities_count/Population)*1000000,
+    region = tolower(State)
+  ) |>
+  filter(
+    year == 2016
+  ) |> 
+  arrange(desc(intensity)) |> 
+  distinct(city, .keep_all = TRUE) -> city_fatalities_population_2016
+
+fatalities_population |>
+  mutate(
+    intensity = (fatalities_count/popuplation)*1000000,
+    region = tolower(STATE)
+  ) |>
+  filter(
+    year == 2015
+  ) -> fatalities_population_2015
+
+fatalities_population |>
+  mutate(
+    intensity = (fatalities_count/popuplation)*1000000,
+    region = tolower(STATE)
+  ) |>
+  filter(
+    year == 2016
+  ) -> fatalities_population_2016
+
+
+us_map_data <- map_data("state")
+
+
+
+alaska <-
+  map_data("world") |>
+  filter(
+    region == "USA" & (subregion == "Alaska" ) 
+  ) |>
+  mutate(
+    region = tolower(subregion),
+    order = max(us_map_data$order) + 1
+  ) |>
+  filter(
+    long < 0
+  )
+
+
+merge_2015_us <- full_join(us_map_data,subset(fatalities_population_2015,!(fatalities_population_2015$region=="alaska" |
+                                                                             fatalities_population_2015$region=="hawaii")))
+merge_2015_alaska <- inner_join(alaska,fatalities_population_2015)
+
+merge_2016_us <- full_join(us_map_data,subset(fatalities_population_2016,!(fatalities_population_2016$region=="alaska" |
+                                                                             fatalities_population_2016$region=="hawaii")))
+merge_2016_alaska <- inner_join(alaska,fatalities_population_2016)
+
+
+ggplot() +
+  geom_polygon(data = merge_2015_alaska,
+               aes(x = long, y = lat,group=group), fill = "#e69e91",
+               color = "white", size = 0.2) +
+  expand_limits(x = merge_2015_alaska$long, y = merge_2015_alaska$lat) +
+  theme_void() +
+  theme(legend.position = "none") + 
+  coord_cartesian(xlim = c(-180, 0), ylim = c(0, 90)) +
+  geom_point(data = subset(city_fatalities_population_2015,city_fatalities_population_2015$region=="alaska"),aes(x = lon,y=lat), color = "darkred")-> plot1_city
+
+ggplot() +
+  geom_polygon(data = merge_2015_us,
+               aes(x = long, y = lat, group = group, fill = intensity),
+               color = "white", size = 0.2) +
+  scale_fill_gradient(low = "#fee5d9", high = "#a50f15", na.value = "grey50",
+                      name = "State") +
+  expand_limits(x = merge_2015_us$long, y = merge_2015_us$lat) +
+  annotation_custom(ggplotGrob(plot1_city),xmin = -130, xmax = -70, ymin = 0, ymax = 40) + theme_void() +
+  geom_point(data = subset(city_fatalities_population_2015,city_fatalities_population_2015$lon>-140),aes(x = lon,y=lat, size = intensity),
+                                                                                                         color = "#8B0020") +
+  geom_label_repel(data = city_fatalities_population_2015 %>% filter(intensity > 28), 
+                   aes(x = lon, y = lat, label = paste(city,"\n",round(intensity,1))), 
+                   #color = "#56007C",
+                   color = "#000000",
+                   nudge_x = ifelse(city_fatalities_population_2015$city == "Oakland", -2, -0.5),
+                   nudge_y = ifelse(city_fatalities_population_2015$city == "Oakland", -1, -0.5),
+                   size = 3.5, 
+                   fill = "transparent") +
+  guides(size = guide_legend(override.aes = list(fill = "transparent"))) + 
+  labs(title = "Shooting Intensity by City : 2015",
+       subtitle = "Per Million of Population",
+      size = "City",
+      caption = "Cities labels are of shooting intensity > 28 \n Grey highlighted states have NO fatalities"
+  ) +
+  theme(
+    legend.text = element_text(size = 9, color = "black"), 
+    #legend.key.size = unit(4, "cm"),
+    legend.title = element_text(size = 12),
+    plot.title = element_text(hjust = 0.5, size = 16, face = "bold"),
+    plot.subtitle = element_text(hjust = 0.5, size = 12),
+    plot.caption = element_text(size = 10)
+  ) -> map_2015_city
+  
+
+
+
+ggplot() +
+  geom_polygon(data = merge_2016_alaska,
+               aes(x = long, y = lat,group=group), fill = "#e69e91",
+               color = "white", size = 0.2) +
+  expand_limits(x = merge_2016_alaska$long, y = merge_2016_alaska$lat) +
+  theme_void() +
+  theme(legend.position = "none") + 
+  coord_cartesian(xlim = c(-180, 0), ylim = c(0, 90)) +
+  geom_point(data = subset(city_fatalities_population_2016,city_fatalities_population_2016$region=="alaska"),aes(x = lon,y=lat), color = "darkred")-> plot2_city
+
+ggplot() +
+  geom_polygon(data = merge_2016_us,
+               aes(x = long, y = lat, group = group, fill = intensity),
+               color = "white", size = 0.2) +
+  scale_fill_gradient(low = "#fee5d9", high = "#a50f15", na.value = "grey50",
+                      name = "State") +
+  expand_limits(x = merge_2016_us$long, y = merge_2016_us$lat) +
+  annotation_custom(ggplotGrob(plot2_city),xmin = -130, xmax = -70, ymin = 0, ymax = 40) + theme_void() +
+  geom_point(data = subset(city_fatalities_population_2016,city_fatalities_population_2016$lon>-140),aes(x = lon,y=lat, size = intensity),
+             color = "#8B0020") +
+  geom_label_repel(data = city_fatalities_population_2016 %>% filter(intensity > 28), 
+                   aes(x = lon, y = lat, label = paste(city,"\n",round(intensity,1))), 
+                   #color = "#56007C",
+                   color = "#000000",
+                   #nudge_x = ifelse(city_fatalities_population_2016$city == "Oakland", -2, -0.5),
+                   #nudge_y = ifelse(city_fatalities_population_2016$city == "Oakland", -1, -0.5),
+                   size = 3.5, 
+                   fill = "transparent") +
+  guides(size = guide_legend(override.aes = list(fill = "transparent"))) + 
+  labs(title = "Shooting Intensity by City : 2016",
+       subtitle = "Per Million of Population",
+       size = "City",
+       caption = "Cities labels are of shooting intensity > 28 \n Grey highlighted states have NO fatalities"
+  ) +
+  theme(
+    legend.text = element_text(size = 9, color = "black"), 
+    #legend.key.size = unit(4, "cm"),
+    legend.title = element_text(size = 12),
+    plot.title = element_text(hjust = 0.5, size = 16, face = "bold"),
+    plot.subtitle = element_text(hjust = 0.5, size = 12),
+    plot.caption = element_text(size = 10)
+  ) -> map_2016_city
+
+
+library(animation)
+
+# explicit
+animation::saveGIF(
+  expr = {
+    plot(map_2015_city)
+    plot(map_2016_city)
+  },
+  movie.name = "shooting_intensity_city.gif",
+  interval = 4,
+  ani.width = 1200,
+  ani.height = 700,
+  ani.dev = "png",
+  ani.type = "cairo",
+  res = 300,
+  ani.x = "in",
+  ani.y = "in",
+  ani.unit = "in",
+  ani.bg = "white",
+  ani.fps = 3
+)
+
+
+
+
+  
 
 ```
 
