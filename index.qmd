@@ -1358,4 +1358,6 @@ animation::saveGIF(
 
 ```
 
+![](images/shooting_intensity_city.gif){fig-align="center"}
+
 ### Discussion
