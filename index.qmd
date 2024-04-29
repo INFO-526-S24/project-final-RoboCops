@@ -412,6 +412,8 @@ By incorporating these additional factors, correlations and patterns can be unco
 
 ### Description of Analysis
 
+For the bar plot which illustrates the socio-economic backdrop of fatal police encounters is classified meticulously by poverty and education levels. The underlying data, standardized for consistency, undergoes a transformation to quantify both poverty rates and high school completion rates, subsequently binned into quintiles for a granular analysis. The methodology ensures that each bracket spans an equal range of the data, capturing a full spectrum of socio-economic statuses. These brackets are then labeled with intuitive percentage ranges, setting the stage for the ensuing visual assessment. This careful numerical and categorical preparation underpins the creation of two bar charts, which, through the nuanced lens of ggplot2, lay bare the stark contrasts in threat level distributions across different socio-economic strata, painting a telling picture of the intersection between socio-economic factors and lethal police interventions.
+
 For the density ridge plots, the population for each race was calculated from the supplemental datasets by multiplying the 2015 city population estimate with the estimated racial proportion of the city and divided by 100. The police shooting dataset, median income dataset, and the cities race estimates were concatenated according to city and state. The merged data was then subsetted to only include incidents with a median income and race estimates. The first ridge plot, which is organized by the total count of fatalities by race, refactorized the race levels according to the total counts and used a geom_density_ridge() with the median income as the horizontal axis and the race as the vertical axis.
 
 The second density ridge plot, which is organized by the race's relative proportion of fatalities (ie the number of fatalities divided by the estimated race's total population). The race's population estimate was calculated by summing the estimated race's population for all cities included in the subsetted data. The data race levels were refactorized according to the proportions with Other and Unknown set to the bottom of the plot. Other and Unknown were set to the bottom of the plot since the interest of this analysis is focused on the potential difference in incidence when race is considered.
@@ -506,7 +508,7 @@ poverty_plot  <- ggplot(analysis_data, aes(x = poverty_bracket, fill = threat_le
   guides(fill = "none") + # This removes the legend from this plot
   theme_minimal() +
   labs(title = "Distribution of Threat Levels by Poverty Bracket",
-       x = "Poverty Bracket",
+       x = "Percentage of Population in Poverty Line",
        y = "Count of Incidents",
        fill = "Threat Level")
 
@@ -515,7 +517,7 @@ education_plot <- ggplot(analysis_data, aes(x = edu_bracket, fill = threat_level
   geom_bar(position = "identity") +
   theme_minimal() +
   labs(title = "Distribution of Threat Levels by High School Degree Bracket",
-       x = "High School Degree Bracket",
+       x = "Percentage of Population having High School Degree",
        y = "Count of Incidents",
        fill = "Threat Level")
 
