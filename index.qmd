@@ -33,7 +33,8 @@ pacman::p_load(dplyr,
                plotly,
                maps,
                ggrepel,
-               animation)
+               animation, 
+               RColorBrewer)
 
 ```
 
@@ -504,7 +505,8 @@ analysis_data$threat_level <- str_to_title(analysis_data$threat_level)
 
 # Plotting for Poverty Bracket
 poverty_plot  <- ggplot(analysis_data, aes(x = poverty_bracket, fill = threat_level)) +
-  geom_bar(position = "identity") +
+  geom_bar(position = "identity", width = 0.5) +
+  scale_fill_brewer(palette = 'Set3') + 
   guides(fill = "none") + # This removes the legend from this plot
   theme_minimal() +
   labs(title = "Distribution of Threat Levels by Poverty Bracket",
@@ -514,7 +516,8 @@ poverty_plot  <- ggplot(analysis_data, aes(x = poverty_bracket, fill = threat_le
 
 # Plotting for Educational Bracket
 education_plot <- ggplot(analysis_data, aes(x = edu_bracket, fill = threat_level)) +
-  geom_bar(position = "identity") +
+  geom_bar(position = "identity", width = 0.5) +
+  scale_fill_brewer(palette = 'Set3') + 
   theme_minimal() +
   labs(title = "Distribution of Threat Levels by High School Degree Bracket",
        x = "Percentage of Population having High School Degree",
