@@ -507,12 +507,22 @@ analysis_data$threat_level <- str_to_title(analysis_data$threat_level)
 poverty_plot  <- ggplot(analysis_data, aes(x = poverty_bracket, fill = threat_level)) +
   geom_bar(position = "identity", width = 0.5) +
   scale_fill_brewer(palette = 'Set3') + 
-  guides(fill = "none") + # This removes the legend from this plot
+  #guides(fill = "none") + # This removes the legend from this plot
   theme_minimal() +
   labs(title = "Distribution of Threat Levels by Poverty Bracket",
        x = "Percentage of Population in Poverty Line",
        y = "Count of Incidents",
-       fill = "Threat Level")
+       fill = "Threat Level") + 
+  theme(theme(legend.position = 'right'))
+poverty_plot
+```
+
+
+### Plot 2
+```{r}
+#| label: Q1-plot2
+#| fig-width: 9
+#| fig-asp: 0.8
 
 # Plotting for Educational Bracket
 education_plot <- ggplot(analysis_data, aes(x = edu_bracket, fill = threat_level)) +
@@ -522,15 +532,19 @@ education_plot <- ggplot(analysis_data, aes(x = edu_bracket, fill = threat_level
   labs(title = "Distribution of Threat Levels by High School Degree Bracket",
        x = "Percentage of Population having High School Degree",
        y = "Count of Incidents",
-       fill = "Threat Level")
+       fill = "Threat Level") + 
+  theme(theme(legend.position = 'right'))
 
-# Combine the plots with a single shared legend on the right
-combined_plot <- poverty_plot / education_plot + 
-  plot_layout(guides = 'collect') + # Collects and deduplicates the guides
-  theme(legend.position = 'right') # Moves the legend to the right
+education_plot
 
-# Print the combined plot
-print(combined_plot)
+
+# # Combine the plots with a single shared legend on the right
+# combined_plot <- poverty_plot / education_plot + 
+#   plot_layout(guides = 'collect') + # Collects and deduplicates the guides
+#   theme(legend.position = 'right') # Moves the legend to the right
+# 
+# # Print the combined plot
+# print(combined_plot)
 ```
 
 ### Plot 2a
