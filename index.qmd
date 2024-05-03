@@ -1454,14 +1454,68 @@ head(race_perc)
 ```
 
 ```{r}
-#| label:  
 
+# Selecting desired columns from state_pop
+state_pop_subset <- state_pop[, c("STATE", "POPESTIMATE2015", "POPESTIMATE2016", "POPESTIMATE2017")]
 
+# # View the structure of the new dataframe
+# str(state_pop_subset)
+# 
+# # View the first few rows of the new dataframe
+# head(state_pop_subset)
+
+# Reshape the dataframe to have Year, State, and Population columns
+state_pop_long <- state_pop_subset %>%
+  pivot_longer(cols = c("POPESTIMATE2015", "POPESTIMATE2016", "POPESTIMATE2017"),
+               names_to = "Year",
+               values_to = "Population")
+
+# Remove "POPESTIMATE" from the Year column
+state_pop_long <- state_pop_long %>%
+  mutate(Year = str_remove(Year, "POPESTIMATE"))
+
+# Convert Year column to numeric for sorting
+state_pop_long$Year <- as.numeric(state_pop_long$Year)
+
+# Sort the dataframe by Year in ascending order
+state_pop_long <- state_pop_long %>%
+  arrange(Year)
+
+# View the sorted dataframe
+str(state_pop_long)
 ```
 
 ```{r}
-#| label: 
+#| label: population_data
 
+# Selecting desired columns from state_pop
+state_pop_subset <- state_pop[, c("STATE", "POPESTIMATE2015", "POPESTIMATE2016", "POPESTIMATE2017")]
+
+# # View the structure of the new dataframe
+# str(state_pop_subset)
+# 
+# # View the first few rows of the new dataframe
+# head(state_pop_subset)
+
+# Reshape the dataframe to have Year, State, and Population columns
+state_pop_long <- state_pop_subset %>%
+  pivot_longer(cols = c("POPESTIMATE2015", "POPESTIMATE2016", "POPESTIMATE2017"),
+               names_to = "Year",
+               values_to = "Population")
+
+# Remove "POPESTIMATE" from the Year column
+state_pop_long <- state_pop_long %>%
+  mutate(Year = str_remove(Year, "POPESTIMATE"))
+
+# Convert Year column to numeric for sorting
+state_pop_long$Year <- as.numeric(state_pop_long$Year)
+
+# Sort the dataframe by Year in ascending order
+state_pop_long <- state_pop_long %>%
+  arrange(Year)
+
+# View the sorted dataframe
+str(state_pop_long)
 ```
 
 ### Discussion
