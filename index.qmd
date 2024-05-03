@@ -517,8 +517,8 @@ poverty_plot  <- ggplot(analysis_data, aes(x = poverty_bracket, fill = threat_le
 poverty_plot
 ```
 
-
 ### Plot 2
+
 ```{r}
 #| label: Q1-plot2
 #| fig-width: 9
@@ -1376,5 +1376,92 @@ animation::saveGIF(
 ```
 
 ![](images/shooting_intensity_city.gif){fig-align="center"}
+
+**Plot 3**
+
+```{r}
+#| label: Q.2 plot 3
+
+library(utils)
+library(dplyr)
+library(tidyr)
+
+fatality <- read.csv("data/PoliceKillingsUS.csv", na.strings = "")
+race_perc <- read.csv("data/ShareRaceByCity.csv")
+state_pop <- read.csv("data/Population_Estimate_data_Statewise_2010-2023.csv")
+
+# 
+# View(fatality)
+# View(race_perc)
+# View(state_pop)
+# str(state_pop) 
+# glimpse(fatality)
+
+fatality$year <- format(as.Date(fatality$date, format = "%d/%m/%y"), "%Y")
+
+
+# Group by year, state, and race, then count occurrences
+race_count <- fatality %>%
+  group_by(year, state, race) %>%
+  summarise(count = n()) %>%
+  ungroup()
+
+# Spread the 'race' column to create individual columns for each race
+race_count <- race_count %>%
+  spread(key = race, value = count, fill = 0)
+
+# Add a column for the total count of races in each state and year
+race_count <- race_count %>%
+  mutate(Total = rowSums(select(., -c(year, state)), na.rm = TRUE))
+
+# Arrange the data by year and state
+race_count <- race_count %>%
+  arrange(year, state)
+
+# View the resulting dataframe
+head(race_count)
+```
+
+```{r}
+#| label: data-wrangling for 
+
+# Remove the 'City' column from race_perc dataframe
+race_perc <- race_perc %>%
+  select(-City)
+
+# Convert columns to numeric
+race_perc$share_white <- as.numeric(race_perc$share_white)
+race_perc$share_black <- as.numeric(race_perc$share_black)
+race_perc$share_native_american <- as.numeric(race_perc$share_native_american)
+race_perc$share_asian <- as.numeric(race_perc$share_asian)
+race_perc$share_hispanic <- as.numeric(race_perc$share_hispanic)
+
+# Add a column for the sum of all race percentages
+race_perc$sum_race_percentages <- rowSums(race_perc[, c("share_white", "share_black", "share_native_american", "share_asian", "share_hispanic")])
+
+# View the structure of the updated dataframe
+str(race_perc)
+
+# View the first few rows of the updated dataframe
+head(race_perc)
+
+
+# View the structure of the dataframe after conversion
+# View(race_perc)
+
+
+
+```
+
+```{r}
+#| label:  
+
+
+```
+
+```{r}
+#| label: 
+
+```
 
 ### Discussion
