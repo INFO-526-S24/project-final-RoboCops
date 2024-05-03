@@ -1423,7 +1423,7 @@ head(race_count)
 ```
 
 ```{r}
-#| label: data-wrangling for 
+#| label: data-wrangling for race_perc
 
 # Remove the 'City' column from race_perc dataframe
 race_perc <- race_perc %>%
@@ -1454,6 +1454,7 @@ head(race_perc)
 ```
 
 ```{r}
+#| label: population_data_update
 
 # Selecting desired columns from state_pop
 state_pop_subset <- state_pop[, c("STATE", "POPESTIMATE2015", "POPESTIMATE2016", "POPESTIMATE2017")]
@@ -1486,36 +1487,63 @@ str(state_pop_long)
 ```
 
 ```{r}
-#| label: population_data
+#| label: merging two dataframe 
 
-# Selecting desired columns from state_pop
-state_pop_subset <- state_pop[, c("STATE", "POPESTIMATE2015", "POPESTIMATE2016", "POPESTIMATE2017")]
+# Define a mapping of state names to state codes
+state_mapping <- c(
+  "Alabama" = "AL", "Alaska" = "AK", "Arizona" = "AZ", "Arkansas" = "AR",
+  "California" = "CA", "Colorado" = "CO", "Connecticut" = "CT", "Delaware" = "DE",
+  "District of Columbia" = "DC", "Florida" = "FL", "Georgia" = "GA", "Hawaii" = "HI",
+  "Idaho" = "ID", "Illinois" = "IL", "Indiana" = "IN", "Iowa" = "IA",
+  "Kansas" = "KS", "Kentucky" = "KY", "Louisiana" = "LA", "Maine" = "ME",
+  "Maryland" = "MD", "Massachusetts" = "MA", "Michigan" = "MI", "Minnesota" = "MN",
+  "Mississippi" = "MS", "Missouri" = "MO", "Montana" = "MT", "Nebraska" = "NE",
+  "Nevada" = "NV", "New Hampshire" = "NH", "New Jersey" = "NJ", "New Mexico" = "NM",
+  "New York" = "NY", "North Carolina" = "NC", "North Dakota" = "ND", "Ohio" = "OH",
+  "Oklahoma" = "OK", "Oregon" = "OR", "Pennsylvania" = "PA", "Rhode Island" = "RI",
+  "South Carolina" = "SC", "South Dakota" = "SD", "Tennessee" = "TN", "Texas" = "TX",
+  "Utah" = "UT", "Vermont" = "VT", "Virginia" = "VA", "Washington" = "WA",
+  "West Virginia" = "WV", "Wisconsin" = "WI", "Wyoming" = "WY", "Puerto Rico" = "PR"
+)
 
-# # View the structure of the new dataframe
-# str(state_pop_subset)
-# 
-# # View the first few rows of the new dataframe
-# head(state_pop_subset)
+# Add STATE CODE column to state_pop dataframe
+state_pop_long <- mutate(state_pop_long, STATE_CODE = state_mapping[STATE])
 
-# Reshape the dataframe to have Year, State, and Population columns
-state_pop_long <- state_pop_subset %>%
-  pivot_longer(cols = c("POPESTIMATE2015", "POPESTIMATE2016", "POPESTIMATE2017"),
-               names_to = "Year",
-               values_to = "Population")
-
-# Remove "POPESTIMATE" from the Year column
+# Rearrange columns with STATE CODE after STATE
 state_pop_long <- state_pop_long %>%
-  mutate(Year = str_remove(Year, "POPESTIMATE"))
+  select(STATE, STATE_CODE, everything())
 
-# Convert Year column to numeric for sorting
-state_pop_long$Year <- as.numeric(state_pop_long$Year)
+# View the updated dataframe
 
-# Sort the dataframe by Year in ascending order
-state_pop_long <- state_pop_long %>%
-  arrange(Year)
+# View(state_pop_long)
 
-# View the sorted dataframe
-str(state_pop_long)
+str(race_perc)
+
+
+# Merge race_perc and state_pop_long dataframes based on state information
+merged_data <- merge(race_perc, state_pop_long, by.x = "Geographic.area", by.y = "STATE_CODE")
+
+# Convert race percentage columns to numeric
+percentage_cols <- c("share_white", "share_black", "share_native_american", "share_asian", "share_hispanic")
+merged_data[percentage_cols] <- lapply(merged_data[percentage_cols], as.numeric)
+
+str(merged_data)
+
+# View(merged_data)
+```
+
+```{r}
+# Normalize race percentages
+merged_data <- merged_data %>%
+  mutate(
+    share_white = share_white / sum_race_percentages,
+    share_black = share_black / sum_race_percentages,
+    share_native_american = share_native_american / sum_race_percentages,
+    share_asian = share_asian / sum_race_percentages,
+    share_hispanic = share_hispanic / sum_race_percentages
+  )
+
+merged_data
 ```
 
 ### Discussion
