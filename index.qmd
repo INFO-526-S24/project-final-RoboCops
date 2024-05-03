@@ -1389,15 +1389,13 @@ library(tidyr)
 fatality <- read.csv("data/PoliceKillingsUS.csv", na.strings = "")
 race_perc <- read.csv("data/ShareRaceByCity.csv")
 state_pop <- read.csv("data/Population_Estimate_data_Statewise_2010-2023.csv")
-
+fatality$year <- format(as.Date(fatality$date, format = "%d/%m/%y"), "%Y")
 # 
 # View(fatality)
 # View(race_perc)
 # View(state_pop)
 # str(state_pop) 
 # glimpse(fatality)
-
-fatality$year <- format(as.Date(fatality$date, format = "%d/%m/%y"), "%Y")
 
 
 # Group by year, state, and race, then count occurrences
@@ -1419,12 +1417,13 @@ race_count <- race_count %>%
   arrange(year, state)
 
 # View the resulting dataframe
-head(race_count)
+View(race_count)
 ```
 
 ```{r}
 #| label: data-wrangling for race_perc
 
+race_perc <- read.csv("data/ShareRaceByCity.csv")
 # Remove the 'City' column from race_perc dataframe
 race_perc <- race_perc %>%
   select(-City)
@@ -1439,15 +1438,47 @@ race_perc$share_hispanic <- as.numeric(race_perc$share_hispanic)
 # Add a column for the sum of all race percentages
 race_perc$sum_race_percentages <- rowSums(race_perc[, c("share_white", "share_black", "share_native_american", "share_asian", "share_hispanic")])
 
-# View the structure of the updated dataframe
-str(race_perc)
 
-# View the first few rows of the updated dataframe
-head(race_perc)
+# # View the structure of the updated dataframe
+# str(race_perc)
+# 
+# # View the first few rows of the updated dataframe
+# head(race_perc)
 
 
 # View the structure of the dataframe after conversion
-# View(race_perc)
+View(race_perc)
+
+
+
+# Assuming race_perc is already loaded as a dataframe
+race_perc <- race_perc %>%
+  group_by(Geographic.area) %>%
+  summarise(
+    share_white = mean(share_white, na.rm = TRUE),
+    share_black = mean(share_black, na.rm = TRUE),
+    share_native_american = mean(share_native_american, na.rm = TRUE),
+    share_asian = mean(share_asian, na.rm = TRUE),
+    share_hispanic = mean(share_hispanic, na.rm = TRUE),
+    sum_race_percentages=mean(sum_race_percentages,na.rm = TRUE)
+  )
+
+View(race_perc)
+
+# Normalize race percentages
+race_perc <- race_perc %>%
+  mutate(
+    share_white = share_white / sum_race_percentages,
+    share_black = share_black / sum_race_percentages,
+    share_native_american = share_native_american / sum_race_percentages,
+    share_asian = share_asian / sum_race_percentages,
+    share_hispanic = share_hispanic / sum_race_percentages
+  )
+
+# Recalculate sum_race_percentages
+race_perc$sum_race_percentages <- rowSums(select(race_perc, starts_with("share_")))
+ 
+View(race_perc)
 
 
 
@@ -1484,6 +1515,7 @@ state_pop_long <- state_pop_long %>%
 
 # View the sorted dataframe
 str(state_pop_long)
+View(state_pop_long)
 ```
 
 ```{r}
@@ -1515,35 +1547,159 @@ state_pop_long <- state_pop_long %>%
 
 # View the updated dataframe
 
-# View(state_pop_long)
+View(state_pop_long)
 
-str(race_perc)
+# str(race_perc)
 
 
 # Merge race_perc and state_pop_long dataframes based on state information
 merged_data <- merge(race_perc, state_pop_long, by.x = "Geographic.area", by.y = "STATE_CODE")
-
+# 
 # Convert race percentage columns to numeric
 percentage_cols <- c("share_white", "share_black", "share_native_american", "share_asian", "share_hispanic")
 merged_data[percentage_cols] <- lapply(merged_data[percentage_cols], as.numeric)
 
-str(merged_data)
-
-# View(merged_data)
+View(merged_data)
 ```
 
 ```{r}
-# Normalize race percentages
+
 merged_data <- merged_data %>%
   mutate(
-    share_white = share_white / sum_race_percentages,
-    share_black = share_black / sum_race_percentages,
-    share_native_american = share_native_american / sum_race_percentages,
-    share_asian = share_asian / sum_race_percentages,
-    share_hispanic = share_hispanic / sum_race_percentages
+    white_population = share_white * Population,
+    black_population = share_black * Population,
+    native_american_population = share_native_american * Population,
+    asian_population = share_asian * Population,
+    hispanic_population = share_hispanic * Population
   )
 
-merged_data
+View(merged_data)
+
+# Select the desired columns
+merged_data <- merged_data %>%
+  select(Geographic.area, Year, Population, white_population, black_population, 
+         native_american_population, asian_population, hispanic_population)
+
+# View the resulting dataframe
+str(merged_data)
+View(merged_data)
+
+
+# # Group data by STATE and Year, and calculate sum of racial populations and averages
+# grouped_merged_data <- merged_data %>%
+#   mutate(
+#     white_population = ifelse(white_population == 0, NA, white_population),
+#     black_population = ifelse(black_population == 0, NA, black_population),
+#     native_american_population = ifelse(native_american_population == 0, NA, native_american_population),
+#     asian_population = ifelse(asian_population == 0, NA, asian_population),
+#     hispanic_population = ifelse(hispanic_population == 0, NA, hispanic_population)
+#   ) %>%
+#   group_by(Geographic.area, Year) %>%
+#   summarise(
+#     sum_white_population = sum(white_population, na.rm = TRUE),
+#     sum_black_population = sum(black_population, na.rm = TRUE),
+#     sum_native_american_population = sum(native_american_population, na.rm = TRUE),
+#     sum_asian_population = sum(asian_population, na.rm = TRUE),
+#     sum_hispanic_population = sum(hispanic_population, na.rm = TRUE), 
+#     sum_race_population = sum(Population)
+#   )
+# 
+# # View the resulting dataframe
+# head(grouped_merged_data)
+# 
+# 
+# # View the resulting dataframe
+# View(grouped_merged_data)
+# str(grouped_merged_data)
 ```
+
+```{r}
+#| label: Fatalities_merging
+
+fatality <- read.csv("data/PoliceKillingsUS.csv", na.strings = "")
+fatality$year <- format(as.Date(fatality$date, format = "%d/%m/%y"), "%Y")
+# Keep only the required columns
+fatality <- fatality %>%
+  select(race,state,year)
+
+str(fatality)
+View(fatality)
+
+
+# Pivot the data wider
+fatality_spread <- fatality %>%
+  pivot_wider(
+    id_cols = c(state, year),
+    names_from = race,
+    values_from = race,
+    values_fn = length,
+    values_fill = 0
+  )
+
+# Rename the racial columns
+fatality_spread <- fatality_spread %>%
+  rename(
+    share_white = W,
+    share_black = B,
+    share_native_american = 'NA',
+    share_asian = A,
+    share_hispanic = H
+   )
+
+# Merge "N" and "O" columns into "Other" column
+fatality_spread <- fatality_spread %>%
+  mutate(Other = N + O) %>%
+  select(-N, -O)
+
+# View the modified dataframe
+head(fatality_spread)
+
+# View the first few rows of the spread dataframe
+View(fatality_spread)
+str(fatality_spread)
+```
+
+```{r}
+#| label: sada
+
+library(dplyr)
+
+# Rename 'Geographic.area' to 'state' in grouped_merged_data for consistency
+merged_data <- merged_data %>%
+  rename(state = Geographic.area)
+
+# Convert Year column in grouped_merged_data to character
+merged_data <- merged_data %>%
+  mutate(Year = as.character(Year))
+
+# Perform left join
+Final_racial_data <- left_join(merged_data, fatality_spread, by = c("state" = "state", "Year" = "year"))
+
+# View the resulting dataframe
+View(Final_racial_data)
+str(Final_racial_data)
+
+```
+
+```{r}
+#| label: intensity
+
+
+# Calculate racial intensity for each racial group
+Final_racial_data <- Final_racial_data %>%
+  mutate(
+    white_intensity = (share_white / white_population) * 10^6,
+    black_intensity = (share_black / black_population) * 10^6,
+    native_american_intensity = (share_native_american / native_american_population) * 10^6,
+    asian_intensity = (share_asian / asian_population) * 10^6,
+    hispanic_intensity = (share_hispanic / hispanic_population) * 10^6
+  )
+
+# View the resulting dataframe
+head(Final_racial_data)
+View(Final_racial_data)
+```
+
+\
 
 ### Discussion
