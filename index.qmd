@@ -1389,7 +1389,7 @@ animation::saveGIF(
 ### Plot 3
 
 ```{r}
-#| label: Q.2_Plot_3_Update
+#| label: Q.2_Plot_3
 #| message: false
 #| eval: false
 
@@ -1704,15 +1704,23 @@ long_data <- long_data %>%
   mutate(Year = as.character(Year))
 
 # Assuming the rest of the plotting code works, here's how to include the year in the animation
-animated_heatmap <- ggplot(long_data, aes(x = racial_group, y = state, fill = intensity)) +
+animated_heatmap <- ggplot(long_data, aes(x = str_to_title(racial_group), y = state, fill = intensity)) +
   geom_tile() +
   scale_fill_viridis_c(option = "plasma") +
-  labs(title = "State vs. Racial Intensity Heatmap: Year {frame_time}", x = "Racial Group", y = "State") +
+  labs(title = "State vs. Racial Intensity Heatmap: Year {frame_time}", 
+       x = "Racial Group", 
+       y = "State",
+       fill = "Intensity") +  # Set the legend title to "Intensity"
   theme_minimal() +
-  theme(axis.text.x = element_text(size=14,angle = 0, hjust = 0.5), 
+  theme(axis.text.x = element_text(size=16, angle = 0, hjust = 0.5), 
         axis.text.y = element_text(size = 14),
-        axis.title = element_text(size = 16),
-        plot.title = element_text(size = 18)) +
+        axis.title = element_text(size = 20),
+        plot.title = element_text(size = 20),
+        panel.grid = element_blank(),
+        legend.title = element_text(size = 16, face = "bold"),  # Increase legend title size and make it bold
+        legend.text = element_text(size = 16),  # Increase legend text size
+        legend.key.width = unit(1.6, "cm"),  # Increase legend key width
+        legend.key.height = unit(1.6, "cm")) +  # Increase legend key height
   transition_time(as.integer(Year)) +  # Ensure 'Year' is treated as an integer
   ease_aes('linear')
 
