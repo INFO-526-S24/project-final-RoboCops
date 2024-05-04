@@ -1725,3 +1725,21 @@ anim_save("images/racial_intensity_heatmap.gif")
 ![](images/racial_intensity_heatmap.gif){fig-align="center"}
 
 ### Discussion
+
+#### Plot 1
+
+The map analyzes the shooting intensity across all 50 states in the United States from 2015 to 2017. It visualizes this intensity by color-coding each state based on the number of shootings per million people. States with higher shooting rates are shaded darker, while those with lower rates are lighter. States with no fatalities are marked in gray. Additionally, the map labels the top three states with the highest shooting intensities and total fatalities for each year.
+
+In 2015, Wyoming, New Mexico, and Oklahoma stood out for their high shooting intensities, while California, Texas, and Florida led in total fatalities. The map annotations highlight these top states for both intensity and fatalities.
+
+In 2016, the states with the highest shooting intensities shifted to New Mexico, Alaska, and the District of Columbia, while California, Texas, and Florida maintained the highest fatalities.
+
+By 2017, Maine, Alaska, and Oklahoma had the highest shooting intensities, while California, Texas, and Florida continued to lead in fatalities.
+
+Overall, the visualization illustrates the variation in shooting intensity across states over the three years. While the states with the most fatalities remain consistent, the states with the highest shooting intensities change over time. Notably, New Mexico and Oklahoma consistently appear among the top states for shooting intensity in two out of the three years.
+
+#### Plot 2
+
+This map visualizes police shootings' intensity and resulting fatalities in major cities across the United States for the years 2015, 2016, and 2017, measured per million of the population. Each dot on the map represents shootings in different cities. Larger dots indicate cities with higher shooting intensities, while smaller dots represent cities with lower shooting intensities. States are also color-coded based on their shooting intensity, with lighter shades for lower intensity and darker shades for higher intensity.
+
+The labels on the map specifically highlight cities with shooting intensities exceeding 28 for that particular year. Notably, Chicago and Los Angeles are consistently among the cities with shootings exceeding this intensity threshold in two out of the three years, indicating their ongoing significance in this regard.
