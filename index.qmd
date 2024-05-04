@@ -675,6 +675,13 @@ Plot 2a breaks down these incidents by raw count of victims in each race populat
 
 The comprehensive analysis includes three animated plots, each offering a unique perspective on the intersection of incidents of police use of force. The first plot highlights hotspot states, shedding light on regions with elevated rates of such incidents. The second plot zooms in on hotspot cities, providing a closer examination of urban areas experiencing heightened police use of force. Finally, the third plot delves into the racial distribution within these hotspot states, offering insights into how demographics intersect with incidences of police use of force. Together, these visualizations aim to provide a holistic understanding of the complex dynamics at play
 
+The first animated plot provides a detailed depiction of state hotspots for the years 2015, 2016, and 2017. These hotspots are identified through meticulous consideration of population data and the application of a critical metric known as "shooting intensity." This intensity is computed as fatalities per million people, ensuring a standardized assessment of states irrespective of their population size. To ensure clarity and inclusivity, both U.S. and world maps are employed in the visualization process. Given that the U.S. map typically excludes Alaska, a comprehensive approach involves manually incorporating Alaska from the `world map` and custom annotating it onto the `U.S. map` to present a holistic view. States where the shooting intensity surpasses the threshold of 3 are specifically highlighted using `geom_label_repel`, drawing attention to regions experiencing heightened incidents. Furthermore, the plot includes annotations identifying the top three hotspot states, ranked by shooting intensity and total fatalities. This multifaceted approach offers a nuanced understanding of incident frequency and impact, facilitating comprehensive analysis across diverse geographical areas.
+
+The second animated plot offers an intricate portrayal of major city hotspots for the years 2015, 2016, and 2017. These hotspots are identified using the same metric of "shooting intensity" as in the previous plot. This intensity is calculated as fatalities per million people, ensuring a consistent evaluation of cities regardless of their population size. To maintain coherence and comprehensiveness, the visualization of states from the previous plot is retained to provide contextual continuity. Moreover, cities are marked using `geom_point`, and those with a high shooting intensity exceeding 28 are further highlighted using `geom_label_repel`. This approach effectively showcases cities within states with moderate shooting intensity that exhibit significantly higher shooting intensity, thus emerging as notable hotspots. This layered depiction elucidates the presence of cities with heightened incidents within states with relatively lower overall intensity, contributing to a nuanced understanding of localized dynamics within broader geographical contexts.
+
+For the final animated plot
+
+
 
 ### Plot 1
 
@@ -1684,3 +1691,6 @@ Final_racial_data$state <- state_mapping_reversed[as.character(Final_racial_data
 ```
 
 ### Discussion
+
+
+
