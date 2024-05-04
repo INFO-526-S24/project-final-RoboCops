@@ -1376,7 +1376,7 @@ animation::saveGIF(
 
 ![](images/shooting_intensity_city.gif){fig-align="center"}
 
-**Plot 3**
+### Plot 3
 
 ```{r}
 #| label: Q.2 plot 3
