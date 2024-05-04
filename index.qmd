@@ -1380,6 +1380,7 @@ animation::saveGIF(
 
 ```{r}
 #| label: Q.2 plot 3
+#| eval: false
 
 library(utils)
 library(dplyr)
@@ -1414,6 +1415,7 @@ race_count <- race_count %>%
 
 ```{r}
 #| label: data-wrangling for race_perc
+#| eval: false
 
 race_perc <- read.csv("data/ShareRaceByCity.csv")
 # Remove the 'City' column from race_perc dataframe
@@ -1465,7 +1467,7 @@ race_perc$sum_race_percentages <- rowSums(select(race_perc, starts_with("share_"
 
 ```{r}
 #| label: population_data_update
-#| include: false
+#| eval: false
 
 # Selecting desired columns from state_pop
 state_pop_subset <- state_pop[, c("STATE", "POPESTIMATE2015", "POPESTIMATE2016", "POPESTIMATE2017")]
@@ -1499,7 +1501,8 @@ state_pop_long <- state_pop_long %>%
 ```
 
 ```{r}
-#| label: merging two dataframe 
+#| label: merging two dataframe
+#| eval: false
 
 # Define a mapping of state names to state codes
 state_mapping <- c(
@@ -1544,6 +1547,7 @@ merged_data[percentage_cols] <- lapply(merged_data[percentage_cols], as.numeric)
 
 ```{r}
 #| label: Created Population
+#| eval: false
 
 
 merged_data <- merged_data %>%
@@ -1569,6 +1573,7 @@ merged_data <- merged_data %>%
 
 ```{r}
 #| label: Fatalities_merging
+#| eval: false
 
 fatality <- read.csv("data/PoliceKillingsUS.csv", na.strings = "")
 fatality$year <- format(as.Date(fatality$date, format = "%d/%m/%y"), "%Y")
@@ -1615,6 +1620,7 @@ fatality_spread <- fatality_spread %>%
 
 ```{r}
 #| label: sada
+#| eval: false
 
 library(dplyr)
 
@@ -1637,6 +1643,7 @@ Final_racial_data <- left_join(merged_data, fatality_spread, by = c("state" = "s
 
 ```{r}
 #| label: intensity
+#| eval: false
 
 
 # Calculate racial intensity for each racial group
@@ -1698,6 +1705,5 @@ Final_racial_data$state <- state_mapping_reversed[as.character(Final_racial_data
 # str(Final_racial_data)
 ```
 
-\
 
 ### Discussion
