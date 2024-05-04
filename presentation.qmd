@@ -147,6 +147,9 @@ my_table
 ```
 
 <!--------------------------------------------------------------->
+# Data Summary with Dashboard
+
+
 # Question 1
 
 How do socioeconomic factors such as median income, poverty rates, and educational relate with incidents of police use of force across different geographic areas?
@@ -181,7 +184,7 @@ How do socioeconomic factors such as median income, poverty rates, and education
 <!--------------------------------------------------------------->
 
 
-# Dashboard Demonstration
+
 
 
 
