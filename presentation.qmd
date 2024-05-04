@@ -1,15 +1,16 @@
 ---
-title: "Project title"
+title: "Analysis and Visualization of Police Shootings in the United States"
 subtitle: "INFO 526 - Fall 2023 - Project Final"
 author: "Peter Yeh, Sachin Pandurang Patil, Arun Koundinya Parasa, Surajit Pal, Christian Ortmann, Valérie Naa Dei Okine"
 title-slide-attributes:
-  data-background-image: images/watercolour_sys02_img34_teacup-ocean.jpg
+  data-background-image: images/skyline_pic.jpg
   data-background-size: stretch
-  data-background-opacity: "0.7"
+  data-background-opacity: "0.5"
   data-slide-number: none
 format:
   revealjs:
     theme:  ['data/customtheming.scss']
+    tbl-colwidths: auto
   
 editor: visual
 execute:
@@ -21,9 +22,16 @@ execute:
 #| include: false
 
 # Load packages here
-# pacman::p_load(tidymodels,
-#                tidyverse,
-#                generics)
+pacman::p_load(dplyr,
+               ggplot2,
+               ggridges,
+               scales,
+               patchwork,
+               stringr,
+               grep,
+               kableExtra,
+               plotly, 
+               tidyverse)
 
 ```
 
@@ -44,14 +52,154 @@ knitr::opts_chunk$set(
 ```
 
 ```{r}
-#| label: load-data
-#| include: false
+#| label: load-dataset
+#| message: false
 
-# Load in the dataset
+# Load in the datasets
 fatality <- read.csv("data/PoliceKillingsUS.csv", na.strings = "")
+median_income <- read.csv("data/MedianHouseholdIncome2015.csv")
+poverty_perc <- read.csv("data/PercentagePeopleBelowPovertyLevel.csv")
+hs_perc <- read.csv("data/PercentOver25CompletedHighSchool.csv")
+race_perc <- read.csv("data/ShareRaceByCity.csv")
+city_pop <- read.csv("data/us-cities-top-1k-multi-year.csv")
+state_pop <- read.csv("data/Population_Estimate_data_Statewise_2010-2023.csv")
 ```
 
-# Using Quarto for presentations
+# Project Overview and Dataset
+
+## Police Shootings: An overview
+- Police shootings are an unfortunate aspect of enforcing the law, as any loss of life is a tragic incident
+- We aim to visualize and analyze police shootings in the United States from 2015 to 2017
+- The data points were gathered on Kaggle and sourced from the Washington Post, so we are limited to their interpretation of what counts a as a police shooting
+
+## Dataset Variables {style="font-size: 55%"}
+```{r}
+
+#| label: dataset-table
+#| echo: false
+#| message: false
+#| 
+
+
+# Create columns for data
+fatality_var <- colnames(fatality)
+
+fatality_desc <- c("Data ID",
+                   "Name of deceased",
+                   "Date of shooting",
+                   "Means of death",
+                   "Weapon/Tool",
+                   "Age of deceased",
+                   "Gender of deceased",
+                   "Race of deceased",
+                   "City",
+                   "State",
+                   "Sign of mental illness during incident",
+                   "Deceased's threat level",
+                   "Method to evade police",
+                   "Reports of police with body camera")
+
+fatality_type <- c("numeric",
+                   "character",
+                   "date",
+                   "categorical",
+                   "categorical",
+                   "numeric",
+                   "logical",
+                   "categorical",
+                   "categorical",
+                   "categorical",
+                   "logical",
+                   "categorical",
+                   "categorical",
+                   "logical")
+
+fatality_values <- c("2535 entries",
+                     "Names",
+                     "dd/mm/yy from 2015-2017",
+                     "shot, shot and tasered",
+                     "69 categories",
+                     "6-91 years old",
+                     "F/M",
+                     "A, B, H, N, O, W, Unknown",
+                     "1417 cities",
+                     "State 2 letter abbreviations and DC",
+                     "True/False",
+                     "attack, other, undetermined",
+                     "Car, Foot, Not fleeing, Other",
+                     "True/False")
+
+# Bind the vectors into a dataframe
+fatality_table <- as.data.frame(cbind(fatality_var,
+                                      fatality_desc,
+                                      fatality_type,
+                                     fatality_values))
+colnames(fatality_table) <- c("Variable", "Description", "Data Type", "Values")
+row.names(fatality_table) <- seq(1:14)
+
+# Generate a nice table with kable
+my_table <- kable(fatality_table, "html") |>
+  kable_styling(full_width = FALSE)
+
+# Display the table
+my_table
+
+```
+
+<!--------------------------------------------------------------->
+# Question 1
+
+How do socioeconomic factors such as median income, poverty rates, and educational relate with incidents of police use of force across different geographic areas?
+
+## Plot 1a
+
+## Plot 1b
+
+## Plot 2a
+
+## Plot 2b
+
+## Insights and Knowledge Inferred {style="font-size: 80%"}
+
+- Cities with greater than 75% high school graduates and poverty levels between 18-25% experience the most shootings with roughly half of all incidents showing a threat level of "Attack"
+
+- Most shootings occur in cities where the median income is roughly between \$40k - \$50k per year, roughly the US average
+
+- White people are shot the most, with the highest raw count, but proportional to the overall population of each race, black people are shot more
+
+- 1 in every 7,143 black people are shot by the police compared to 1 in every 333,334 white people. Thus, black people are 47 times more likely to be shot by police, a striking and sad statistic
+<!--------------------------------------------------------------->
+
+# Question 2
+
+## Plot 1
+
+## Plot 2
+
+## Insights and Knowledge Inferred
+
+<!--------------------------------------------------------------->
+
+
+# Dashboard Demonstration
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ## Quarto
 

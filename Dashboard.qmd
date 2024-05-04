@@ -1,0 +1,261 @@
+---
+title: "Police Fatal Shootings"
+format: 
+ dashboard:
+   theme: united
+execute: 
+  echo: false
+---
+
+```{r setup, include=FALSE}
+# # Load required libraries
+# library(dplyr)
+# library(ggplot2)
+# library(plotly)
+# library(leaflet)
+```
+
+
+```{r}
+#| label: load-packages
+#| include: false
+
+# Load packages here
+pacman::p_load(dplyr,
+               ggplot2,
+               ggridges,
+               scales,
+               patchwork,
+               stringr,
+               grep,
+               kableExtra,
+               plotly,
+               maps,
+               ggrepel,
+               animation, 
+               RColorBrewer, 
+               leaflet)
+
+```
+
+```{r}
+#| label: load-dataset
+#| message: false
+
+# Load in the datasets
+fatality <- read.csv("data/PoliceKillingsUS.csv", na.strings = "")
+median_income <- read.csv("data/MedianHouseholdIncome2015.csv")
+poverty_perc <- read.csv("data/PercentagePeopleBelowPovertyLevel.csv")
+hs_perc <- read.csv("data/PercentOver25CompletedHighSchool.csv")
+race_perc <- read.csv("data/ShareRaceByCity.csv")
+city_pop <- read.csv("data/us-cities-top-1k-multi-year.csv")
+state_pop <- read.csv("data/Population_Estimate_data_Statewise_2010-2023.csv")
+fatality1 <- read.csv("data/fatality1.csv")
+```
+
+
+# Fatality Summary
+
+```{r}
+#| label: all-values
+#| results: hide
+
+n_fatalities <- nrow(fatality)
+
+n_attack <- nrow(subset(fatality,fatality$threat_level == "attack"))
+
+n_other <- nrow(subset(fatality,fatality$threat_level == "other"))
+
+n_undetermined <- nrow(subset(fatality,fatality$threat_level == "undetermined"))
+
+```
+
+
+## Row {height="20%"}
+
+```{r}
+#| content: valuebox
+#| title: "Total Fatalties"
+
+list(
+  icon = "droplet-fill",
+  color = "danger",
+  value = n_fatalities
+)
+```
+
+```{r}
+#| content: valuebox
+#| title: "Total Attack"
+
+list(
+  icon = "droplet-fill",
+  color = "danger",
+  value = n_attack
+)
+```
+
+```{r}
+#| content: valuebox
+#| title: "Other"
+
+list(
+  icon = "droplet-fill",
+  color = "danger",
+  value = n_other
+)
+```
+
+
+```{r}
+#| content: valuebox
+#| title: "Un Determined"
+
+list(
+  icon = "droplet-fill",
+  color = "danger",
+  value = n_undetermined
+)
+```
+
+## Row {height="65%"} 
+
+### Column {width="40%"} {.tabset}
+
+```{r}
+#| title: Top 7 Weapons  used
+
+fatality %>%
+  count(armed) %>%
+  top_n(7) %>%
+  mutate(armed = factor(armed, levels = unique(armed))) %>%
+  ggplot(aes(x = reorder(armed, n), y = n, text = paste("Armed: ", armed, "<br>Count: ", n))) +
+  geom_bar(stat = "identity", fill = "#a50f15", color = "#a50f15") +
+  labs(x = "Armed Category", y = "") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  theme_minimal() +
+  coord_flip() -> p
+
+p <- ggplotly(p, tooltip = "text")
+p
+
+```
+
+
+```{r}
+#| title: Age Distribution of Victims
+
+fatality %>%
+  filter(!is.na(age)) |> 
+  mutate(age_group = cut(age, breaks = seq(0, 100, by = 10), include.lowest = TRUE)) %>%
+  count(age_group, armed) %>%
+  group_by(age_group) %>%
+  top_n(1) %>%
+  ungroup() %>%
+  ggplot(aes(x = age_group, y = n, text = paste("Age Group: ", age_group, "<br>Count: ", n))) +
+  geom_bar(stat = "identity", fill = "#a50f15", color = "#a50f15") +
+  labs(x = "Age Group", y = "Total Fatalities") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  theme_minimal() -> p
+
+p <- ggplotly(p, tooltip = "text")
+p
+
+```
+
+
+
+```{r}
+#| title: Gender Distribution of Victims
+
+fatality_counts <- fatality %>%
+  filter(!is.na(gender)) %>%
+  count(gender)
+
+# Plot the counts
+ggplot(fatality_counts, aes(x = gender, y = n, text = paste("Gender: ", gender, "<br>Count: ", n))) +
+  geom_bar(stat = "identity", fill = "#a50f15", color = "#a50f15", width=0.3) + 
+  labs(x = "Gender", y = "Total Fatalities") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  theme_minimal() -> p
+
+p <- ggplotly(p, tooltip = "text")
+p
+
+
+```
+
+
+
+
+```{r}
+#| title: Racial Distribution of Victims
+
+
+fatality %>%
+  mutate(
+    race = case_when(
+      race %in% "A" ~ "Asian",
+      race %in% "B" ~ "Black",
+      race %in% "H" ~ "Hispanic",
+      race %in% "N" ~ "Native American",
+      race %in% "O" ~ "Other",
+      race %in% "W" ~ "White",
+      is.na(race) == TRUE ~ "Unknown",
+      TRUE ~ race
+    )
+  ) |> 
+  count(race) %>%
+  mutate(armed = factor(race, levels = unique(race)),
+         percentage = n / sum(n) * 100) %>%
+  ggplot(aes(x = reorder(race, percentage), y = percentage, text = paste("Race: ", race, "<br>Percentage: ", round(percentage, 2), "%"))) +
+  geom_bar(stat = "identity", fill = "#a50f15", color = "#a50f15") +
+  labs(x = "Race", y = "Percentage of Fatalities") +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  theme_minimal() +
+  coord_flip() -> p
+
+p <- ggplotly(p, tooltip = "text")
+p
+
+```
+
+
+### Column
+
+
+```{r}
+#| title: GeoDistribution of Fatal Incidents across three years
+
+
+fatality_usa <- fatality1 %>%
+  filter((long >= -125 & long <= -67 & lat >= 25 & lat <= 49) | 
+           (long >= -170 & long <= -130 & lat >= 50 & lat <= 72))
+
+
+# Create leaflet map
+map <- leaflet(data = fatality_usa) %>%
+  addTiles() %>%
+  addCircleMarkers(
+    lng = ~long,
+    lat = ~lat,
+    popup = paste("Name: ", fatality_usa$name, "<br>",
+                  "Manner of Death: ", fatality_usa$manner_of_death, "<br>",
+                  "Armed: ", fatality_usa$armed, "<br>",
+                  "Age: ", fatality_usa$age, "<br>",
+                  "Gender: ", fatality_usa$gender, "<br>",
+                  "Race: ", fatality_usa$race),
+    radius = 5,
+    color = ~manner_of_death,
+    fillColor = "#a50f15",
+    stroke = FALSE,
+    fillOpacity = 0.7
+  ) %>%
+  addLayersControl(overlayGroups = c("Markers"), position = "bottomright") %>%  # Add layer control
+  setView(lng = -98.58, lat = 39.83, zoom = 4)  # Center map on USA and set zoom level
+
+# Display the map
+map
+
+
+```

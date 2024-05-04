@@ -14,6 +14,8 @@ website:
         href: proposal.qmd
       - text: Presentation
         href: presentation.qmd
+      - text: Dashboard
+        href: Dashboard.qmd
       - text: About
         href: about.qmd
 
@@ -26,6 +28,9 @@ format:
 
   revealjs:
     theme:  [simple,data/customtheming.scss]
+  
+  dashboard:
+    theme:  united
 
 execute:
   freeze: auto

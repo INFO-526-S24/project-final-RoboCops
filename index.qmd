@@ -34,7 +34,8 @@ pacman::p_load(dplyr,
                plotly,
                maps,
                ggrepel,
-               animation)
+               animation, 
+               RColorBrewer)
 
 ```
 
@@ -284,11 +285,9 @@ This will be achieved through the use of data visualizations to contribute to a 
 
 ## Introduction
 
-\*Introduction: The introduction provides a clear explanation of the question and the dataset used to answer the question, including a description of all relevant variables in the dataset. (3 points)
-
 Police shootings are a sad reality of policing practices that date back decades. While many are justified to protect the lives of innocent civilians, there has been an uptick in recent years of police shooting people whom they perceive to be a threat in the heat of the moment, but are proven innocent after the fact. These shootings can often be hard to analyze because there are many psychological factors that come into play when an officer decides to discharge their weapon, such as their training, the perceived threat, and an officer's internalized prejudice. Without further information on the psyche of a police officer, the reason why they discharge their weapon cannot be determined. However, their actions and surroundings can be analyzed to provide context into communities and situations that may be more prone to police shootings.
 
-The police shooting data set is sourced from a Kaggle dataset originally created by Karolina Wullum. The dataset consists of shootings from all fifty states and DC, and is supplemented with informations on demographics including as median household income, distribution of race, city population, percent of people below poverty line, and percent of people over 25 who completed high school.
+The police shooting data set is sourced from a Kaggle dataset originally created by Karolina Wullum. The dataset consists of shootings from all fifty states and DC, and is supplemented with informations on demographics including as median household income, distribution of race, city population, percent of people below poverty line, and percent of people over 25 who completed high school. The data is from 2015 to 2017. 
 
 This analysis aims to understand the dataset on police killings, extending its scope beyond the original focus tracked by the Washington Post. Socioeconomic factors like housing income, poverty rates, and population demographics will be used to understand and contextualize any patterns that appear. The goal is to explore how socioeconomic factors can play into incidents of police violence. The following table represents the variables relevant to the analysis.
 
@@ -419,7 +418,7 @@ For the density ridge plots, the population for each race was calculated from th
 
 The second density ridge plot, which is organized by the race's relative proportion of fatalities (ie the number of fatalities divided by the estimated race's total population). The race's population estimate was calculated by summing the estimated race's population for all cities included in the subsetted data. The data race levels were refactorized according to the proportions with Other and Unknown set to the bottom of the plot. Other and Unknown were set to the bottom of the plot since the interest of this analysis is focused on the potential difference in incidence when race is considered.
 
-### Plot 1
+### Plot 1a
 
 ```{r}
 #| label: Q1-plot1
@@ -505,30 +504,45 @@ analysis_data$threat_level <- str_to_title(analysis_data$threat_level)
 
 # Plotting for Poverty Bracket
 poverty_plot  <- ggplot(analysis_data, aes(x = poverty_bracket, fill = threat_level)) +
-  geom_bar(position = "identity") +
-  guides(fill = "none") + # This removes the legend from this plot
+  geom_bar(position = "identity", width = 0.5) +
+  scale_fill_brewer(palette = 'Set3') + 
   theme_minimal() +
   labs(title = "Distribution of Threat Levels by Poverty Bracket",
        x = "Percentage of Population in Poverty Line",
        y = "Count of Incidents",
-       fill = "Threat Level")
+       fill = "Threat Level") + 
+  theme(legend.position = 'right')  # Adjusted theme settings here
+poverty_plot
+```
+
+### Plot 1b
+
+```{r}
+#| label: Q1-plot2
+#| fig-width: 9
+#| fig-asp: 0.8
 
 # Plotting for Educational Bracket
 education_plot <- ggplot(analysis_data, aes(x = edu_bracket, fill = threat_level)) +
-  geom_bar(position = "identity") +
+  geom_bar(position = "identity", width = 0.5) +
+  scale_fill_brewer(palette = 'Set3') + 
   theme_minimal() +
   labs(title = "Distribution of Threat Levels by High School Degree Bracket",
        x = "Percentage of Population having High School Degree",
        y = "Count of Incidents",
-       fill = "Threat Level")
+       fill = "Threat Level") + 
+  theme(legend.position = 'right')  # Adjusted theme settings here
 
-# Combine the plots with a single shared legend on the right
-combined_plot <- poverty_plot / education_plot + 
-  plot_layout(guides = 'collect') + # Collects and deduplicates the guides
-  theme(legend.position = 'right') # Moves the legend to the right
+education_plot
 
-# Print the combined plot
-print(combined_plot)
+
+# # Combine the plots with a single shared legend on the right
+# combined_plot <- poverty_plot / education_plot + 
+#   plot_layout(guides = 'collect') + # Collects and deduplicates the guides
+#   theme(legend.position = 'right') # Moves the legend to the right
+# 
+# # Print the combined plot
+# print(combined_plot)
 ```
 
 ### Plot 2a
@@ -713,13 +727,23 @@ ggplot(merged_data, aes(x = Median, y = Race)) +
 
 ### Discussion
 
-The above visualizations focus on the distribution of shootings across three demographic categories: median income, percent high school graduates, and poverty level. Plot 1 take takes this further by breaking down the shootings by threat level across poverty level and percent high school graduates. Looking further at Plot 1, two major observations can be made: cities with greater than 75% high school graduates and poverty levels between 18-25% experience the most shootings with roughly half of all incidents showing a threat level of "Attack", meaning the shooting officer felt their safety was at risk via the suspect. Additionally, most shootings had a threat level of "Attack" or "Other", and a minority of the shootings are undetermined, meaning most officers recorded a reason for discharing their weapon. These observations suggest that cities with more high school edcuated individuals and a poverty level that is twice the US average will experience more shootings. One explanation for this is very large US cities like New York City and Chicago. These cities have large populations and a large wage gap between class levels, so the high school graduate percentage is supplemented by higher income classes and the poverty level is driven up by lower income classes, and because of the sheer size of these large cities, there are more cases of shootings, even if the rate per count of population is the same as other cities. Additionally, it can be safely assumed that the lower percentages of high school graduate cities are outliers in the dataset.
+The above visualizations focus on the distribution of shootings across three demographic categories: median income, percent high school graduates, and poverty level. Plot 1 take takes this further by breaking down the shootings by threat level across poverty level and percent high school graduates. Looking further at Plot 1, two major observations can be made: cities with greater than 75% high school graduates and poverty levels between 18-25% experience the most shootings with roughly half of all incidents showing a threat level of "Attack", meaning the shooting officer felt their safety was at risk via the suspect. Additionally, most shootings had a threat level of "Attack" or "Other", and a minority of the shootings are undetermined, meaning most officers recorded a reason for discharging their weapon. These observations suggest that cities with more high school edcuated individuals and a poverty level that is twice the US average will experience more shootings. One explanation for this is very large US cities like New York City and Chicago. These cities have large populations and a large wage gap between class levels, so the high school graduate percentage is supplemented by higher income classes and the poverty level is driven up by lower income classes, and because of the sheer size of these large cities, there are more cases of shootings, even if the rate per count of population is the same as other cities. Additionally, it can be safely assumed that the lower percentages of high school graduate cities are outliers in the dataset.
 
 Plot 2a breaks down these incidents by raw count of victims in each race population, and Plot 2b takes these raw counts and converts them to overall percent of victims per total population of each race. These plots show these representations across the median income of each city where the shooting occured. From these plots, a few insights can be gained. First, most shootings occur in cities where the median income is roughly between \$40k - \$50k per year, with more shootings at the higher end of that range. Second, out of all races in a given city, white people are shot the most, with the highest raw count. However, when compared to the overal population of each race, black are shot the most, at 0.0014% of the black population being shot, the equivalent of 1 in every 7,143 black people being shot by the police. In contrast, white people have a 0.0003% chance of being shot by the police, or 1 in every 333,334 white people. That means that black people are 47 times more likely to be shot by police, a striking statistic. Finally, the last major observation that can be made is that most native Americans are shot in cities where the median income is roughly \$45k per year, based on the large spike at the \$45k mark.
 
 ## Question 2
 
+2.  In what ways do the analyses of hotspot states, hotspot cities, and racial distribution contribute to understanding the intersection of incidents of police use of force across diverse geographic areas?
+
 ### Description of Analysis
+
+The comprehensive analysis includes three animated plots, each offering a unique perspective on the intersection of incidents of police use of force. The first plot highlights hotspot states, shedding light on regions with elevated rates of such incidents. The second plot zooms in on hotspot cities, providing a closer examination of urban areas experiencing heightened police use of force. Finally, the third plot delves into the racial distribution within these hotspot states, offering insights into how demographics intersect with incidences of police use of force. Together, these visualizations aim to provide a holistic understanding of the complex dynamics at play
+
+The animated plot provides a comprehensive overview of state hotspots throughout 2015, 2016, and 2017. These hotspots are meticulously identified by considering population data and using a critical metric called "shooting intensity." This intensity measures fatalities per million people, ensuring a fair assessment of states regardless of their population size. To ensure clarity and inclusivity, the visualization employs both U.S. and world maps. Since the U.S. map typically excludes Alaska, a comprehensive approach involves manually incorporating Alaska from the world map and custom annotating it onto the U.S. map for a holistic view. States where shooting intensity exceeds a threshold of 3 are specifically highlighted using geom_label_repel, drawing attention to regions with heightened incidents. Additionally, annotations identify the top three hotspot states, ranked by shooting intensity and total fatalities. This multifaceted approach offers a nuanced understanding of incident frequency and impact, facilitating comprehensive analysis across diverse geographical areas. The process for creating the plot starts with summarizing fatalities across different years and merging this data with state population datasets. Individual datasets are then created for each year (2015, 2016, and 2017) to focus on shooting intensity for each specific year. USA map data plays a crucial role in defining borders for the map visualization. Shooting intensities are calculated by dividing the fatalities count by the population and multiplying by 1,000,000 to obtain a per million population rate. Specific adjustments are made to ensure clear visualization of Alaska's data on the map. Labels are strategically placed at the center of each state to convey clear information about shooting intensities for each respective year.
+
+The second animated plot provides a detailed portrayal of major city hotspots throughout 2015, 2016, and 2017. These hotspots are identified using the same "shooting intensity" metric as in the previous plot. This intensity measures fatalities per million people, ensuring a consistent evaluation of cities regardless of their population size. To maintain coherence and comprehensiveness, the visualization retains the depiction of states from the previous plot to provide contextual continuity. Cities are marked using geom_point, and those with a high shooting intensity exceeding 28 are further emphasized using geom_label_repel. This approach effectively highlights cities within states that exhibit significantly higher shooting intensity, contributing to a nuanced understanding of localized dynamics within broader geographical contexts. This layered depiction elucidates the presence of cities with heightened incidents within states with relatively lower overall intensity. The process for creating the plot starts with summarizing fatalities across different years, similar to plot 1. Individual datasets are then created for each year (2015, 2016, and 2017), and shooting intensities are calculated by dividing the fatalities count by the population and multiplying by 1,000,000 to obtain a per million population rate. The use of USA map data is crucial in defining boundaries for the map visualization, bringing the visualization to life.
+
+For the final animated plot
 
 ### Plot 1
 
@@ -1426,4 +1450,368 @@ animation::saveGIF(
 
 ![](images/shooting_intensity_city.gif){fig-align="center"}
 
+### Plot 3
+
+```{r}
+#| label: Q.2_Plot_3
+#| message: false
+#| eval: false
+
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(gganimate)
+library(utils)
+library(dplyr)
+library(tidyr)
+library(tidyr)
+library(stringr)
+
+
+fatality <- read.csv("data/PoliceKillingsUS.csv", na.strings = "")
+race_perc <- read.csv("data/ShareRaceByCity.csv")
+state_pop <- read.csv("data/Population_Estimate_data_Statewise_2010-2023.csv")
+fatality$year <- format(as.Date(fatality$date, format = "%d/%m/%y"), "%Y")
+
+# Group by year, state, and race, then count occurrences
+race_count <- fatality %>%
+  group_by(year, state, race) %>%
+  summarise(count = n()) %>%
+  ungroup()
+
+# Spread the 'race' column to create individual columns for each race
+race_count <- race_count %>%
+  spread(key = race, value = count, fill = 0)
+
+# Add a column for the total count of races in each state and year
+race_count <- race_count %>%
+  mutate(Total = rowSums(select(., -c(year, state)), na.rm = TRUE))
+
+# Arrange the data by year and state
+race_count <- race_count %>%
+  arrange(year, state)
+
+
+race_perc <- read.csv("data/ShareRaceByCity.csv")
+# Remove the 'City' column from race_perc dataframe
+race_perc <- race_perc %>%
+  select(-City)
+
+# Convert columns to numeric
+race_perc$share_white <- as.numeric(race_perc$share_white)
+race_perc$share_black <- as.numeric(race_perc$share_black)
+race_perc$share_native_american <- as.numeric(race_perc$share_native_american)
+race_perc$share_asian <- as.numeric(race_perc$share_asian)
+race_perc$share_hispanic <- as.numeric(race_perc$share_hispanic)
+
+# Add a column for the sum of all race percentages
+race_perc$sum_race_percentages <- rowSums(race_perc[, c("share_white", "share_black", "share_native_american", "share_asian", "share_hispanic")])
+
+
+# Assuming race_perc is already loaded as a dataframe
+race_perc <- race_perc %>%
+  group_by(Geographic.area) %>%
+  summarise(
+    share_white = mean(share_white, na.rm = TRUE),
+    share_black = mean(share_black, na.rm = TRUE),
+    share_native_american = mean(share_native_american, na.rm = TRUE),
+    share_asian = mean(share_asian, na.rm = TRUE),
+    share_hispanic = mean(share_hispanic, na.rm = TRUE),
+    sum_race_percentages=mean(sum_race_percentages,na.rm = TRUE)
+  )
+
+# View(race_perc)
+
+# Normalize race percentages
+race_perc <- race_perc %>%
+  mutate(
+    share_white = share_white / sum_race_percentages,
+    share_black = share_black / sum_race_percentages,
+    share_native_american = share_native_american / sum_race_percentages,
+    share_asian = share_asian / sum_race_percentages,
+    share_hispanic = share_hispanic / sum_race_percentages
+  )
+
+# Recalculate sum_race_percentages
+race_perc$sum_race_percentages <- rowSums(select(race_perc, starts_with("share_")))
+ 
+# View(race_perc)
+
+# Selecting desired columns from state_pop
+state_pop_subset <- state_pop[, c("STATE", "POPESTIMATE2015", "POPESTIMATE2016", "POPESTIMATE2017")]
+
+# # View the structure of the new dataframe
+# str(state_pop_subset)
+# 
+# # View the first few rows of the new dataframe
+# head(state_pop_subset)
+
+# Reshape the dataframe to have Year, State, and Population columns
+state_pop_long <- state_pop_subset %>%
+  pivot_longer(cols = c("POPESTIMATE2015", "POPESTIMATE2016", "POPESTIMATE2017"),
+               names_to = "Year",
+               values_to = "Population")
+
+# Remove "POPESTIMATE" from the Year column
+state_pop_long <- state_pop_long %>%
+  mutate(Year = str_remove(Year, "POPESTIMATE"))
+
+# Convert Year column to numeric for sorting
+state_pop_long$Year <- as.numeric(state_pop_long$Year)
+
+# Sort the dataframe by Year in ascending order
+state_pop_long <- state_pop_long %>%
+  arrange(Year)
+
+# View the sorted dataframe
+# str(state_pop_long)
+# View(state_pop_long)
+
+
+
+# Define a mapping of state names to state codes
+state_mapping <- c(
+  "Alabama" = "AL", "Alaska" = "AK", "Arizona" = "AZ", "Arkansas" = "AR",
+  "California" = "CA", "Colorado" = "CO", "Connecticut" = "CT", "Delaware" = "DE",
+  "District of Columbia" = "DC", "Florida" = "FL", "Georgia" = "GA", "Hawaii" = "HI",
+  "Idaho" = "ID", "Illinois" = "IL", "Indiana" = "IN", "Iowa" = "IA",
+  "Kansas" = "KS", "Kentucky" = "KY", "Louisiana" = "LA", "Maine" = "ME",
+  "Maryland" = "MD", "Massachusetts" = "MA", "Michigan" = "MI", "Minnesota" = "MN",
+  "Mississippi" = "MS", "Missouri" = "MO", "Montana" = "MT", "Nebraska" = "NE",
+  "Nevada" = "NV", "New Hampshire" = "NH", "New Jersey" = "NJ", "New Mexico" = "NM",
+  "New York" = "NY", "North Carolina" = "NC", "North Dakota" = "ND", "Ohio" = "OH",
+  "Oklahoma" = "OK", "Oregon" = "OR", "Pennsylvania" = "PA", "Rhode Island" = "RI",
+  "South Carolina" = "SC", "South Dakota" = "SD", "Tennessee" = "TN", "Texas" = "TX",
+  "Utah" = "UT", "Vermont" = "VT", "Virginia" = "VA", "Washington" = "WA",
+  "West Virginia" = "WV", "Wisconsin" = "WI", "Wyoming" = "WY", "Puerto Rico" = "PR"
+)
+
+# Add STATE CODE column to state_pop dataframe
+state_pop_long <- mutate(state_pop_long, STATE_CODE = state_mapping[STATE])
+
+# Rearrange columns with STATE CODE after STATE
+state_pop_long <- state_pop_long %>%
+  select(STATE, STATE_CODE, everything())
+
+# View the updated dataframe
+
+# View(state_pop_long)
+
+# str(race_perc)
+
+
+# Merge race_perc and state_pop_long dataframes based on state information
+merged_data <- merge(race_perc, state_pop_long, by.x = "Geographic.area", by.y = "STATE_CODE")
+# 
+# Convert race percentage columns to numeric
+percentage_cols <- c("share_white", "share_black", "share_native_american", "share_asian", "share_hispanic")
+merged_data[percentage_cols] <- lapply(merged_data[percentage_cols], as.numeric)
+
+# View(merged_data)
+
+
+merged_data <- merged_data %>%
+  mutate(
+    white_population = share_white * Population,
+    black_population = share_black * Population,
+    native_american_population = share_native_american * Population,
+    asian_population = share_asian * Population,
+    hispanic_population = share_hispanic * Population
+  )
+
+# View(merged_data)
+
+# Select the desired columns
+merged_data <- merged_data %>%
+  select(Geographic.area, Year, Population, white_population, black_population, 
+         native_american_population, asian_population, hispanic_population)
+
+# # View the resulting dataframe
+# str(merged_data)
+# View(merged_data)
+
+fatality <- read.csv("data/PoliceKillingsUS.csv", na.strings = "")
+fatality$year <- format(as.Date(fatality$date, format = "%d/%m/%y"), "%Y")
+# Keep only the required columns
+fatality <- fatality %>%
+  select(race,state,year)
+
+# str(fatality)
+# View(fatality)
+
+
+# Pivot the data wider
+fatality_spread <- fatality %>%
+  pivot_wider(
+    id_cols = c(state, year),
+    names_from = race,
+    values_from = race,
+    values_fn = length,
+    values_fill = 0
+  )
+
+# Rename the racial columns
+fatality_spread <- fatality_spread %>%
+  rename(
+    share_white = W,
+    share_black = B,
+    share_native_american = 'NA',
+    share_asian = A,
+    share_hispanic = H
+   )
+
+# Merge "N" and "O" columns into "Other" column
+fatality_spread <- fatality_spread %>%
+  mutate(Other = N + O) %>%
+  select(-N, -O)
+
+# # View the modified dataframe
+# head(fatality_spread)
+# 
+# # View the first few rows of the spread dataframe
+# View(fatality_spread)
+# str(fatality_spread)
+
+
+# Rename 'Geographic.area' to 'state' in grouped_merged_data for consistency
+merged_data <- merged_data %>%
+  rename(state = Geographic.area)
+
+# Convert Year column in grouped_merged_data to character
+merged_data <- merged_data %>%
+  mutate(Year = as.character(Year))
+
+# Perform left join
+Final_racial_data <- left_join(merged_data, fatality_spread, by = c("state" = "state", "Year" = "year"))
+
+# View the resulting dataframe
+# View(Final_racial_data)
+# str(Final_racial_data)
+
+# Calculate racial intensity for each racial group
+Final_racial_data <- Final_racial_data %>%
+  mutate(
+    white_intensity = round((share_white / white_population) * 10^6, 2),
+    black_intensity = round((share_black / black_population) * 10^6, 2),
+    native_american_intensity = round((share_native_american / native_american_population) * 10^6, 2),
+    asian_intensity = round((share_asian / asian_population) * 10^6, 2),
+    hispanic_intensity = round((share_hispanic / hispanic_population) * 10^6, 2)
+  )
+
+library(tidyr)
+
+# Create a template dataframe with all combinations of states and years
+template <- expand.grid(state = unique(Final_racial_data$state), 
+                        Year = c("2015", "2016", "2017"))
+
+
+# Merge the template dataframe with Final_racial_data
+Final_racial_data <- merge(template, Final_racial_data, by = c("state", "Year"), all.x = TRUE)
+
+# View(Final_racial_data)
+# Replace NA values with 0
+Final_racial_data[is.na(Final_racial_data)] <- 0
+
+# Reorder columns to match the original dataframe
+Final_racial_data <- Final_racial_data[, names(Final_racial_data)]
+
+# View the updated dataframe
+
+
+# Define the state_mapping_reversed dictionary
+state_mapping_reversed <- c(
+  "AL" = "Alabama", "AK" = "Alaska", "AZ" = "Arizona", "AR" = "Arkansas",
+  "CA" = "California", "CO" = "Colorado", "CT" = "Connecticut", "DE" = "Delaware",
+  "DC" = "District of Columbia", "FL" = "Florida", "GA" = "Georgia", "HI" = "Hawaii",
+  "ID" = "Idaho", "IL" = "Illinois", "IN" = "Indiana", "IA" = "Iowa",
+  "KS" = "Kansas", "KY" = "Kentucky", "LA" = "Louisiana", "ME" = "Maine",
+  "MD" = "Maryland", "MA" = "Massachusetts", "MI" = "Michigan", "MN" = "Minnesota",
+  "MS" = "Mississippi", "MO" = "Missouri", "MT" = "Montana", "NE" = "Nebraska",
+  "NV" = "Nevada", "NH" = "New Hampshire", "NJ" = "New Jersey", "NM" = "New Mexico",
+  "NY" = "New York", "NC" = "North Carolina", "ND" = "North Dakota", "OH" = "Ohio",
+  "OK" = "Oklahoma", "OR" = "Oregon", "PA" = "Pennsylvania", "RI" = "Rhode Island",
+  "SC" = "South Carolina", "SD" = "South Dakota", "TN" = "Tennessee", "TX" = "Texas",
+  "UT" = "Utah", "VT" = "Vermont", "VA" = "Virginia", "WA" = "Washington",
+  "WV" = "West Virginia", "WI" = "Wisconsin", "WY" = "Wyoming", "PR" = "Puerto Rico"
+)
+
+# Replace values in the state column using state_mapping_reversed
+Final_racial_data$state <- state_mapping_reversed[as.character(Final_racial_data$state)]
+
+# Check the updated state column
+# head(Final_racial_data)
+
+# 
+# View(Final_racial_data)
+# 
+# str(Final_racial_data)
+
+
+
+# Correcting the use of pivot_longer
+long_data <- Final_racial_data %>%
+
+    select(state, Year, ends_with("intensity")) %>%  # Select columns that end with 'intensity' and include state, Year
+  pivot_longer(
+    cols = ends_with("intensity",FALSE),  # This selects all columns that end with 'intensity'
+    names_to = "racial_group",
+    values_to = "intensity"
+  ) %>%
+  drop_na(intensity)  # Drop NA values in the intensity column
+
+# Remove "intensity" from racial_group column
+long_data <- long_data %>%
+  mutate(racial_group = gsub("_intensity", "", racial_group))
+
+# Convert Year to character
+long_data <- long_data %>%
+  mutate(Year = as.character(Year))
+
+# Assuming the rest of the plotting code works, here's how to include the year in the animation
+animated_heatmap <- ggplot(long_data, aes(x = str_to_title(racial_group), y = state, fill = intensity)) +
+  geom_tile() +
+  scale_fill_viridis_c(option = "plasma") +
+  labs(title = "State vs. Racial Intensity Heatmap: Year {frame_time}", 
+       x = "Racial Group", 
+       y = "State",
+       fill = "Intensity") +  # Set the legend title to "Intensity"
+  theme_minimal() +
+  theme(axis.text.x = element_text(size=16, angle = 0, hjust = 0.5), 
+        axis.text.y = element_text(size = 14),
+        axis.title = element_text(size = 20),
+        plot.title = element_text(size = 20),
+        panel.grid = element_blank(),
+        legend.title = element_text(size = 16, face = "bold"),  # Increase legend title size and make it bold
+        legend.text = element_text(size = 16),  # Increase legend text size
+        legend.key.width = unit(1.6, "cm"),  # Increase legend key width
+        legend.key.height = unit(1.6, "cm")) +  # Increase legend key height
+  transition_time(as.integer(Year)) +  # Ensure 'Year' is treated as an integer
+  ease_aes('linear')
+
+# Render and save the animation
+animate(animated_heatmap, fps = 1, duration = 15, width = 800, height = 800, renderer = gifski_renderer())
+anim_save("images/racial_intensity_heatmap.gif")
+
+```
+
+![](images/racial_intensity_heatmap.gif){fig-align="center"}
+
 ### Discussion
+
+#### Plot 1
+
+The map analyzes the shooting intensity across all 50 states in the United States from 2015 to 2017. It visualizes this intensity by color-coding each state based on the number of shootings per million people. States with higher shooting rates are shaded darker, while those with lower rates are lighter. States with no fatalities are marked in gray. Additionally, the map labels the top three states with the highest shooting intensities and total fatalities for each year.
+
+In 2015, Wyoming, New Mexico, and Oklahoma stood out for their high shooting intensities, while California, Texas, and Florida led in total fatalities. The map annotations highlight these top states for both intensity and fatalities.
+
+In 2016, the states with the highest shooting intensities shifted to New Mexico, Alaska, and the District of Columbia, while California, Texas, and Florida maintained the highest fatalities.
+
+By 2017, Maine, Alaska, and Oklahoma had the highest shooting intensities, while California, Texas, and Florida continued to lead in fatalities.
+
+Overall, the visualization illustrates the variation in shooting intensity across states over the three years. While the states with the most fatalities remain consistent, the states with the highest shooting intensities change over time. Notably, New Mexico and Oklahoma consistently appear among the top states for shooting intensity in two out of the three years.
+
+#### Plot 2
+
+This map visualizes police shootings' intensity and resulting fatalities in major cities across the United States for the years 2015, 2016, and 2017, measured per million of the population. Each dot on the map represents shootings in different cities. Larger dots indicate cities with higher shooting intensities, while smaller dots represent cities with lower shooting intensities. States are also color-coded based on their shooting intensity, with lighter shades for lower intensity and darker shades for higher intensity.
+
+The labels on the map specifically highlight cities with shooting intensities exceeding 28 for that particular year. Notably, Chicago and Los Angeles are consistently among the cities with shootings exceeding this intensity threshold in two out of the three years, indicating their ongoing significance in this regard.
