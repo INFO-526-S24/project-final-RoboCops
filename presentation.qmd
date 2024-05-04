@@ -65,11 +65,14 @@ city_pop <- read.csv("data/us-cities-top-1k-multi-year.csv")
 state_pop <- read.csv("data/Population_Estimate_data_Statewise_2010-2023.csv")
 ```
 
-# Project Overview and Data Set
+# Project Overview and Dataset
 
 ## Police Shootings: An overview
+- Police shootings are an unfortunate aspect of enforcing the law, as any loss of life is a tragic incident
+- We aim to visualize and analyze police shootings in the United States from 2015 to 2017
+- The data points were gathered on Kaggle and sourced from the Washington Post, so we are limited to their interpretation of what counts a as a police shooting
 
-## Dataset {style="font-size: 55%"}
+## Dataset Variables {style="font-size: 55%"}
 ```{r}
 
 #| label: dataset-table
@@ -146,14 +149,23 @@ my_table
 <!--------------------------------------------------------------->
 # Question 1
 
+How do socioeconomic factors such as median income, poverty rates, and educational relate with incidents of police use of force across different geographic areas?
+
 ## Plot 1
 
 ## Plot 2a
 
 ## Plot 2b
 
-## Insights and Knowledge Inferred
+## Insights and Knowledge Inferred {style="font-size: 80%"}
 
+- Cities with greater than 75% high school graduates and poverty levels between 18-25% experience the most shootings with roughly half of all incidents showing a threat level of "Attack"
+
+- Most shootings occur in cities where the median income is roughly between \$40k - \$50k per year, roughly the US average
+
+- White people are shot the most, with the highest raw count, but proportional to the overall population of each race, black people are shot more
+
+- 1 in every 7,143 black people are shot by the police compared to 1 in every 333,334 white people. Thus, black people are 47 times more likely to be shot by police, a striking and sad statistic
 <!--------------------------------------------------------------->
 
 # Question 2
@@ -165,6 +177,27 @@ my_table
 ## Insights and Knowledge Inferred
 
 <!--------------------------------------------------------------->
+
+
+# Dashboard Demonstration
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ## Quarto
 

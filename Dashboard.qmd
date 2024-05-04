@@ -8,11 +8,11 @@ execute:
 ---
 
 ```{r setup, include=FALSE}
-# Load required libraries
-library(dplyr)
-library(ggplot2)
-library(plotly)
-library(leaflet)
+# # Load required libraries
+# library(dplyr)
+# library(ggplot2)
+# library(plotly)
+# library(leaflet)
 ```
 
 
@@ -33,7 +33,8 @@ pacman::p_load(dplyr,
                maps,
                ggrepel,
                animation, 
-               RColorBrewer)
+               RColorBrewer, 
+               leaflet)
 
 ```
 
