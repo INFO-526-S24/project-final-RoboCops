@@ -419,7 +419,7 @@ For the density ridge plots, the population for each race was calculated from th
 
 The second density ridge plot, which is organized by the race's relative proportion of fatalities (ie the number of fatalities divided by the estimated race's total population). The race's population estimate was calculated by summing the estimated race's population for all cities included in the subsetted data. The data race levels were refactorized according to the proportions with Other and Unknown set to the bottom of the plot. Other and Unknown were set to the bottom of the plot since the interest of this analysis is focused on the potential difference in incidence when race is considered.
 
-### Plot 1
+### Plot 1a
 
 ```{r}
 #| label: Q1-plot1
@@ -507,17 +507,16 @@ analysis_data$threat_level <- str_to_title(analysis_data$threat_level)
 poverty_plot  <- ggplot(analysis_data, aes(x = poverty_bracket, fill = threat_level)) +
   geom_bar(position = "identity", width = 0.5) +
   scale_fill_brewer(palette = 'Set3') + 
-  #guides(fill = "none") + # This removes the legend from this plot
   theme_minimal() +
   labs(title = "Distribution of Threat Levels by Poverty Bracket",
        x = "Percentage of Population in Poverty Line",
        y = "Count of Incidents",
        fill = "Threat Level") + 
-  theme(theme(legend.position = 'right'))
+  theme(legend.position = 'right')  # Adjusted theme settings here
 poverty_plot
 ```
 
-### Plot 2
+### Plot 1b
 
 ```{r}
 #| label: Q1-plot2
@@ -533,7 +532,7 @@ education_plot <- ggplot(analysis_data, aes(x = edu_bracket, fill = threat_level
        x = "Percentage of Population having High School Degree",
        y = "Count of Incidents",
        fill = "Threat Level") + 
-  theme(theme(legend.position = 'right'))
+  theme(legend.position = 'right')  # Adjusted theme settings here
 
 education_plot
 
