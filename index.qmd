@@ -28,6 +28,7 @@ pacman::p_load(dplyr,
                scales,
                patchwork,
                stringr,
+               tidyr,
                grep,
                kableExtra,
                plotly,
@@ -549,8 +550,14 @@ supp_stat <- supp_stat |>
 
 # Select specific columns of the supplementary data
 supp_stat <- supp_stat[,c(1, 2, 4, 15:19)]
-colnames(supp_stat) <- c("State", "City", "Median",
-                         "White", "Black", "Native", "Asian", "Hispanic")
+colnames(supp_stat) <- c("State",
+                         "City",
+                         "Median",
+                         "White",
+                         "Black",
+                         "Native",
+                         "Asian",
+                         "Hispanic")
 
 # Select specific columns of the fatality data
 fatality_subset <- fatality[,8:10]
@@ -596,6 +603,61 @@ ggplot(merged_data, aes(x = Median, y = Race)) +
   theme_minimal()
 ```
 
+### Median Insights
+```{r}
+#| label: Q1-median
+#| message: false
+
+# Find distinct city and states and only keep numerical data
+distinct_city <- merged_data |>
+  distinct(State, City, .keep_all = TRUE) |>
+  select(Median, White, Black, Native, Asian, Hispanic)
+
+# Generate dataset for geom_smooth
+distinct_city <- distinct_city |> # Find the proportions for each race
+  mutate(
+    Total = rowSums(across(White:Hispanic)),
+    White = White / Total,
+    Black = Black / Total,
+    Native = Native / Total,
+    Asian = Asian / Total,
+    Hispanic = Hispanic / Total
+  ) |> # Pivot data so race and values are columns
+  pivot_longer(
+    cols = c(White, Black, Native, Asian, Hispanic),
+    names_to = "Race",
+    values_to = "Percent"
+  ) |> # Create legend column so that races can have colors later
+  mutate(
+    legend = case_when(
+      Race %in% "White" ~ "White",
+      Race %in% "Black" ~ "Black",
+      TRUE ~ "Other"
+    )
+  )
+
+# Refactor levels for legends order
+distinct_city$legend <- factor(distinct_city$legend,
+                               levels = c("Black", "White", "Other"))
+
+# Generate smooth plot
+ggplot(data = distinct_city,
+       aes(x = Median, y = Percent, group = Race, color = legend)) +
+  geom_smooth(se = F) +
+  scale_color_manual(values = c("red", "blue", "grey")) +
+  scale_x_continuous(labels = label_dollar(scale = 1e-3, suffix = "K")) +
+  scale_y_continuous(labels = percent_format()) +
+  coord_cartesian(xlim = c(35000, 75000)) +
+  labs(title = "City Race Proportions",
+       subtitle = "Over city median income",
+       x = "Median Income of City",
+       y = "Proportion of Population") +
+  guides(color = guide_legend(title = "Race")) +
+  theme_minimal() +
+  theme()
+
+```
+
 ### Plot 2b
 
 ```{r}
@@ -610,11 +672,16 @@ race_pop <- merged_data |>
 race_total <- as.data.frame(colSums(race_pop[,5:9]))
 
 # Proportion shot for each race:
-# Asian: 23/12570851 * 100 = 1.82963e-04
-# Black: 409/30170898 * 100 = 1.355611e-03
-# Hispanic: 301/51034800 * 100 = 5.897936e-04
-# Native: 13/1827873 * 100 = 7.112091e-04
-# White: 466/135231935 * 100 = 3.445932e-04
+# Asian:0.000182963
+# race_count[1,1]/race_total[4,1] * 100
+# Black: 0.001355611
+# race_count[2,1]/race_total[2,1] * 100
+# Hispanic: 0.0005897936
+# race_count[3,1]/race_total[5,1] * 100
+# Native: 0.0007112093
+# race_count[4,1]/race_total[3,1] * 100
+# White: 0.0003445932
+# race_count[7,1]/race_total[1,1] * 100
 
 # Refactor levels according to the proportions
 merged_data$Race <- factor(merged_data$Race,
@@ -642,7 +709,6 @@ ggplot(merged_data, aes(x = Median, y = Race)) +
   xlab("Median Income of City") +
   ylab("Race") +
   theme_minimal()
-
 ```
 
 ### Discussion
