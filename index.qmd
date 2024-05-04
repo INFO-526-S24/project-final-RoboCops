@@ -1388,4 +1388,338 @@ animation::saveGIF(
 
 ### Plot 3
 
+```{r}
+#| label: Q.2_Plot_3_Update
+#| message: false
+#| eval: false
+
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(gganimate)
+library(utils)
+library(dplyr)
+library(tidyr)
+library(tidyr)
+library(stringr)
+
+
+fatality <- read.csv("data/PoliceKillingsUS.csv", na.strings = "")
+race_perc <- read.csv("data/ShareRaceByCity.csv")
+state_pop <- read.csv("data/Population_Estimate_data_Statewise_2010-2023.csv")
+fatality$year <- format(as.Date(fatality$date, format = "%d/%m/%y"), "%Y")
+
+# Group by year, state, and race, then count occurrences
+race_count <- fatality %>%
+  group_by(year, state, race) %>%
+  summarise(count = n()) %>%
+  ungroup()
+
+# Spread the 'race' column to create individual columns for each race
+race_count <- race_count %>%
+  spread(key = race, value = count, fill = 0)
+
+# Add a column for the total count of races in each state and year
+race_count <- race_count %>%
+  mutate(Total = rowSums(select(., -c(year, state)), na.rm = TRUE))
+
+# Arrange the data by year and state
+race_count <- race_count %>%
+  arrange(year, state)
+
+
+race_perc <- read.csv("data/ShareRaceByCity.csv")
+# Remove the 'City' column from race_perc dataframe
+race_perc <- race_perc %>%
+  select(-City)
+
+# Convert columns to numeric
+race_perc$share_white <- as.numeric(race_perc$share_white)
+race_perc$share_black <- as.numeric(race_perc$share_black)
+race_perc$share_native_american <- as.numeric(race_perc$share_native_american)
+race_perc$share_asian <- as.numeric(race_perc$share_asian)
+race_perc$share_hispanic <- as.numeric(race_perc$share_hispanic)
+
+# Add a column for the sum of all race percentages
+race_perc$sum_race_percentages <- rowSums(race_perc[, c("share_white", "share_black", "share_native_american", "share_asian", "share_hispanic")])
+
+
+# Assuming race_perc is already loaded as a dataframe
+race_perc <- race_perc %>%
+  group_by(Geographic.area) %>%
+  summarise(
+    share_white = mean(share_white, na.rm = TRUE),
+    share_black = mean(share_black, na.rm = TRUE),
+    share_native_american = mean(share_native_american, na.rm = TRUE),
+    share_asian = mean(share_asian, na.rm = TRUE),
+    share_hispanic = mean(share_hispanic, na.rm = TRUE),
+    sum_race_percentages=mean(sum_race_percentages,na.rm = TRUE)
+  )
+
+# View(race_perc)
+
+# Normalize race percentages
+race_perc <- race_perc %>%
+  mutate(
+    share_white = share_white / sum_race_percentages,
+    share_black = share_black / sum_race_percentages,
+    share_native_american = share_native_american / sum_race_percentages,
+    share_asian = share_asian / sum_race_percentages,
+    share_hispanic = share_hispanic / sum_race_percentages
+  )
+
+# Recalculate sum_race_percentages
+race_perc$sum_race_percentages <- rowSums(select(race_perc, starts_with("share_")))
+ 
+# View(race_perc)
+
+# Selecting desired columns from state_pop
+state_pop_subset <- state_pop[, c("STATE", "POPESTIMATE2015", "POPESTIMATE2016", "POPESTIMATE2017")]
+
+# # View the structure of the new dataframe
+# str(state_pop_subset)
+# 
+# # View the first few rows of the new dataframe
+# head(state_pop_subset)
+
+# Reshape the dataframe to have Year, State, and Population columns
+state_pop_long <- state_pop_subset %>%
+  pivot_longer(cols = c("POPESTIMATE2015", "POPESTIMATE2016", "POPESTIMATE2017"),
+               names_to = "Year",
+               values_to = "Population")
+
+# Remove "POPESTIMATE" from the Year column
+state_pop_long <- state_pop_long %>%
+  mutate(Year = str_remove(Year, "POPESTIMATE"))
+
+# Convert Year column to numeric for sorting
+state_pop_long$Year <- as.numeric(state_pop_long$Year)
+
+# Sort the dataframe by Year in ascending order
+state_pop_long <- state_pop_long %>%
+  arrange(Year)
+
+# View the sorted dataframe
+# str(state_pop_long)
+# View(state_pop_long)
+
+
+
+# Define a mapping of state names to state codes
+state_mapping <- c(
+  "Alabama" = "AL", "Alaska" = "AK", "Arizona" = "AZ", "Arkansas" = "AR",
+  "California" = "CA", "Colorado" = "CO", "Connecticut" = "CT", "Delaware" = "DE",
+  "District of Columbia" = "DC", "Florida" = "FL", "Georgia" = "GA", "Hawaii" = "HI",
+  "Idaho" = "ID", "Illinois" = "IL", "Indiana" = "IN", "Iowa" = "IA",
+  "Kansas" = "KS", "Kentucky" = "KY", "Louisiana" = "LA", "Maine" = "ME",
+  "Maryland" = "MD", "Massachusetts" = "MA", "Michigan" = "MI", "Minnesota" = "MN",
+  "Mississippi" = "MS", "Missouri" = "MO", "Montana" = "MT", "Nebraska" = "NE",
+  "Nevada" = "NV", "New Hampshire" = "NH", "New Jersey" = "NJ", "New Mexico" = "NM",
+  "New York" = "NY", "North Carolina" = "NC", "North Dakota" = "ND", "Ohio" = "OH",
+  "Oklahoma" = "OK", "Oregon" = "OR", "Pennsylvania" = "PA", "Rhode Island" = "RI",
+  "South Carolina" = "SC", "South Dakota" = "SD", "Tennessee" = "TN", "Texas" = "TX",
+  "Utah" = "UT", "Vermont" = "VT", "Virginia" = "VA", "Washington" = "WA",
+  "West Virginia" = "WV", "Wisconsin" = "WI", "Wyoming" = "WY", "Puerto Rico" = "PR"
+)
+
+# Add STATE CODE column to state_pop dataframe
+state_pop_long <- mutate(state_pop_long, STATE_CODE = state_mapping[STATE])
+
+# Rearrange columns with STATE CODE after STATE
+state_pop_long <- state_pop_long %>%
+  select(STATE, STATE_CODE, everything())
+
+# View the updated dataframe
+
+# View(state_pop_long)
+
+# str(race_perc)
+
+
+# Merge race_perc and state_pop_long dataframes based on state information
+merged_data <- merge(race_perc, state_pop_long, by.x = "Geographic.area", by.y = "STATE_CODE")
+# 
+# Convert race percentage columns to numeric
+percentage_cols <- c("share_white", "share_black", "share_native_american", "share_asian", "share_hispanic")
+merged_data[percentage_cols] <- lapply(merged_data[percentage_cols], as.numeric)
+
+# View(merged_data)
+
+
+merged_data <- merged_data %>%
+  mutate(
+    white_population = share_white * Population,
+    black_population = share_black * Population,
+    native_american_population = share_native_american * Population,
+    asian_population = share_asian * Population,
+    hispanic_population = share_hispanic * Population
+  )
+
+# View(merged_data)
+
+# Select the desired columns
+merged_data <- merged_data %>%
+  select(Geographic.area, Year, Population, white_population, black_population, 
+         native_american_population, asian_population, hispanic_population)
+
+# # View the resulting dataframe
+# str(merged_data)
+# View(merged_data)
+
+fatality <- read.csv("data/PoliceKillingsUS.csv", na.strings = "")
+fatality$year <- format(as.Date(fatality$date, format = "%d/%m/%y"), "%Y")
+# Keep only the required columns
+fatality <- fatality %>%
+  select(race,state,year)
+
+# str(fatality)
+# View(fatality)
+
+
+# Pivot the data wider
+fatality_spread <- fatality %>%
+  pivot_wider(
+    id_cols = c(state, year),
+    names_from = race,
+    values_from = race,
+    values_fn = length,
+    values_fill = 0
+  )
+
+# Rename the racial columns
+fatality_spread <- fatality_spread %>%
+  rename(
+    share_white = W,
+    share_black = B,
+    share_native_american = 'NA',
+    share_asian = A,
+    share_hispanic = H
+   )
+
+# Merge "N" and "O" columns into "Other" column
+fatality_spread <- fatality_spread %>%
+  mutate(Other = N + O) %>%
+  select(-N, -O)
+
+# # View the modified dataframe
+# head(fatality_spread)
+# 
+# # View the first few rows of the spread dataframe
+# View(fatality_spread)
+# str(fatality_spread)
+
+
+# Rename 'Geographic.area' to 'state' in grouped_merged_data for consistency
+merged_data <- merged_data %>%
+  rename(state = Geographic.area)
+
+# Convert Year column in grouped_merged_data to character
+merged_data <- merged_data %>%
+  mutate(Year = as.character(Year))
+
+# Perform left join
+Final_racial_data <- left_join(merged_data, fatality_spread, by = c("state" = "state", "Year" = "year"))
+
+# View the resulting dataframe
+# View(Final_racial_data)
+# str(Final_racial_data)
+
+# Calculate racial intensity for each racial group
+Final_racial_data <- Final_racial_data %>%
+  mutate(
+    white_intensity = round((share_white / white_population) * 10^6, 2),
+    black_intensity = round((share_black / black_population) * 10^6, 2),
+    native_american_intensity = round((share_native_american / native_american_population) * 10^6, 2),
+    asian_intensity = round((share_asian / asian_population) * 10^6, 2),
+    hispanic_intensity = round((share_hispanic / hispanic_population) * 10^6, 2)
+  )
+
+library(tidyr)
+
+# Create a template dataframe with all combinations of states and years
+template <- expand.grid(state = unique(Final_racial_data$state), 
+                        Year = c("2015", "2016", "2017"))
+
+
+# Merge the template dataframe with Final_racial_data
+Final_racial_data <- merge(template, Final_racial_data, by = c("state", "Year"), all.x = TRUE)
+
+# View(Final_racial_data)
+# Replace NA values with 0
+Final_racial_data[is.na(Final_racial_data)] <- 0
+
+# Reorder columns to match the original dataframe
+Final_racial_data <- Final_racial_data[, names(Final_racial_data)]
+
+# View the updated dataframe
+
+
+# Define the state_mapping_reversed dictionary
+state_mapping_reversed <- c(
+  "AL" = "Alabama", "AK" = "Alaska", "AZ" = "Arizona", "AR" = "Arkansas",
+  "CA" = "California", "CO" = "Colorado", "CT" = "Connecticut", "DE" = "Delaware",
+  "DC" = "District of Columbia", "FL" = "Florida", "GA" = "Georgia", "HI" = "Hawaii",
+  "ID" = "Idaho", "IL" = "Illinois", "IN" = "Indiana", "IA" = "Iowa",
+  "KS" = "Kansas", "KY" = "Kentucky", "LA" = "Louisiana", "ME" = "Maine",
+  "MD" = "Maryland", "MA" = "Massachusetts", "MI" = "Michigan", "MN" = "Minnesota",
+  "MS" = "Mississippi", "MO" = "Missouri", "MT" = "Montana", "NE" = "Nebraska",
+  "NV" = "Nevada", "NH" = "New Hampshire", "NJ" = "New Jersey", "NM" = "New Mexico",
+  "NY" = "New York", "NC" = "North Carolina", "ND" = "North Dakota", "OH" = "Ohio",
+  "OK" = "Oklahoma", "OR" = "Oregon", "PA" = "Pennsylvania", "RI" = "Rhode Island",
+  "SC" = "South Carolina", "SD" = "South Dakota", "TN" = "Tennessee", "TX" = "Texas",
+  "UT" = "Utah", "VT" = "Vermont", "VA" = "Virginia", "WA" = "Washington",
+  "WV" = "West Virginia", "WI" = "Wisconsin", "WY" = "Wyoming", "PR" = "Puerto Rico"
+)
+
+# Replace values in the state column using state_mapping_reversed
+Final_racial_data$state <- state_mapping_reversed[as.character(Final_racial_data$state)]
+
+# Check the updated state column
+# head(Final_racial_data)
+
+# 
+# View(Final_racial_data)
+# 
+# str(Final_racial_data)
+
+
+
+# Correcting the use of pivot_longer
+long_data <- Final_racial_data %>%
+
+    select(state, Year, ends_with("intensity")) %>%  # Select columns that end with 'intensity' and include state, Year
+  pivot_longer(
+    cols = ends_with("intensity",FALSE),  # This selects all columns that end with 'intensity'
+    names_to = "racial_group",
+    values_to = "intensity"
+  ) %>%
+  drop_na(intensity)  # Drop NA values in the intensity column
+
+# Remove "intensity" from racial_group column
+long_data <- long_data %>%
+  mutate(racial_group = gsub("_intensity", "", racial_group))
+
+# Convert Year to character
+long_data <- long_data %>%
+  mutate(Year = as.character(Year))
+
+# Assuming the rest of the plotting code works, here's how to include the year in the animation
+animated_heatmap <- ggplot(long_data, aes(x = racial_group, y = state, fill = intensity)) +
+  geom_tile() +
+  scale_fill_viridis_c(option = "plasma") +
+  labs(title = "State vs. Racial Intensity Heatmap: Year {frame_time}", x = "Racial Group", y = "State") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(size=14,angle = 0, hjust = 0.5), 
+        axis.text.y = element_text(size = 14),
+        axis.title = element_text(size = 16),
+        plot.title = element_text(size = 18)) +
+  transition_time(as.integer(Year)) +  # Ensure 'Year' is treated as an integer
+  ease_aes('linear')
+
+# Render and save the animation
+animate(animated_heatmap, fps = 1, duration = 15, width = 800, height = 800, renderer = gifski_renderer())
+anim_save("images/racial_intensity_heatmap.gif")
+
+```
+
 ### Discussion
