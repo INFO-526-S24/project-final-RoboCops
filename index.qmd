@@ -669,7 +669,12 @@ Plot 2a breaks down these incidents by raw count of victims in each race populat
 
 ## Question 2
 
+2.  In what ways do the analyses of hotspot states, hotspot cities, and racial distribution contribute to understanding the intersection of incidents of police use of force across diverse geographic areas?
+
 ### Description of Analysis
+
+The comprehensive analysis includes three animated plots, each offering a unique perspective on the intersection of incidents of police use of force. The first plot highlights hotspot states, shedding light on regions with elevated rates of such incidents. The second plot zooms in on hotspot cities, providing a closer examination of urban areas experiencing heightened police use of force. Finally, the third plot delves into the racial distribution within these hotspot states, offering insights into how demographics intersect with incidences of police use of force. Together, these visualizations aim to provide a holistic understanding of the complex dynamics at play
+
 
 ### Plot 1
 
@@ -1379,7 +1384,7 @@ animation::saveGIF(
 ### Plot 3
 
 ```{r}
-#| label: Q.2 plot 3
+#| label: Q2-plot-3
 #| eval: false
 
 library(utils)
@@ -1411,11 +1416,8 @@ race_count <- race_count %>%
 
 # View the resulting dataframe
 # View(race_count)
-```
 
-```{r}
-#| label: data-wrangling for race_perc
-#| eval: false
+
 
 race_perc <- read.csv("data/ShareRaceByCity.csv")
 # Remove the 'City' column from race_perc dataframe
@@ -1462,12 +1464,6 @@ race_perc$sum_race_percentages <- rowSums(select(race_perc, starts_with("share_"
  
 # View(race_perc)
 
-
-```
-
-```{r}
-#| label: population_data_update
-#| eval: false
 
 # Selecting desired columns from state_pop
 state_pop_subset <- state_pop[, c("STATE", "POPESTIMATE2015", "POPESTIMATE2016", "POPESTIMATE2017")]
@@ -1543,11 +1539,6 @@ percentage_cols <- c("share_white", "share_black", "share_native_american", "sha
 merged_data[percentage_cols] <- lapply(merged_data[percentage_cols], as.numeric)
 
 # View(merged_data)
-```
-
-```{r}
-#| label: Created Population
-#| eval: false
 
 
 merged_data <- merged_data %>%
@@ -1569,11 +1560,7 @@ merged_data <- merged_data %>%
 # # View the resulting dataframe
 # str(merged_data)
 # View(merged_data)
-```
 
-```{r}
-#| label: Fatalities_merging
-#| eval: false
 
 fatality <- read.csv("data/PoliceKillingsUS.csv", na.strings = "")
 fatality$year <- format(as.Date(fatality$date, format = "%d/%m/%y"), "%Y")
@@ -1616,11 +1603,7 @@ fatality_spread <- fatality_spread %>%
 # # View the first few rows of the spread dataframe
 # View(fatality_spread)
 # str(fatality_spread)
-```
 
-```{r}
-#| label: sada
-#| eval: false
 
 library(dplyr)
 
@@ -1638,12 +1621,6 @@ Final_racial_data <- left_join(merged_data, fatality_spread, by = c("state" = "s
 # View the resulting dataframe
 # View(Final_racial_data)
 # str(Final_racial_data)
-
-```
-
-```{r}
-#| label: intensity
-#| eval: false
 
 
 # Calculate racial intensity for each racial group
@@ -1703,7 +1680,7 @@ Final_racial_data$state <- state_mapping_reversed[as.character(Final_racial_data
 # View(Final_racial_data)
 # 
 # str(Final_racial_data)
-```
 
+```
 
 ### Discussion
