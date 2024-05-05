@@ -270,7 +270,6 @@ supp_data <- left_join(supp_data, city_pop_2015,
                        by = c("State", "City"))
 ```
 
-
 # Project Overview and Dataset
 
 ## Police Shootings: An overview
@@ -371,7 +370,6 @@ poverty_plot
 ```
 
 ## Distribution of Threat Levels by High School Pass Rate
-       
 
 ```{r}
 #| label: Q1-plot2
@@ -390,16 +388,6 @@ education_plot <- ggplot(analysis_data, aes(x = edu_bracket, fill = threat_level
 education_plot
 
 ```
-
-## Insights and Knowledge Inferred {style="font-size: 80%"}
-
--   Cities with over 75% high school graduates and poverty levels between 18-25% experience the highest number of shootings, predominantly with a threat level categorized as "Attack."
-
--   Most shootings across the board are recorded with a threat level of "Attack" or "Other," with only a few incidents left undetermined, indicating that officers generally report a justification for using their weapon.
-
--   The correlation between higher shootings and areas with more educated populations alongside a notable poverty rate might be influenced by large urban areas like New York City and Chicago, which have significant population densities and economic disparities.
-
--   Areas with lower percentages of high school graduates appear to be exceptions within the overall dataset, possibly acting as outliers.
 
 <!--------------------------------------------------------------->
 
@@ -583,14 +571,7 @@ ggplot(merged_data, aes(x = Median, y = Race)) +
   ylab("Race") +
   theme_minimal()
 ```
-
-## Insights and Knowledge Inferred {style="font-size: 80%"}
-
--   Most shootings occur in cities where the median income is roughly between \$40k - \$50k per year, roughly the US average
-
--   White people are shot the most, with the highest raw count, but proportional to the overall population of each race, black people are shot more
-
--   1 in every 71,429 black people are shot by the police compared to 1 in every 333,334 white people. Thus, black people are 4.7 times as likely to be shot by police, a striking and sad statistic <!--------------------------------------------------------------->
+ <!--------------------------------------------------------------->
 
 # Question 2
 
