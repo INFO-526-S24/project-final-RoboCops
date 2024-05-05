@@ -442,9 +442,6 @@ poverty_plot
 
 ## Plot 1b
 
-<<<<<<< HEAD
-## Racial Shooting Density Across Median Income
-=======
 ```{r}
 #| label: Q1-plot2
 #| warning: FALSE
@@ -476,8 +473,7 @@ education_plot
 
 <!--------------------------------------------------------------->
 
-## Plot 2a
->>>>>>> 6efbb385742027e27ebbeafe75773773cbe73730
+## Racial Shooting Density Across Median Income
 
 ```{r}
 #| label: Q1-plot2a
@@ -659,8 +655,6 @@ ggplot(merged_data, aes(x = Median, y = Race)) +
 ```
 
 ## Insights and Knowledge Inferred {style="font-size: 80%"}
-
--   Cities with greater than 75% high school graduates and poverty levels between 18-25% experience the most shootings with roughly half of all incidents showing a threat level of "Attack"
 
 -   Most shootings occur in cities where the median income is roughly between \$40k - \$50k per year, roughly the US average
 
