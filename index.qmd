@@ -497,7 +497,7 @@ education_plot
 
 ```
 
-### Plot 2a
+### Racial Shooting Density Across Median Income
 
 ```{r}
 #| label: Q1-plot2a
@@ -625,7 +625,7 @@ ggplot(data = distinct_city,
 
 ```
 
-### Plot 2b
+### Adjusted Density Plot
 
 ```{r}
 #| label: Q1-plot2b

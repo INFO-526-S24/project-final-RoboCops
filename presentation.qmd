@@ -351,7 +351,7 @@ How do socioeconomic factors such as median income, poverty rates, and education
 
 ## Plot 1b
 
-## Plot 2a
+## Racial Shooting Density Across Median Income
 ```{r}
 #| label: Q1-plot2a
 #| message: false
@@ -422,7 +422,7 @@ ggplot(merged_data, aes(x = Median, y = Race)) +
   theme_minimal()
 ```
 
-## Plot 2b
+## Median Insight
 ```{r}
 #| label: Q1-median
 #| message: false
@@ -477,7 +477,7 @@ ggplot(data = distinct_city,
 
 ```
 
-## Plot 2c
+## Adjusted Density Plots
 ```{r}
 #| label: Q1-plot2b
 #| message: false
