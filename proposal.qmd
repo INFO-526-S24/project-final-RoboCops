@@ -357,24 +357,28 @@ tasks <- c("Proposal-For Peer Review",
            "Peer Review",
            "Proposal-Updated",
            "Proposal-Final",
-           "Question 1: Plot 1",
-           "Question 1: Plot 2",
+           "Question 1: Bar Plots",
+           "Question 1: Density and Regression Plots",
            "Question 1: Interpret",
-           "Question 2: Plot 1",
-           "Question 2: Plot 2",
-           "Question 2: Interpretation")
+           "Question 2: Shooting Intensity 1",
+           "Question 2: Shooting Intensity 2",
+           "Question 2: Interpretation",
+           "Presentation Structure",
+           "Write-up Abstract/Introduction")
 
 # Create vector to represent status
 status <- c("Complete",
             "Complete",
             "Complete",
             "Complete",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "")
+            "Complete",
+            "Complete",
+            "Complete",
+            "Complete",
+            "Complete",
+            "Complete",
+            "Complete",
+            "Complete")
 
 # Create vector to represent ownership
 member <- c("All",
@@ -386,7 +390,9 @@ member <- c("All",
             "Christian",
             "Arun",
             "Sachin",
-            "Valerie")
+            "Valerie",
+            "Christian",
+            "Christian")
 
 # Create vector to represent the deadline
 due <- c("April 1",
@@ -398,13 +404,17 @@ due <- c("April 1",
          "April 22",
          "April 22",
          "April 22",
-         "April 22")
+         "April 22",
+         "",
+         "")
 
 # Create vector to represent priority
 priority <- c("High",
               "High",
               "Medium",
               "Low",
+              "Medium",
+              "Medium",
               "Medium",
               "Medium",
               "Medium",
@@ -417,12 +427,14 @@ description <- c("Write proposal for peer review",
                  "Write up peer reviews for other groups",
                  "Update proposal using peer feedback",
                  "Update proposal using instructor feedback",
-                 "Generate plot",
-                 "Generate plot",
+                 "Generate plot/slides for plot",
+                 "Generate plot/slides for plot",
                  "Interpret plots",
-                 "Generate plot",
-                 "Generate plot",
-                 "Interpret plots")
+                 "Generate plot/slides for plot",
+                 "Generate plot/slides for plot",
+                 "Interpret plots",
+                 "Create presentation order",
+                 "Write up introduction and abstract")
 
 # Bind the columns
 table_2 <- as.table(cbind(tasks, status, member, due, priority, description))

@@ -159,8 +159,182 @@ How do socioeconomic factors such as median income, poverty rates, and education
 ## Plot 1b
 
 ## Plot 2a
+```{r}
+#| label: Q1-plot2a
+#| message: false
+
+# Calculate the populations of each population for each city
+supp_stat <- na.omit(supp_data)
+supp_stat <- supp_stat |>
+  mutate(
+    white_pop <- White * Population / 100,
+    black_pop <- Black * Population / 100,
+    native_pop <- Native * Population / 100,
+    asian_pop <- Asian * Population / 100,
+    hispanic_pop <- Hispanic * Population / 100
+  )
+
+# Select specific columns of the supplementary data
+supp_stat <- supp_stat[,c(1, 2, 4, 15:19)]
+colnames(supp_stat) <- c("State",
+                         "City",
+                         "Median",
+                         "White",
+                         "Black",
+                         "Native",
+                         "Asian",
+                         "Hispanic")
+
+# Select specific columns of the fatality data
+fatality_subset <- fatality[,8:10]
+colnames(fatality_subset) <- c("Race", "City", "State")
+
+# Merge dataset and remove rows with NAs
+merged_data <- left_join(fatality_subset, supp_stat,
+                         by = c("State", "City"))
+merged_data <- na.omit(merged_data)
+
+# Acquire counts of race:
+# Asian = 23, Black = 409, Hispanic = 301, Native American = 13, Other = 17,
+# Unknown = 92, White = 466
+race_count <- as.data.frame(summary(as.factor(merged_data$Race)))
+
+# Refactor levels according to the total counts
+merged_data$Race <- factor(merged_data$Race,
+                           levels = c("Unknown",
+                                      "Other",
+                                      "Native American",
+                                      "Asian",
+                                      "Hispanic",
+                                      "Black",
+                                      "White"))
+
+# Generate the density ridge plot (smallest count at the bottom)
+ggplot(merged_data, aes(x = Median, y = Race)) +
+  geom_density_ridges() +
+  scale_x_continuous(expand = c(0, 0),
+                    labels = label_dollar(scale = 1e-3, suffix = "K")) +
+  coord_cartesian(clip = "off") +
+  geom_text(aes(x = 125000, y = 1.2, label = "13")) +
+  geom_text(aes(x = 125000, y = 2.2, label = "17")) +
+  geom_text(aes(x = 125000, y = 3.2, label = "23")) +
+  geom_text(aes(x = 125000, y = 4.2, label = "92")) +
+  geom_text(aes(x = 125000, y = 5.2, label = "301")) +
+  geom_text(aes(x = 125000, y = 6.2, label = "409")) +
+  geom_text(aes(x = 125000, y = 7.2, label = "466")) +
+  labs(title = "Density Plots of Police Shootings",
+       subtitle = "Ordered by descending counts") +
+  xlab("Median Income of City") +
+  ylab("Race") +
+  theme_minimal()
+```
 
 ## Plot 2b
+```{r}
+#| label: Q1-median
+#| message: false
+
+# Find distinct city and states and only keep numerical data
+distinct_city <- merged_data |>
+  distinct(State, City, .keep_all = TRUE) |>
+  select(Median, White, Black, Native, Asian, Hispanic)
+
+# Generate dataset for geom_smooth
+distinct_city <- distinct_city |> # Find the proportions for each race
+  mutate(
+    Total = rowSums(across(White:Hispanic)),
+    White = White / Total,
+    Black = Black / Total,
+    Native = Native / Total,
+    Asian = Asian / Total,
+    Hispanic = Hispanic / Total
+  ) |> # Pivot data so race and values are columns
+  pivot_longer(
+    cols = c(White, Black, Native, Asian, Hispanic),
+    names_to = "Race",
+    values_to = "Percent"
+  ) |> # Create legend column so that races can have colors later
+  mutate(
+    legend = case_when(
+      Race %in% "White" ~ "White",
+      Race %in% "Black" ~ "Black",
+      TRUE ~ "Other"
+    )
+  )
+
+# Refactor levels for legends order
+distinct_city$legend <- factor(distinct_city$legend,
+                               levels = c("Black", "White", "Other"))
+
+# Generate smooth plot
+ggplot(data = distinct_city,
+       aes(x = Median, y = Percent, group = Race, color = legend)) +
+  geom_smooth(se = F) +
+  scale_color_manual(values = c("red", "blue", "grey")) +
+  scale_x_continuous(labels = label_dollar(scale = 1e-3, suffix = "K")) +
+  scale_y_continuous(labels = percent_format()) +
+  coord_cartesian(xlim = c(35000, 75000)) +
+  labs(title = "City Race Proportions",
+       subtitle = "Over city median income",
+       x = "Median Income of City",
+       y = "Proportion of Population") +
+  guides(color = guide_legend(title = "Race")) +
+  theme_minimal() +
+  theme()
+
+```
+
+## Plot 2c
+```{r}
+#| label: Q1-plot2b
+#| message: false
+
+# Find the race populations
+# White = 135231935, Black = 30170898, Native = 1827873, Asian = 12570851,
+# Hispanic = 51034800
+race_pop <- merged_data |>
+  distinct(State, City, .keep_all = TRUE)
+race_total <- as.data.frame(colSums(race_pop[,5:9]))
+
+# Proportion shot for each race:
+# Asian:0.000182963
+# race_count[1,1]/race_total[4,1] * 100
+# Black: 0.001355611
+# race_count[2,1]/race_total[2,1] * 100
+# Hispanic: 0.0005897936
+# race_count[3,1]/race_total[5,1] * 100
+# Native: 0.0007112093
+# race_count[4,1]/race_total[3,1] * 100
+# White: 0.0003445932
+# race_count[7,1]/race_total[1,1] * 100
+
+# Refactor levels according to the proportions
+merged_data$Race <- factor(merged_data$Race,
+                           levels = c("Unknown",
+                                      "Other",
+                                      "Asian",
+                                      "White",
+                                      "Hispanic",
+                                      "Native American",
+                                      "Black"))
+
+# Generate the density ridge plot (smallest proportion at the bottom)
+ggplot(merged_data, aes(x = Median, y = Race)) +
+  geom_density_ridges() +
+  scale_x_continuous(expand = c(0, 0),
+                    labels = label_dollar(scale = 1e-3, suffix = "K")) +
+  coord_cartesian(clip = "off") +
+  geom_text(aes(x = 125000, y = 3.2, label = "0.0002%")) +
+  geom_text(aes(x = 125000, y = 4.2, label = "0.0003%")) +
+  geom_text(aes(x = 125000, y = 5.2, label = "0.0006%")) +
+  geom_text(aes(x = 125000, y = 6.2, label = "0.0007%")) +
+  geom_text(aes(x = 125000, y = 7.2, label = "0.0014%")) +
+  labs(title = "Density Plots of Police Shootings",
+       subtitle = "Ordered by descending proportion within race") +
+  xlab("Median Income of City") +
+  ylab("Race") +
+  theme_minimal()
+```
 
 ## Insights and Knowledge Inferred {style="font-size: 80%"}
 
