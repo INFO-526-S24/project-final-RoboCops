@@ -43,6 +43,8 @@ pacman::p_load(dplyr,
 ```{r}
 #| label: load-dataset
 #| message: false
+#| warning: FALSE
+#| echo: FALSE
 
 # Load in the datasets
 fatality <- read.csv("data/PoliceKillingsUS.csv", na.strings = "")
@@ -342,7 +344,6 @@ my_table
 Additionally, six .csv files are utilized to provide supplemental demographic data such as poverty levels, percent high school graduates, city and state population, race percentage by city, and median household income.
 
 ```{r}
-
 #| label: census-table
 #| warning: FALSE
 #| echo: FALSE
@@ -489,6 +490,8 @@ poverty_plot
 #| label: Q1-plot2
 #| fig-width: 9
 #| fig-asp: 0.8
+#| warning: FALSE
+#| echo: FALSE
 
 # Plotting for Educational Bracket
 education_plot <- ggplot(analysis_data, aes(x = edu_bracket, fill = threat_level)) +
@@ -642,6 +645,8 @@ ggplot(data = distinct_city,
 ```{r}
 #| label: Q1-plot2b
 #| message: false
+#| warning: FALSE
+#| echo: FALSE
 
 # Find the race populations
 # White = 135231935, Black = 30170898, Native = 1827873, Asian = 12570851,
@@ -708,12 +713,12 @@ The animated plot provides a comprehensive overview of state hotspots throughout
 
 The second animated plot provides a detailed portrayal of major city hotspots throughout 2015, 2016, and 2017. These hotspots are identified using the same "shooting intensity" metric as in the previous plot. This intensity measures fatalities per million people, ensuring a consistent evaluation of cities regardless of their population size. To maintain coherence and comprehensiveness, the visualization retains the depiction of states from the previous plot to provide contextual continuity. Cities are marked using geom_point, and those with a high shooting intensity exceeding 28 are further emphasized using geom_label_repel. This approach effectively highlights cities within states that exhibit significantly higher shooting intensity, contributing to a nuanced understanding of localized dynamics within broader geographical contexts. This layered depiction elucidates the presence of cities with heightened incidents within states with relatively lower overall intensity. The process for creating the plot starts with summarizing fatalities across different years, similar to plot 1. Individual datasets are then created for each year (2015, 2016, and 2017), and shooting intensities are calculated by dividing the fatalities count by the population and multiplying by 1,000,000 to obtain a per million population rate. The use of USA map data is crucial in defining boundaries for the map visualization, bringing the visualization to life.
 
-For the final animated plot
+The final animated heat-map provides a comprehensive portrayal of racial intensity across states from 2015 to 2017, highlighting the disparities and variations in racial dynamics across different regions of the United States. Constructed by amalgamating data on police fatalities categorized by race, state, and year, alongside demographic information on the racial composition of cities and population estimates for each state, the visualization ensures consistency in evaluating racial dynamics across diverse population sizes through the normalization of racial intensity metrics. Each frame of the animation corresponds to a specific year, with states represented along the y-axis and racial groups along the x-axis. Utilizing color gradients, the intensity of each racial group within a state is vividly illustrated, offering insights into the evolving landscape of racial disparities over time. Transition effects between years enhance the interpret ability of temporal trends in racial intensity, enriching the viewer's understanding of how racial dynamics unfold across different states and years. Ultimately, this visualization serves as a powerful tool for fostering informed discussions on racial justice and social equity, providing stakeholders with valuable insights into the complex interplay of factors shaping racial disparities and trends across the United States.
 
 ### Plot 1
 
 ```{r}
-#| label: Q2-plot1-shooting-intensity-state-wise
+#| label: Q2-plot1-state_shooting_intensity
 #| message: false
 #| eval: false
 #| warning: FALSE
@@ -763,7 +768,6 @@ fatality <- data_list[["fatality"]] %>%
   group_by(state, year) %>%
   summarise(fatalities_count = n(), .groups = "drop")
 
-
 # Process state population data
 state_pop_updated <- data_list[["state_pop"]] %>%
   inner_join(state_abbreviations_df) %>%
@@ -779,7 +783,6 @@ state_pop_updated <- data_list[["state_pop"]] %>%
     year = year(complete_year)
   )
 
-
 # Merge fatality summaries with population data
 fatalities_population <- fatality %>%
   inner_join(state_pop_updated, by = c("state", "year")) %>%
@@ -787,7 +790,6 @@ fatalities_population <- fatality %>%
     intensity = (fatalities_count / population) * 1000000,
     region = tolower(STATE)
   )
-
 
 # Function to prepare label data
 prepare_label_data <- function(map_data, fatalities_data) {
@@ -831,6 +833,7 @@ prepare_alaska_map_data <- function(us_map_data) {
 }
 
 
+# Creating a state wise plotting of shooting intensity since we need to add alaska map seperately each year.
 plot_shooting_intensity <- function(fatalities_population, us_map_data, year, label_data) {
   
   # Filter fatalities data for the specific year
@@ -845,6 +848,7 @@ plot_shooting_intensity <- function(fatalities_population, us_map_data, year, la
     label_data$intensity <- label_data$intensity * 1.75
   }
   
+  # Creating Alaska Labels
   alaska_label <- label_data |>
     filter(
       state %in% c("Alaska")
@@ -866,16 +870,16 @@ plot_shooting_intensity <- function(fatalities_population, us_map_data, year, la
     )
 
     
-  # Merge with map data
+  # Merge with map data that can be used for plotting
   merge_data <- full_join(us_map_data, fatalities_population %>% 
                             filter(!(region %in% c("alaska", "hawaii", "rhode island"))))
   
-  # Filter Alaska data
+  # Filter Alaska data to use in alaska map plotting
   alaska_data <- fatalities_population %>% 
     filter(region %in% c("Alaska"))
   
 
-  # Plot map
+  # Ploting the usa map using merged data
   p <- ggplot() +
     geom_polygon(data = merge_data,
                  aes(x = long, y = lat, group = group, fill = intensity),
@@ -890,6 +894,7 @@ plot_shooting_intensity <- function(fatalities_population, us_map_data, year, la
   # Add Alaska data if available
   if (!is.null(alaska_data)) {
     
+    # Creating another plot using alaska data
     p1 <- ggplot() + geom_polygon(data = prepare_alaska_map_data(us_map_data),
                           aes(x = long, y = lat, group = group),
                           fill = "#e69e91", color = "white", linewidth = 0.2) +
@@ -900,7 +905,7 @@ plot_shooting_intensity <- function(fatalities_population, us_map_data, year, la
       theme_void() +
       theme(legend.position = "none") 
     
-    # Add custom annotation if provided
+    # Add alaska plot at the bottom to usa map
     p <- p + annotation_custom(ggplotGrob(p1), xmin = -130, xmax = -70, ymin = 0, ymax = 40) +
       labs(title = paste("Shooting Intensity by State :", year),
            subtitle = "Per Million of Population",
@@ -932,13 +937,13 @@ plot_shooting_intensity <- function(fatalities_population, us_map_data, year, la
   return(p)
 }
 
-
+# loading usa map
 us_map_data <- map_data("state")
 
 # Prepare label data
 label_data <- prepare_label_data(us_map_data, fatalities_population)
 
-# Plot shooting intensity for 2015
+# Plot state shooting intensity for 2015  and adding specific  annotation
 plot_2015_map <- 
   plot_shooting_intensity(fatalities_population, us_map_data, 2015, label_data) + 
   annotate(
@@ -955,6 +960,7 @@ plot_2015_map <-
     vjust = 0
   ) 
 
+# Plot state shooting intensity for 2016  and adding specific  annotation
 plot_2016_map <- 
   plot_shooting_intensity(fatalities_population, us_map_data, 2016, label_data) + 
   annotate(
@@ -971,6 +977,7 @@ plot_2016_map <-
     vjust = 0
   ) 
 
+# Plot state shooting intensity for 2017  and adding specific  annotation
 plot_2017_map <- 
   plot_shooting_intensity(fatalities_population, us_map_data, 2017, label_data) +
   annotate(
@@ -988,14 +995,14 @@ plot_2017_map <-
   ) 
 
 
-
+# Animating the three plots created above
 animation::saveGIF(
   expr = {
     plot(plot_2015_map)
     plot(plot_2016_map)
     plot(plot_2017_map)
   },
-  movie.name = "shooting_intensity.gif",
+  movie.name = "images/shooting_intensity.gif",
   interval = 4,
   ani.width = 1200,
   ani.height = 700,
@@ -1016,7 +1023,7 @@ animation::saveGIF(
 ### Plot 2
 
 ```{r}
-#| label: Q2-plot2
+#| label: Q2-plot2-city_shooting_intensity
 #| message: false
 #| eval: false
 #| warning: FALSE
@@ -1044,7 +1051,8 @@ city_fatalities_population <- inner_join(city_fatality_summaries_year, data_list
     region = tolower(State)
   )
 
-
+# Creating a city wise plotting of shooting intensity since we need to add Alaska map separately each year
+# This code uses the earlier state wise heat intensity
 plot_shooting_intensity_city <- function(fatalities_population, us_map_data, year, city_population_data) {
   
   # Filter fatalities data for the specific year
@@ -1112,7 +1120,7 @@ plot_shooting_intensity_city <- function(fatalities_population, us_map_data, yea
   return(p)
 }
 
-
+# loading usa map
 us_map_data <- map_data("state")
 
 # Plot shooting intensity for 2015 for city
@@ -1121,12 +1129,13 @@ map_2015_city <- plot_shooting_intensity_city(fatalities_population, us_map_data
 # Plot shooting intensity for 2016 for city
 map_2016_city <- plot_shooting_intensity_city(fatalities_population, us_map_data, 2016, city_fatalities_population) 
 
+# Animating the two plots created above
 animation::saveGIF(
   expr = {
     plot(map_2015_city)
     plot(map_2016_city)
   },
-  movie.name = "shooting_intensity_city.gif",
+  movie.name = "images/shooting_intensity_city.gif",
   interval = 4,
   ani.width = 1200,
   ani.height = 700,
@@ -1139,7 +1148,6 @@ animation::saveGIF(
   ani.bg = "white",
   ani.fps = 3
 )
-
 
 ```
 
@@ -1439,3 +1447,14 @@ Overall, the visualization illustrates the variation in shooting intensity acros
 This map visualizes police shootings' intensity and resulting fatalities in major cities across the United States for the years 2015, 2016, and 2017, measured per million of the population. Each dot on the map represents shootings in different cities. Larger dots indicate cities with higher shooting intensities, while smaller dots represent cities with lower shooting intensities. States are also color-coded based on their shooting intensity, with lighter shades for lower intensity and darker shades for higher intensity.
 
 The labels on the map specifically highlight cities with shooting intensities exceeding 28 for that particular year. Notably, Chicago and Los Angeles are consistently among the cities with shootings exceeding this intensity threshold in two out of the three years, indicating their ongoing significance in this regard.
+
+#### Plot 3
+
+In delving into the heatmap portraying state-wise shootings concerning racial demographics, a nuanced narrative unfolds. While initial assessments may suggest a predominant number of fatalities among the white population, a more comprehensive analysis of shooting intensity over the course of three years reveals a contrasting pattern. Notably, black and Native American communities consistently demonstrate significantly higher levels of shooting intensity across the observed timeframe. Conversely, both the white and Hispanic populations tend to experience relatively lower shooting intensity in comparison. The Asian demographic similarly exhibits lower shooting intensity overall, with the notable exception of South Dakota in the year 2017. 
+
+While refraining from definitive assertions regarding potential police bias towards specific racial groups, it becomes apparent that the intensity of shootings is notably elevated within black and Native American communities throughout the duration of the study period.
+
+
+#### Discussion Summary
+
+The analyses of hotspot states, hotspot cities, and racial distribution provide multifaceted insights into the intersection of incidents of police use of force across diverse geographic areas. The first plot scrutinizes shooting intensity across all 50 states from 2015 to 2017, revealing dynamic shifts in intensity levels and highlighting consistent top-performing states. In contrast, the second plot zooms into major cities, emphasizing variations in shooting intensity and underscoring the ongoing significance of certain urban centers. Lastly, the third plot delves into the racial dynamics of police shootings, unveiling disparities in shooting intensity across racial demographics. Together, these analyses offer a comprehensive understanding of how incidents of police use of force manifest across different geographical scales, shedding light on localized dynamics and contributing to broader discussions on social equity and justice.
