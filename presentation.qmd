@@ -3,7 +3,7 @@ title: "Analysis and Visualization of Police Shootings in the United States"
 subtitle: "INFO 526 - Spring 2024 - Project Final"
 author: "Peter Yeh, Sachin Pandurang Patil, Arun Koundinya Parasa, Surajit Pal, Christian Ortmann, Valérie Naa Dei Okine"
 title-slide-attributes:
-  data-background-image: images/slidebackground.jpeg
+  data-background-image: images/skyline_pic.jpg
   data-background-size: stretch
   data-background-opacity: "0.5"
   data-slide-number: none
