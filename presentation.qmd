@@ -463,13 +463,13 @@ education_plot
 
 ## Insights and Knowledge Inferred {style="font-size: 80%"}
 
-- Cities with over 75% high school graduates and poverty levels between 18-25% experience the highest number of shootings, predominantly with a threat level categorized as "Attack."
+-   Cities with over 75% high school graduates and poverty levels between 18-25% experience the highest number of shootings, predominantly with a threat level categorized as "Attack."
 
-- Most shootings across the board are recorded with a threat level of "Attack" or "Other," with only a few incidents left undetermined, indicating that officers generally report a justification for using their weapon.
+-   Most shootings across the board are recorded with a threat level of "Attack" or "Other," with only a few incidents left undetermined, indicating that officers generally report a justification for using their weapon.
 
-- The correlation between higher shootings and areas with more educated populations alongside a notable poverty rate might be influenced by large urban areas like New York City and Chicago, which have significant population densities and economic disparities.
+-   The correlation between higher shootings and areas with more educated populations alongside a notable poverty rate might be influenced by large urban areas like New York City and Chicago, which have significant population densities and economic disparities.
 
-- Areas with lower percentages of high school graduates appear to be exceptions within the overall dataset, possibly acting as outliers.
+-   Areas with lower percentages of high school graduates appear to be exceptions within the overall dataset, possibly acting as outliers.
 
 <!--------------------------------------------------------------->
 
@@ -673,7 +673,7 @@ In what ways do the analyses of hotspot states, hotspot cities, and racial distr
 
 -   Identifies regions and major urban areas with heightened police incidents using the shooting intensity metric, providing a nuanced understanding of localized dynamics.
 -   Utilizes shooting intensity per million people to highlight states and cities with high incidents.
--   Incorporates customer annotation techniques to ensure clarity and comprehensive representation, including strategic labeling for Alaska on the maps.
+-   Incorporates custom annotation techniques to ensure clarity and comprehensive representation, including strategic labeling for Alaska on the maps.
 
 **Racial Intensity Heatmap**:
 
@@ -1363,7 +1363,7 @@ long_data <- long_data |>
 long_data <- long_data |>
   mutate(Year = as.character(Year))
 
-# Animation for Plot_racial_intesity 
+# Animation for Heatmap_racial_intesity 
 animated_heatmap <- ggplot(long_data,
                            aes(x = str_to_title(racial_group),
                                y = state,
