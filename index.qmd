@@ -14,7 +14,6 @@ format:
 editor: visual
 execute:
   warning: false
-  echo: false
 ---
 
 ```{r}
@@ -34,9 +33,10 @@ pacman::p_load(dplyr,
                plotly,
                maps,
                ggrepel,
-               animation, 
+               animation,
+               gganimate,
+               utiles,
                RColorBrewer)
-
 ```
 
 ```{r}
@@ -156,7 +156,7 @@ state_pop <- state_pop |>
 colnames(state_pop) <- c("State", colnames(state_pop[-1]))
 
 # Select State and 2015 column
-state_pop <- state_pop[, c("State", "POPESTIMATE2015")]
+state_pop_2015 <- state_pop[, c("State", "POPESTIMATE2015")]
 
 # City population modify state
 city_pop <- city_pop |>
@@ -218,7 +218,7 @@ city_pop <- city_pop |>
   )
 
 # Filter city population by 2015
-city_pop <- city_pop[which(city_pop$year == 2015),]
+city_pop_2015 <- city_pop[which(city_pop$year == 2015),]
 
 # Concatenate supplementary datasets
 supp_data <- left_join(hs_perc, median_income,
@@ -247,34 +247,8 @@ supp_data$City <- gsub(" town", "", supp_data$City)
 supp_data$City <- gsub(" CDP", "", supp_data$City)
 
 # Merge supplementary data and state population data
-supp_data <- left_join(supp_data, city_pop,
+supp_data <- left_join(supp_data, city_pop_2015,
                        by = c("State", "City"))
-
-# # First, explicitly convert the encoding of city names to UTF-8
-
-# 
-# # Define a function to safely apply gsub and catch errors
-# safe_gsub <- function(pattern, replacement, x) {
-#   tryCatch({
-#     gsub(pattern, replacement, x, perl = TRUE)
-#   }, error = function(e) {
-#     message("Error with input: ", x)
-#     x # Return original string on error
-#   })
-# }
-# 
-# #safe_gsub
-# 
-# # Apply the safe_gsub function to remove " city", " town", and " CDP"
-# supp_data$City <- sapply(supp_data$City, function(x) safe_gsub(" city", "", x))
-# supp_data$City <- sapply(supp_data$City, function(x) safe_gsub(" town", "", x))
-# supp_data$City <- sapply(supp_data$City, function(x) safe_gsub(" CDP", "", x))
-# 
-# # Merge supplementary data and state population data
-# supp_data <- left_join(supp_data, city_pop,
-#                        by = c("State", "City"))
-
-
 ```
 
 ## Abstract
@@ -399,7 +373,6 @@ row.names(census_table) <- seq(1:6)
 # Generate a nice table with kable
 my_table <- kable(census_table, "html") %>%
   kable_styling(full_width = FALSE)
-
 my_table
 
 ```
@@ -408,7 +381,7 @@ By incorporating these additional factors, correlations and patterns can be unco
 
 ## Question 1
 
-1.  How do socioeconomic factors such as median income, poverty rates, and educational relate with incidents of police use of force across different geographic areas?
+1.  How do socioeconomic factors such as median income, poverty rates, and education relate with incidents of police use of force?
 
 ### Description of Analysis
 
@@ -425,21 +398,8 @@ The second density ridge plot, which is organized by the race's relative proport
 #| fig-width: 9
 #| fig-asp: 0.8
 
-#glimpse(fatality)
-#glimpse(median_income)
-#glimpse(poverty_perc)
-#glimpse(hs_perc)
-#glimpse(race_perc)
-#glimpse(city_pop)
-#glimpse(state_pop)
-
-
-#supp_data
-
+# supp_data
 supp_data <- na.omit(supp_data)
-
-#glimpse(supp_data)
-
 
 # Ensure the column names are correctly formatted before merging
 fatality$city <- as.character(fatality$city)
@@ -448,7 +408,10 @@ supp_data$City <- as.character(supp_data$City)
 supp_data$State <- as.character(supp_data$State)
 
 # Merge the main fatality data with the supplementary socio-economic data
-analysis_data <- merge(fatality, supp_data, by.x = c("city", "state"), by.y = c("City", "State"))
+analysis_data <- merge(fatality,
+                       supp_data,
+                       by.x = c("city", "state"),
+                       by.y = c("City", "State"))
 
 # Convert Poverty from character to numeric to handle in quantile calculation
 analysis_data$Poverty <- as.numeric(as.character(analysis_data$Poverty))
@@ -457,8 +420,6 @@ analysis_data$Poverty <- as.numeric(as.character(analysis_data$Poverty))
 if (any(is.na(analysis_data$Poverty))) {
   analysis_data$Poverty[is.na(analysis_data$Poverty)] <- median(analysis_data$Poverty, na.rm = TRUE)
 }
-
-#glimpse(analysis_data)
 
 # Ensure Poverty is numeric
 analysis_data$Poverty <- as.numeric(as.character(analysis_data$Poverty))
@@ -508,7 +469,7 @@ poverty_plot  <- ggplot(analysis_data, aes(x = poverty_bracket, fill = threat_le
   scale_fill_brewer(palette = 'Set3') + 
   theme_minimal() +
   labs(title = "Distribution of Threat Levels by Poverty Bracket",
-       x = "Percentage of Population in Poverty Line",
+       x = "Percentage of Population Below Poverty Line",
        y = "Count of Incidents",
        fill = "Threat Level") + 
   theme(legend.position = 'right')  # Adjusted theme settings here
@@ -527,22 +488,14 @@ education_plot <- ggplot(analysis_data, aes(x = edu_bracket, fill = threat_level
   geom_bar(position = "identity", width = 0.5) +
   scale_fill_brewer(palette = 'Set3') + 
   theme_minimal() +
-  labs(title = "Distribution of Threat Levels by High School Degree Bracket",
-       x = "Percentage of Population having High School Degree",
+  labs(title = "Distribution of Threat Levels by High School Pass Rate",
+       x = "Percentage of Population with High School Degree",
        y = "Count of Incidents",
        fill = "Threat Level") + 
   theme(legend.position = 'right')  # Adjusted theme settings here
 
 education_plot
 
-
-# # Combine the plots with a single shared legend on the right
-# combined_plot <- poverty_plot / education_plot + 
-#   plot_layout(guides = 'collect') + # Collects and deduplicates the guides
-#   theme(legend.position = 'right') # Moves the legend to the right
-# 
-# # Print the combined plot
-# print(combined_plot)
 ```
 
 ### Plot 2a
@@ -782,7 +735,6 @@ state_abbreviations <- c(
 
 state_abbreviations_df <- data.frame(STATE = names(state_abbreviations), state = state_abbreviations, row.names = NULL)
 
-
 # Creating Fatalaties Summaries by Year
 fatality_summaries_year <-
   fatality |> 
@@ -825,42 +777,39 @@ state_pop_updated <-
 # Merging Fatalaties Summaries by Year with State Population
 fatalities_population <- merge(fatality_summaries_year,state_pop_updated)
 
-
 # Creating an individual fatalaties population wise dataset along with shooting intensity column - Year wise
-fatalities_population |>
+fatalities_population_2015 <- fatalities_population |>
   mutate(
     intensity = (fatalities_count/popuplation)*1000000,
     region = tolower(STATE)
   ) |>
   filter(
     year == 2015
-  ) -> fatalities_population_2015
+  )
 
-fatalities_population |>
+fatalities_population_2016 <- fatalities_population |>
   mutate(
     intensity = (fatalities_count/popuplation)*1000000,
     region = tolower(STATE)
   ) |>
   filter(
     year == 2016
-  ) -> fatalities_population_2016
+  )
 
-fatalities_population |>
+fatalities_population_2017 <- fatalities_population |>
   mutate(
     intensity = (fatalities_count/popuplation)*1000000,
     region = tolower(STATE)
   ) |>
   filter(
     year == 2017
-  ) -> fatalities_population_2017
+  )
 
 # Loading USA MAP
 us_map_data <- map_data("state")
 
-
 # Loading World Map and Subsetting Alaska
-alaska <-
-  map_data("world") |>
+alaska <- map_data("world") |>
   filter(
     region == "USA" & (subregion == "Alaska" ) 
   ) |>
@@ -873,16 +822,25 @@ alaska <-
   )
 
 # Creating Year Wise Map data frame from the fatalies dataset 
-merge_2015_us <- full_join(us_map_data,subset(fatalities_population_2015,!(fatalities_population_2015$region=="alaska" |
-                                                                      fatalities_population_2015$region=="hawaii")))
+merge_2015_us <- full_join(us_map_data,
+                           subset(fatalities_population_2015,
+                                  !(fatalities_population_2015$region=="alaska" |
+                                      fatalities_population_2015$region=="hawaii")))
+
 merge_2015_alaska <- inner_join(alaska,fatalities_population_2015)
 
-merge_2016_us <- full_join(us_map_data,subset(fatalities_population_2016,!(fatalities_population_2016$region=="alaska" |
-                                                                             fatalities_population_2016$region=="hawaii")))
+merge_2016_us <- full_join(us_map_data,
+                           subset(fatalities_population_2016,
+                                  !(fatalities_population_2016$region=="alaska" |
+                                      fatalities_population_2016$region=="hawaii")))
+
 merge_2016_alaska <- inner_join(alaska,fatalities_population_2016)
 
-merge_2017_us <- full_join(us_map_data,subset(fatalities_population_2017,!(fatalities_population_2017$region=="alaska" |
-                                                                             fatalities_population_2017$region=="hawaii")))
+merge_2017_us <- full_join(us_map_data,
+                           subset(fatalities_population_2017,
+                                  !(fatalities_population_2017$region=="alaska" |
+                                      fatalities_population_2017$region=="hawaii")))
+
 merge_2017_alaska <- inner_join(alaska,fatalities_population_2017)
 
 # Creating District of Columbia Lat Long Manually
@@ -891,11 +849,10 @@ dc_row <- data.frame(long = -77.0369,  # Longitude for Washington, D.C.
                      state = "District of Columbia",
                      region = tolower("District of Columbia"))
 
-
-
 # Creating Labels data frame to map the labels at the centre of each state with state name and intensity
 
-label_data <- data.frame(long = state.center$x, lat = state.center$y,
+label_data <- data.frame(long = state.center$x,
+                         lat = state.center$y,
                          state = state.name) |>
   mutate(
     region = tolower(state)
@@ -949,8 +906,7 @@ label_data <-label_data |>
 label_data$STATE[label_data$region=="rhode island"] <- "Rhode Island"
 
 ## Creating 2015 Shooting Intensity plot for Alaska which will be annotated in usa map
-
-ggplot() +
+plot <- ggplot() +
   geom_polygon(data = merge_2015_alaska,
                aes(x = long, y = lat,group=group), fill = "#e69e91",
                color = "white", linewidth = 0.2) +
@@ -958,10 +914,10 @@ ggplot() +
   geom_label_repel(data = alaska_label, aes(x = long, y = lat, label = paste(STATE,":\n",round(intensity_2015,1))), size = 20) +
   theme_void() +
   theme(legend.position = "none") + 
-  coord_cartesian(xlim = c(-180, 0), ylim = c(0, 90)) -> plot1
+  coord_cartesian(xlim = c(-180, 0), ylim = c(0, 90))
 
 ## Creating 2015 Shooting Intensity plot for USA 
-ggplot() +
+ plot_2015_map <- ggplot() +
   geom_polygon(data = merge_2015_us,
            aes(x = long, y = lat, group = group, fill = intensity),
            color = "white", linewidth = 0.2) +
@@ -1009,12 +965,10 @@ ggplot() +
     fontface = "italic",
     color = "#a50f15",
     vjust = 0
-  ) -> plot_2015_map
-
-
+  )
 
 ## Creating 2016 Shooting Intensity plot for Alaska which will be annotated in usa map
-ggplot() +
+plot2 <- ggplot() +
   geom_polygon(data = merge_2016_alaska,
                aes(x = long, y = lat,group=group), fill = "#a50f15",
                color = "white", size = 0.2) +
@@ -1022,11 +976,11 @@ ggplot() +
   geom_label_repel(data = alaska_label, aes(x = long, y = lat, label = paste(STATE,":\n",round(intensity_2016,1))), size = 20) +
   theme_void() +
   theme(legend.position = "none") + 
-  coord_cartesian(xlim = c(-180, 0), ylim = c(0, 90)) -> plot2
+  coord_cartesian(xlim = c(-180, 0), ylim = c(0, 90))
 
 
 ## Creating 2016 Shooting Intensity plot for USA 
-ggplot() +
+plot_2016_map <- ggplot() +
   geom_polygon(data = merge_2016_us,
                aes(x = long, y = lat, group = group, fill = intensity),
                color = "white", size = 0.2) +
@@ -1074,14 +1028,10 @@ ggplot() +
     fontface = "italic",
     color = "#a50f15",
     vjust = 0
-  ) -> plot_2016_map
-
-
-
+  )
 
 ## Creating 2017 Shooting Intensity plot for Alaska which will be annotated in usa map
-
-ggplot() +
+plot3 <- ggplot() +
   geom_polygon(data = merge_2017_alaska,
                aes(x = long, y = lat,group=group), fill = "#a50f15",
                color = "white", size = 0.2) +
@@ -1089,11 +1039,10 @@ ggplot() +
   geom_label_repel(data = alaska_label, aes(x = long, y = lat, label = paste(STATE,":\n",round(intensity_2017_up,1))), size = 20) +
   theme_void() +
   theme(legend.position = "none") + 
-  coord_cartesian(xlim = c(-180, 0), ylim = c(0, 90)) -> plot3
+  coord_cartesian(xlim = c(-180, 0), ylim = c(0, 90))
 
 ## Creating 2017 Shooting Intensity plot for USA 
-
-ggplot() +
+plot_2017_map <- ggplot() +
   geom_polygon(data = merge_2017_us,
                aes(x = long, y = lat, group = group, fill = intensity),
                color = "white", size = 0.2) +
@@ -1142,7 +1091,7 @@ ggplot() +
     fontface = "italic",
     color = "#a50f15",
     vjust = 0
-  ) -> plot_2017_map
+  )
 
 # Creating an animation for above map plots with better resolution
 animation::saveGIF(
@@ -1176,12 +1125,6 @@ animation::saveGIF(
 #| message: false
 #| eval: false
 
-
-fatality <- read.csv("data/PoliceKillingsUS.csv", na.strings = "")
-median_income <- read.csv("data/MedianHouseholdIncome2015.csv")
-poverty_perc <- read.csv("data/PercentagePeopleBelowPovertyLevel.csv")
-hs_perc <- read.csv("data/PercentOver25CompletedHighSchool.csv")
-race_perc <- read.csv("data/ShareRaceByCity.csv")
 city_pop <- read.csv("data/us-cities-top-1k-multi-year.csv")
 state_pop <- read.csv("data/Population_Estimate_data_Statewise_2010-2023.csv")
 
@@ -1200,8 +1143,9 @@ state_abbreviations <- c(
   "West Virginia" = "WV", "Wisconsin" = "WI", "Wyoming" = "WY", "Puerto Rico" = "PR"
 )
 
-state_abbreviations_df <- data.frame(STATE = names(state_abbreviations), state = state_abbreviations, row.names = NULL)
-
+state_abbreviations_df <- data.frame(STATE = names(state_abbreviations),
+                                     state = state_abbreviations,
+                                     row.names = NULL)
 
 fatality_summaries_year <-
   fatality |> 
@@ -1240,27 +1184,30 @@ state_pop_updated <-
 
 fatalities_population <- merge(fatality_summaries_year,state_pop_updated)
 
-
-
-city_fatality_summaries_year <-
-  fatality |> 
+city_fatality_summaries_year <- fatality |> 
   mutate(
     year = year(as.Date(fatality$date,format = "%d/%m/%y"))
   ) |>
   group_by(state,city,year) |>
   summarise(fatalities_count = n() , .groups = "drop")
 
-city_fatality_summaries_year1 <- subset(city_fatality_summaries_year, city_fatality_summaries_year$year == 2015)
+city_fatality_summaries_year1 <- subset(city_fatality_summaries_year,
+                                        city_fatality_summaries_year$year == 2015)
 
-city_fatality_summaries_year2 <- subset(city_fatality_summaries_year, city_fatality_summaries_year$year == 2016)
+city_fatality_summaries_year2 <- subset(city_fatality_summaries_year,
+                                        city_fatality_summaries_year$year == 2016)
 
-fatality_summaries_year <- rbind(city_fatality_summaries_year1,city_fatality_summaries_year2)
+fatality_summaries_year <- rbind(city_fatality_summaries_year1,
+                                 city_fatality_summaries_year2)
 
 rm(city_fatality_summaries_year1,city_fatality_summaries_year2)
 
-city_fatalities_population <- merge(city_fatality_summaries_year,city_pop,by.x = c("city","year"),by.y = c("City","year"))
+city_fatalities_population <- merge(city_fatality_summaries_year,
+                                    city_pop,
+                                    by.x = c("city","year"),
+                                    by.y = c("City","year"))
 
-city_fatalities_population |>
+city_fatalities_population_2015 <- city_fatalities_population |>
   mutate(
     intensity = (fatalities_count/Population)*1000000,
     region = tolower(State)
@@ -1270,9 +1217,9 @@ city_fatalities_population |>
     lon > -150
   ) |>
   arrange(desc(intensity)) |> 
-  distinct(city, .keep_all = TRUE) -> city_fatalities_population_2015
+  distinct(city, .keep_all = TRUE)
 
-city_fatalities_population |>
+city_fatalities_population_2016 <- city_fatalities_population |>
   mutate(
     intensity = (fatalities_count/Population)*1000000,
     region = tolower(State)
@@ -1281,30 +1228,27 @@ city_fatalities_population |>
     year == 2016
   ) |> 
   arrange(desc(intensity)) |> 
-  distinct(city, .keep_all = TRUE) -> city_fatalities_population_2016
+  distinct(city, .keep_all = TRUE)
 
-fatalities_population |>
+fatalities_population_2015 <- fatalities_population |>
   mutate(
     intensity = (fatalities_count/popuplation)*1000000,
     region = tolower(STATE)
   ) |>
   filter(
     year == 2015
-  ) -> fatalities_population_2015
+  )
 
-fatalities_population |>
+fatalities_population_2016 <- fatalities_population |>
   mutate(
     intensity = (fatalities_count/popuplation)*1000000,
     region = tolower(STATE)
   ) |>
   filter(
     year == 2016
-  ) -> fatalities_population_2016
-
+  )
 
 us_map_data <- map_data("state")
-
-
 
 alaska <-
   map_data("world") |>
@@ -1319,17 +1263,20 @@ alaska <-
     long < 0
   )
 
-
-merge_2015_us <- full_join(us_map_data,subset(fatalities_population_2015,!(fatalities_population_2015$region=="alaska" |
-                                                                             fatalities_population_2015$region=="hawaii")))
+merge_2015_us <- full_join(us_map_data,
+                           subset(fatalities_population_2015,
+                                  !(fatalities_population_2015$region=="alaska" |
+                                      fatalities_population_2015$region=="hawaii")))
 merge_2015_alaska <- inner_join(alaska,fatalities_population_2015)
 
-merge_2016_us <- full_join(us_map_data,subset(fatalities_population_2016,!(fatalities_population_2016$region=="alaska" |
-                                                                             fatalities_population_2016$region=="hawaii")))
+merge_2016_us <- full_join(us_map_data,
+                           subset(fatalities_population_2016,
+                                  !(fatalities_population_2016$region=="alaska" |
+                                      fatalities_population_2016$region=="hawaii")))
 merge_2016_alaska <- inner_join(alaska,fatalities_population_2016)
 
 
-ggplot() +
+plot1_city <- ggplot() +
   geom_polygon(data = merge_2015_alaska,
                aes(x = long, y = lat,group=group), fill = "#e69e91",
                color = "white", size = 0.2) +
@@ -1337,9 +1284,9 @@ ggplot() +
   theme_void() +
   theme(legend.position = "none") + 
   coord_cartesian(xlim = c(-180, 0), ylim = c(0, 90)) +
-  geom_point(data = subset(city_fatalities_population_2015,city_fatalities_population_2015$region=="alaska"),aes(x = lon,y=lat), color = "darkred")-> plot1_city
+  geom_point(data = subset(city_fatalities_population_2015,city_fatalities_population_2015$region=="alaska"),aes(x = lon,y=lat), color = "darkred")
 
-ggplot() +
+map_2015_city <- ggplot() +
   geom_polygon(data = merge_2015_us,
                aes(x = long, y = lat, group = group, fill = intensity),
                color = "white", size = 0.2) +
@@ -1370,12 +1317,9 @@ ggplot() +
     plot.title = element_text(hjust = 0.5, size = 16, face = "bold"),
     plot.subtitle = element_text(hjust = 0.5, size = 12),
     plot.caption = element_text(size = 10)
-  ) -> map_2015_city
+  )
   
-
-
-
-ggplot() +
+plot2_city <- ggplot() +
   geom_polygon(data = merge_2016_alaska,
                aes(x = long, y = lat,group=group), fill = "#e69e91",
                color = "white", size = 0.2) +
@@ -1383,9 +1327,9 @@ ggplot() +
   theme_void() +
   theme(legend.position = "none") + 
   coord_cartesian(xlim = c(-180, 0), ylim = c(0, 90)) +
-  geom_point(data = subset(city_fatalities_population_2016,city_fatalities_population_2016$region=="alaska"),aes(x = lon,y=lat), color = "darkred")-> plot2_city
+  geom_point(data = subset(city_fatalities_population_2016,city_fatalities_population_2016$region=="alaska"),aes(x = lon,y=lat), color = "darkred")
 
-ggplot() +
+map_2016_city <- ggplot() +
   geom_polygon(data = merge_2016_us,
                aes(x = long, y = lat, group = group, fill = intensity),
                color = "white", size = 0.2) +
@@ -1399,8 +1343,6 @@ ggplot() +
                    aes(x = lon, y = lat, label = paste(city,"\n",round(intensity,1))), 
                    #color = "#56007C",
                    color = "#000000",
-                   #nudge_x = ifelse(city_fatalities_population_2016$city == "Oakland", -2, -0.5),
-                   #nudge_y = ifelse(city_fatalities_population_2016$city == "Oakland", -1, -0.5),
                    size = 3.5, 
                    fill = "transparent") +
   guides(size = guide_legend(override.aes = list(fill = "transparent"))) + 
@@ -1411,15 +1353,11 @@ ggplot() +
   ) +
   theme(
     legend.text = element_text(size = 9, color = "black"), 
-    #legend.key.size = unit(4, "cm"),
     legend.title = element_text(size = 12),
     plot.title = element_text(hjust = 0.5, size = 16, face = "bold"),
     plot.subtitle = element_text(hjust = 0.5, size = 12),
     plot.caption = element_text(size = 10)
-  ) -> map_2016_city
-
-
-library(animation)
+  )
 
 # explicit
 animation::saveGIF(
@@ -1441,11 +1379,6 @@ animation::saveGIF(
   ani.fps = 3
 )
 
-
-
-
-  
-
 ```
 
 ![](images/shooting_intensity_city.gif){fig-align="center"}
@@ -1457,44 +1390,30 @@ animation::saveGIF(
 #| message: false
 #| eval: false
 
-library(dplyr)
-library(tidyr)
-library(ggplot2)
-library(gganimate)
-library(utils)
-library(dplyr)
-library(tidyr)
-library(tidyr)
-library(stringr)
-
-
-fatality <- read.csv("data/PoliceKillingsUS.csv", na.strings = "")
-race_perc <- read.csv("data/ShareRaceByCity.csv")
 state_pop <- read.csv("data/Population_Estimate_data_Statewise_2010-2023.csv")
 fatality$year <- format(as.Date(fatality$date, format = "%d/%m/%y"), "%Y")
 
 # Group by year, state, and race, then count occurrences
-race_count <- fatality %>%
-  group_by(year, state, race) %>%
-  summarise(count = n()) %>%
+race_count <- fatality |>
+  group_by(year, state, race) |>
+  summarise(count = n()) |>
   ungroup()
 
 # Spread the 'race' column to create individual columns for each race
-race_count <- race_count %>%
+race_count <- race_count |>
   spread(key = race, value = count, fill = 0)
 
 # Add a column for the total count of races in each state and year
-race_count <- race_count %>%
+race_count <- race_count |>
   mutate(Total = rowSums(select(., -c(year, state)), na.rm = TRUE))
 
 # Arrange the data by year and state
-race_count <- race_count %>%
+race_count <- race_count |>
   arrange(year, state)
-
-
 race_perc <- read.csv("data/ShareRaceByCity.csv")
+
 # Remove the 'City' column from race_perc dataframe
-race_perc <- race_perc %>%
+race_perc <- race_perc |>
   select(-City)
 
 # Convert columns to numeric
@@ -1507,10 +1426,9 @@ race_perc$share_hispanic <- as.numeric(race_perc$share_hispanic)
 # Add a column for the sum of all race percentages
 race_perc$sum_race_percentages <- rowSums(race_perc[, c("share_white", "share_black", "share_native_american", "share_asian", "share_hispanic")])
 
-
 # Assuming race_perc is already loaded as a dataframe
-race_perc <- race_perc %>%
-  group_by(Geographic.area) %>%
+race_perc <- race_perc |>
+  group_by(Geographic.area) |>
   summarise(
     share_white = mean(share_white, na.rm = TRUE),
     share_black = mean(share_black, na.rm = TRUE),
@@ -1520,10 +1438,8 @@ race_perc <- race_perc %>%
     sum_race_percentages=mean(sum_race_percentages,na.rm = TRUE)
   )
 
-# View(race_perc)
-
 # Normalize race percentages
-race_perc <- race_perc %>%
+race_perc <- race_perc |>
   mutate(
     share_white = share_white / sum_race_percentages,
     share_black = share_black / sum_race_percentages,
@@ -1534,40 +1450,29 @@ race_perc <- race_perc %>%
 
 # Recalculate sum_race_percentages
 race_perc$sum_race_percentages <- rowSums(select(race_perc, starts_with("share_")))
- 
-# View(race_perc)
 
 # Selecting desired columns from state_pop
-state_pop_subset <- state_pop[, c("STATE", "POPESTIMATE2015", "POPESTIMATE2016", "POPESTIMATE2017")]
-
-# # View the structure of the new dataframe
-# str(state_pop_subset)
-# 
-# # View the first few rows of the new dataframe
-# head(state_pop_subset)
+state_pop_subset <- state_pop[, c("STATE",
+                                  "POPESTIMATE2015",
+                                  "POPESTIMATE2016",
+                                  "POPESTIMATE2017")]
 
 # Reshape the dataframe to have Year, State, and Population columns
-state_pop_long <- state_pop_subset %>%
+state_pop_long <- state_pop_subset |>
   pivot_longer(cols = c("POPESTIMATE2015", "POPESTIMATE2016", "POPESTIMATE2017"),
                names_to = "Year",
                values_to = "Population")
 
 # Remove "POPESTIMATE" from the Year column
-state_pop_long <- state_pop_long %>%
+state_pop_long <- state_pop_long |>
   mutate(Year = str_remove(Year, "POPESTIMATE"))
 
 # Convert Year column to numeric for sorting
 state_pop_long$Year <- as.numeric(state_pop_long$Year)
 
 # Sort the dataframe by Year in ascending order
-state_pop_long <- state_pop_long %>%
+state_pop_long <- state_pop_long |>
   arrange(Year)
-
-# View the sorted dataframe
-# str(state_pop_long)
-# View(state_pop_long)
-
-
 
 # Define a mapping of state names to state codes
 state_mapping <- c(
@@ -1590,27 +1495,16 @@ state_mapping <- c(
 state_pop_long <- mutate(state_pop_long, STATE_CODE = state_mapping[STATE])
 
 # Rearrange columns with STATE CODE after STATE
-state_pop_long <- state_pop_long %>%
+state_pop_long <- state_pop_long |>
   select(STATE, STATE_CODE, everything())
-
-# View the updated dataframe
-
-# View(state_pop_long)
-
-# str(race_perc)
-
 
 # Merge race_perc and state_pop_long dataframes based on state information
 merged_data <- merge(race_perc, state_pop_long, by.x = "Geographic.area", by.y = "STATE_CODE")
-# 
+
 # Convert race percentage columns to numeric
 percentage_cols <- c("share_white", "share_black", "share_native_american", "share_asian", "share_hispanic")
 merged_data[percentage_cols] <- lapply(merged_data[percentage_cols], as.numeric)
-
-# View(merged_data)
-
-
-merged_data <- merged_data %>%
+merged_data <- merged_data |>
   mutate(
     white_population = share_white * Population,
     black_population = share_black * Population,
@@ -1619,29 +1513,20 @@ merged_data <- merged_data %>%
     hispanic_population = share_hispanic * Population
   )
 
-# View(merged_data)
-
 # Select the desired columns
-merged_data <- merged_data %>%
+merged_data <- merged_data |>
   select(Geographic.area, Year, Population, white_population, black_population, 
          native_american_population, asian_population, hispanic_population)
 
-# # View the resulting dataframe
-# str(merged_data)
-# View(merged_data)
-
 fatality <- read.csv("data/PoliceKillingsUS.csv", na.strings = "")
 fatality$year <- format(as.Date(fatality$date, format = "%d/%m/%y"), "%Y")
+
 # Keep only the required columns
-fatality <- fatality %>%
+fatality <- fatality |>
   select(race,state,year)
 
-# str(fatality)
-# View(fatality)
-
-
 # Pivot the data wider
-fatality_spread <- fatality %>%
+fatality_spread <- fatality |>
   pivot_wider(
     id_cols = c(state, year),
     names_from = race,
@@ -1651,7 +1536,7 @@ fatality_spread <- fatality %>%
   )
 
 # Rename the racial columns
-fatality_spread <- fatality_spread %>%
+fatality_spread <- fatality_spread |>
   rename(
     share_white = W,
     share_black = B,
@@ -1661,35 +1546,23 @@ fatality_spread <- fatality_spread %>%
    )
 
 # Merge "N" and "O" columns into "Other" column
-fatality_spread <- fatality_spread %>%
-  mutate(Other = N + O) %>%
+fatality_spread <- fatality_spread |>
+  mutate(Other = N + O) |>
   select(-N, -O)
 
-# # View the modified dataframe
-# head(fatality_spread)
-# 
-# # View the first few rows of the spread dataframe
-# View(fatality_spread)
-# str(fatality_spread)
-
-
 # Rename 'Geographic.area' to 'state' in grouped_merged_data for consistency
-merged_data <- merged_data %>%
+merged_data <- merged_data |>
   rename(state = Geographic.area)
 
 # Convert Year column in grouped_merged_data to character
-merged_data <- merged_data %>%
+merged_data <- merged_data |>
   mutate(Year = as.character(Year))
 
 # Perform left join
 Final_racial_data <- left_join(merged_data, fatality_spread, by = c("state" = "state", "Year" = "year"))
 
-# View the resulting dataframe
-# View(Final_racial_data)
-# str(Final_racial_data)
-
 # Calculate racial intensity for each racial group
-Final_racial_data <- Final_racial_data %>%
+Final_racial_data <- Final_racial_data |>
   mutate(
     white_intensity = round((share_white / white_population) * 10^6, 2),
     black_intensity = round((share_black / black_population) * 10^6, 2),
@@ -1697,8 +1570,6 @@ Final_racial_data <- Final_racial_data %>%
     asian_intensity = round((share_asian / asian_population) * 10^6, 2),
     hispanic_intensity = round((share_hispanic / hispanic_population) * 10^6, 2)
   )
-
-library(tidyr)
 
 # Create a template dataframe with all combinations of states and years
 template <- expand.grid(state = unique(Final_racial_data$state), 
@@ -1708,15 +1579,11 @@ template <- expand.grid(state = unique(Final_racial_data$state),
 # Merge the template dataframe with Final_racial_data
 Final_racial_data <- merge(template, Final_racial_data, by = c("state", "Year"), all.x = TRUE)
 
-# View(Final_racial_data)
 # Replace NA values with 0
 Final_racial_data[is.na(Final_racial_data)] <- 0
 
 # Reorder columns to match the original dataframe
 Final_racial_data <- Final_racial_data[, names(Final_racial_data)]
-
-# View the updated dataframe
-
 
 # Define the state_mapping_reversed dictionary
 state_mapping_reversed <- c(
@@ -1738,37 +1605,30 @@ state_mapping_reversed <- c(
 # Replace values in the state column using state_mapping_reversed
 Final_racial_data$state <- state_mapping_reversed[as.character(Final_racial_data$state)]
 
-# Check the updated state column
-# head(Final_racial_data)
-
-# 
-# View(Final_racial_data)
-# 
-# str(Final_racial_data)
-
-
-
 # Correcting the use of pivot_longer
-long_data <- Final_racial_data %>%
-
-    select(state, Year, ends_with("intensity")) %>%  # Select columns that end with 'intensity' and include state, Year
+long_data <- Final_racial_data |>
+  
+    select(state, Year, ends_with("intensity")) |>  # Select columns that end with 'intensity' and include state, Year
   pivot_longer(
     cols = ends_with("intensity",FALSE),  # This selects all columns that end with 'intensity'
     names_to = "racial_group",
     values_to = "intensity"
-  ) %>%
+  ) |>
   drop_na(intensity)  # Drop NA values in the intensity column
 
 # Remove "intensity" from racial_group column
-long_data <- long_data %>%
+long_data <- long_data |>
   mutate(racial_group = gsub("_intensity", "", racial_group))
 
 # Convert Year to character
-long_data <- long_data %>%
+long_data <- long_data |>
   mutate(Year = as.character(Year))
 
 # Assuming the rest of the plotting code works, here's how to include the year in the animation
-animated_heatmap <- ggplot(long_data, aes(x = str_to_title(racial_group), y = state, fill = intensity)) +
+animated_heatmap <- ggplot(long_data,
+                           aes(x = str_to_title(racial_group),
+                               y = state,
+                               fill = intensity)) +
   geom_tile() +
   scale_fill_viridis_c(option = "plasma") +
   labs(title = "State vs. Racial Intensity Heatmap: Year {frame_time}", 
