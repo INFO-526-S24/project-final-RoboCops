@@ -705,241 +705,229 @@ For the final animated plot
 #| message: false
 #| eval: false
 
-# Creating state_abbreviations dataframe
+
+# Define data file paths
+data_paths <- list(
+  fatality = "data/PoliceKillingsUS.csv",
+  state_pop = "data/Population_Estimate_data_Statewise_2010-2023.csv"
+)
+
+# Load data into a list
+data_list <- lapply(data_paths, read.csv, na.strings = "")
+
+
+
+# Define state abbreviations
 state_abbreviations <- c(
-  "Alabama" = "AL", "Alaska" = "AK", 
-  "Arizona" = "AZ", "Arkansas" = "AR",
-  "California" = "CA", "Colorado" = "CO", 
-  "Connecticut" = "CT", "Delaware" = "DE",
-  "District of Columbia" = "DC", "Florida" = "FL", 
-  "Georgia" = "GA", "Hawaii" = "HI",
-  "Idaho" = "ID", "Illinois" = "IL", "Indiana" = "IN", 
-  "Iowa" = "IA", "Kansas" = "KS",
-  "Kentucky" = "KY", "Louisiana" = "LA", 
-  "Maine" = "ME", "Maryland" = "MD", 
-  "Massachusetts" = "MA", "Michigan" = "MI", 
-  "Minnesota" = "MN", "Mississippi" = "MS", 
-  "Missouri" = "MO", "Montana" = "MT",
-  "Nebraska" = "NE", "Nevada" = "NV", 
-  "New Hampshire" = "NH", "New Jersey" = "NJ", 
-  "New Mexico" = "NM", "New York" = "NY", 
-  "North Carolina" = "NC", "North Dakota" = "ND", 
-  "Ohio" = "OH", "Oklahoma" = "OK",
-  "Oregon" = "OR", "Pennsylvania" = "PA", 
-  "Rhode Island" = "RI", "South Carolina" = "SC", 
-  "South Dakota" = "SD", "Tennessee" = "TN", 
-  "Texas" = "TX", "Utah" = "UT", 
+  "Alabama" = "AL", "Alaska" = "AK", "Arizona" = "AZ", 
+  "Arkansas" = "AR","California" = "CA", "Colorado" = "CO",
+  "Connecticut" = "CT", "Delaware" = "DE","District of Columbia" = "DC",
+  "Florida" = "FL", "Georgia" = "GA", "Hawaii" = "HI",
+  "Idaho" = "ID", "Illinois" = "IL", "Indiana" = "IN", "Iowa" = "IA", 
+  "Kansas" = "KS","Kentucky" = "KY", "Louisiana" = "LA", "Maine" = "ME", 
+  "Maryland" = "MD", "Massachusetts" = "MA", "Michigan" = "MI", 
+  "Minnesota" = "MN", "Mississippi" = "MS", "Missouri" = "MO", "Montana" = "MT",
+  "Nebraska" = "NE", "Nevada" = "NV", "New Hampshire" = "NH", "New Jersey" = "NJ",
+  "New Mexico" = "NM", "New York" = "NY", "North Carolina" = "NC", 
+  "North Dakota" = "ND", "Ohio" = "OH", "Oklahoma" = "OK", "Oregon" = "OR", 
+  "Pennsylvania" = "PA", "Rhode Island" = "RI", "South Carolina" = "SC", 
+  "South Dakota" = "SD","Tennessee" = "TN", "Texas" = "TX", "Utah" = "UT", 
   "Vermont" = "VT", "Virginia" = "VA", "Washington" = "WA",
   "West Virginia" = "WV", "Wisconsin" = "WI", "Wyoming" = "WY", "Puerto Rico" = "PR"
 )
 
+# Convert state abbreviations to data frame
 state_abbreviations_df <- data.frame(STATE = names(state_abbreviations), state = state_abbreviations, row.names = NULL)
 
-# Creating Fatalaties Summaries by Year
-fatality_summaries_year <-
-  fatality |> 
+
+# Process fatality data
+fatality <- data_list[["fatality"]] %>%
   mutate(
-    year = year(as.Date(fatality$date,format = "%d/%m/%y"))
-  ) |>
-  group_by(state,year) |>
-  summarise(fatalities_count = n() , .groups = "drop")
+    date = as.Date(date, format = "%d/%m/%y"),
+    year = year(date)
+  ) %>%
+  select(-date) %>%
+  group_by(state, year) %>%
+  summarise(fatalities_count = n(), .groups = "drop")
 
-## Loading State Population dataset
-state_pop <- read.csv("data/Population_Estimate_data_Statewise_2010-2023.csv")
 
-## Creating a long format State Population dataframe
-state_pop_updated <- 
-  merge(state_pop,state_abbreviations_df) |>
+# Process state population data
+state_pop_updated <- data_list[["state_pop"]] %>%
+  inner_join(state_abbreviations_df) %>%
   pivot_longer(
     cols = starts_with("POP"),
     names_to = "year",
-    values_to = "popuplation"
-  ) |> 
+    values_to = "population"
+  ) %>%
   mutate(
-    year = case_when(
-      year == "POPESTIMATE2010" ~ year(as.Date("01/01/10",format="%d/%m/%y")),
-      year == "POPESTIMATE2011" ~ year(as.Date("01/01/11",format="%d/%m/%y")),
-      year == "POPESTIMATE2012" ~ year(as.Date("01/01/12",format="%d/%m/%y")),
-      year == "POPESTIMATE2013" ~ year(as.Date("01/01/13",format="%d/%m/%y")),
-      year == "POPESTIMATE2014" ~ year(as.Date("01/01/14",format="%d/%m/%y")),
-      year == "POPESTIMATE2015" ~ year(as.Date("01/01/15",format="%d/%m/%y")),
-      year == "POPESTIMATE2016" ~ year(as.Date("01/01/16",format="%d/%m/%y")),
-      year == "POPESTIMATE2017" ~ year(as.Date("01/01/17",format="%d/%m/%y")),
-      year == "POPESTIMATE2018" ~ year(as.Date("01/01/18",format="%d/%m/%y")),
-      year == "POPESTIMATE2019" ~ year(as.Date("01/01/19",format="%d/%m/%y")),
-      year == "POPESTIMATE2020" ~ year(as.Date("01/01/20",format="%d/%m/%y")),
-      year == "POPESTIMATE2021" ~ year(as.Date("01/01/21",format="%d/%m/%y")),
-      year == "POPESTIMATE2022" ~ year(as.Date("01/01/22",format="%d/%m/%y")),
-      year == "POPESTIMATE2023" ~ year(as.Date("01/01/23",format="%d/%m/%y")),
+    complete_year = as.Date(paste0("01/01/", gsub("POPESTIMATE", "", year)), format = "%d/%m/%Y")
+  ) |>
+  mutate(
+    year = year(complete_year)
+  )
+
+
+# Merge fatality summaries with population data
+fatalities_population <- fatality %>%
+  inner_join(state_pop_updated, by = c("state", "year")) %>%
+  mutate(
+    intensity = (fatalities_count / population) * 1000000,
+    region = tolower(STATE)
+  )
+
+
+# Function to prepare label data
+prepare_label_data <- function(map_data, fatalities_data) {
+  # Define DC row
+  dc_row <- data.frame(long = -77.0369,
+                       lat = 38.9072,
+                       state = "District of Columbia",
+                       region = tolower("District of Columbia"))
+  
+  # Define label data
+  label_data <- data.frame(long = state.center$x,
+                           lat = state.center$y,
+                           state = state.name) %>%
+    mutate(region = tolower(state)) %>%
+    bind_rows(dc_row)
+  
+  # Join with fatalities data
+  label_data <- label_data %>%
+    left_join(fatalities_data, by = c("region" = "region")) %>%
+    mutate_at(vars(matches("\\d{4}$")), list(~paste0(., "_", fatalities_data$year)))
+  
+  # Ensuring no duplicate names
+  names(label_data)[3] <- "state"
+  names(label_data)[5] <- "US_STATE"
+  names(label_data)[8] <- "USSTATE"
+
+  return(label_data)
+}
+
+
+# Function to prepare map data for Alaska
+prepare_alaska_map_data <- function(us_map_data) {
+  alaska <- map_data("world") %>%
+    filter(region == "USA" & subregion == "Alaska") %>%
+    mutate(region = tolower(subregion),
+           order = max(us_map_data$order) + 1,
+           long = ifelse(long < 0, long, -150),
+           lat = ifelse(long < 0, lat, 65))
+  
+  return(alaska)
+}
+
+
+plot_shooting_intensity <- function(fatalities_population, us_map_data, year, label_data) {
+  
+  # Filter fatalities data for the specific year
+  fatalities_population <- fatalities_population[fatalities_population$year == year, ]
+  
+  # Filter label data for the specific year
+  label_data <- label_data[label_data$year == year, ]
+  
+  # Scalingup the data by 1.75 time for year 2017 as data for full year is not available
+  if ( year == 2017) {
+    fatalities_population$intensity <- fatalities_population$intensity * 1.75
+    label_data$intensity <- label_data$intensity * 1.75
+  }
+  
+  alaska_label <- label_data |>
+    filter(
+      state %in% c("Alaska")
+    ) |>
+    mutate(
+      long = case_when(
+        state == "Alaska" ~ -150,
+        state != "Alaska" ~ long
+      ),
+      lat = case_when(
+        state == "Alaska" ~ 65,
+        state != "Alaska" ~ lat
+      )
     )
-  )
+  
+  label_data <-label_data |>
+    filter(
+      !(state %in% c("Hawaii", "Alaska"))
+    )
 
-# Merging Fatalaties Summaries by Year with State Population
-fatalities_population <- merge(fatality_summaries_year,state_pop_updated)
+    
+  # Merge with map data
+  merge_data <- full_join(us_map_data, fatalities_population %>% 
+                            filter(!(region %in% c("alaska", "hawaii", "rhode island"))))
+  
+  # Filter Alaska data
+  alaska_data <- fatalities_population %>% 
+    filter(region %in% c("Alaska"))
+  
 
-# Creating an individual fatalaties population wise dataset along with shooting intensity column - Year wise
-fatalities_population_2015 <- fatalities_population |>
-  mutate(
-    intensity = (fatalities_count/popuplation)*1000000,
-    region = tolower(STATE)
-  ) |>
-  filter(
-    year == 2015
-  )
+  # Plot map
+  p <- ggplot() +
+    geom_polygon(data = merge_data,
+                 aes(x = long, y = lat, group = group, fill = intensity),
+                 color = "white", size = 0.2) +
+    scale_fill_gradient(low = "#fee5d9", high = "#a50f15", na.value = "grey50",
+                        name = "Intensity") +
+    geom_label_repel(data = label_data %>% filter(intensity > 3), 
+                     aes(x = long, y = lat, 
+                         label = paste(state,":\n",round(intensity,1))), size = 5) +
+    theme_void() 
+  
+  # Add Alaska data if available
+  if (!is.null(alaska_data)) {
+    
+    p1 <- ggplot() + geom_polygon(data = prepare_alaska_map_data(us_map_data),
+                          aes(x = long, y = lat, group = group),
+                          fill = "#e69e91", color = "white", linewidth = 0.2) +
+      geom_label_repel(data = alaska_label,
+                       aes(x = long, y = lat, label = paste(state, ":\n", round(intensity, 1))),
+                       size = 5) +
+      coord_cartesian(xlim = c(-180, 0), ylim = c(0, 90)) +
+      theme_void() +
+      theme(legend.position = "none") 
+    
+    # Add custom annotation if provided
+    p <- p + annotation_custom(ggplotGrob(p1), xmin = -130, xmax = -70, ymin = 0, ymax = 40) +
+      labs(title = paste("Shooting Intensity by State :", year),
+           subtitle = "Per Million of Population",
+           caption = paste("Highlighted states have shooting intensity > 3 : #", length(fatalities_population$intensity[fatalities_population$intensity>3]),
+                           "\n Grey states indicate no fatalties in that year")
+      ) +
+      theme(
+        legend.position = "bottom",
+        plot.title = element_text(hjust = 0.5, size = 20, face = "bold"),
+        plot.subtitle = element_text(hjust = 0.5, size = 16),
+        plot.caption = element_text(size = 10)
+      ) +
+      annotate(
+        "text",
+        x = -70,
+        y = 30,
+        label = "Top 3 by Total Fatalities:
+    1) California
+    2) Texas
+    3) Florida",
+        size = 5,
+        fontface = "italic",
+        color = "#a50f15",
+        vjust = 0
+      )
+  
+  }
+  
+  return(p)
+}
 
-fatalities_population_2016 <- fatalities_population |>
-  mutate(
-    intensity = (fatalities_count/popuplation)*1000000,
-    region = tolower(STATE)
-  ) |>
-  filter(
-    year == 2016
-  )
 
-fatalities_population_2017 <- fatalities_population |>
-  mutate(
-    intensity = (fatalities_count/popuplation)*1000000,
-    region = tolower(STATE)
-  ) |>
-  filter(
-    year == 2017
-  )
-
-# Loading USA MAP
 us_map_data <- map_data("state")
 
-# Loading World Map and Subsetting Alaska
-alaska <- map_data("world") |>
-  filter(
-    region == "USA" & (subregion == "Alaska" ) 
-  ) |>
-  mutate(
-    region = tolower(subregion),
-    order = max(us_map_data$order) + 1
-  ) |>
-  filter(
-    long < 0
-  )
+# Prepare label data
+label_data <- prepare_label_data(us_map_data, fatalities_population)
 
-# Creating Year Wise Map data frame from the fatalies dataset 
-merge_2015_us <- full_join(us_map_data,
-                           subset(fatalities_population_2015,
-                                  !(fatalities_population_2015$region=="alaska" |
-                                      fatalities_population_2015$region=="hawaii")))
-
-merge_2015_alaska <- inner_join(alaska,fatalities_population_2015)
-
-merge_2016_us <- full_join(us_map_data,
-                           subset(fatalities_population_2016,
-                                  !(fatalities_population_2016$region=="alaska" |
-                                      fatalities_population_2016$region=="hawaii")))
-
-merge_2016_alaska <- inner_join(alaska,fatalities_population_2016)
-
-merge_2017_us <- full_join(us_map_data,
-                           subset(fatalities_population_2017,
-                                  !(fatalities_population_2017$region=="alaska" |
-                                      fatalities_population_2017$region=="hawaii")))
-
-merge_2017_alaska <- inner_join(alaska,fatalities_population_2017)
-
-# Creating District of Columbia Lat Long Manually
-dc_row <- data.frame(long = -77.0369,  # Longitude for Washington, D.C.
-                     lat = 38.9072,    # Latitude for Washington, D.C.
-                     state = "District of Columbia",
-                     region = tolower("District of Columbia"))
-
-# Creating Labels data frame to map the labels at the centre of each state with state name and intensity
-
-label_data <- data.frame(long = state.center$x,
-                         lat = state.center$y,
-                         state = state.name) |>
-  mutate(
-    region = tolower(state)
-  )
-
-label_data <- bind_rows(label_data, dc_row)
-
-# Creating each year intensity information in columns
-label_data <- full_join(label_data,fatalities_population_2015, by = "region") |>
-  select(long, lat, region, STATE,intensity) |>
-  rename(
-    intensity_2015 = intensity)
-
-label_data <- full_join(label_data,fatalities_population_2016, by = "region") |>
-  select(long, lat, region, STATE.x,intensity_2015, intensity) |>
-  rename(
-    intensity_2016 = intensity,
-    STATE = STATE.x)
-
-label_data <- full_join(label_data,fatalities_population_2017, by = "region") |>
-  select(long, lat,region, STATE.x,intensity_2015,intensity_2016, intensity) |>
-  rename(
-    intensity_2017 = intensity,
-    STATE = STATE.x) |>
-  mutate(
-    intensity_2017_up = intensity_2017*1.75
-  )
-
-# Creating Alaka Label information separately
-alaska_label <- label_data |>
-  filter(
-    STATE %in% c("Alaska")
-    ) |>
-  mutate(
-    long = case_when(
-      STATE == "Alaska" ~ -150,
-      STATE != "Alaska" ~ long
-    ),
-    lat = case_when(
-      STATE == "Alaska" ~ 65,
-      STATE != "Alaska" ~ lat
-    )
-  )
-
-# Removing Alaska from label_data as in above alaksa_label is already created
-label_data <-label_data |>
-  filter(
-    !(STATE %in% c("Hawaii", "Alaska"))
-  )
-
-label_data$STATE[label_data$region=="rhode island"] <- "Rhode Island"
-
-## Creating 2015 Shooting Intensity plot for Alaska which will be annotated in usa map
-plot <- ggplot() +
-  geom_polygon(data = merge_2015_alaska,
-               aes(x = long, y = lat,group=group), fill = "#e69e91",
-               color = "white", linewidth = 0.2) +
-  expand_limits(x = merge_2015_alaska$long, y = merge_2015_alaska$lat) +
-  geom_label_repel(data = alaska_label, aes(x = long, y = lat, label = paste(STATE,":\n",round(intensity_2015,1))), size = 20) +
-  theme_void() +
-  theme(legend.position = "none") + 
-  coord_cartesian(xlim = c(-180, 0), ylim = c(0, 90))
-
-## Creating 2015 Shooting Intensity plot for USA 
- plot_2015_map <- ggplot() +
-  geom_polygon(data = merge_2015_us,
-           aes(x = long, y = lat, group = group, fill = intensity),
-           color = "white", linewidth = 0.2) +
-  scale_fill_gradient(low = "#fee5d9", high = "#a50f15", na.value = "grey50",
-                      name = "Intensity") +
-  geom_label_repel(data = label_data %>% filter(intensity_2015 > 3), aes(x = long, y = lat, label = paste(STATE,":\n",round(intensity_2015,1))), size = 20) +
-  expand_limits(x = merge_2015_us$long, y = merge_2015_us$lat) +
-  labs(title = "Shooting Intensity by State : 2015",
-       subtitle = "Per Million of Population",
-       caption = paste("Highlighted states have shooting intensity > 3 : #", length(fatalities_population_2015$intensity[fatalities_population_2015$intensity>3]),
-                       "\n Grey states indicate no fatalties in that year")
-       ) +
-       annotation_custom(ggplotGrob(plot1),xmin = -130, xmax = -70, ymin = 0, ymax = 40) + theme_void() +
-  theme(
-    legend.position = "bottom",
-    legend.key.size = unit(4, "cm"),
-    legend.title = element_text(size = 48),
-    legend.text = element_text(size = 48),
-    plot.title = element_text(hjust = 0.5, size = 96, face = "bold"),
-    plot.subtitle = element_text(hjust = 0.5, size = 80),
-    plot.caption = element_text(size = 40)
-    ) + 
+# Plot shooting intensity for 2015
+plot_2015_map <- 
+  plot_shooting_intensity(fatalities_population, us_map_data, 2015, label_data) + 
   annotate(
     "text",
     x = -80,
@@ -948,61 +936,14 @@ plot <- ggplot() +
     1) Wyoming
     2) New Mexico
     3) Oklahoma",
-    size = 20,
+    size = 5,
     fontface = "italic",
     color = "#a50f15",
     vjust = 0
-  ) + 
-  annotate(
-    "text",
-    x = -70,
-    y = 30,
-    label = "Top 3 by Total Fatalities:
-    1) California
-    2) Texas
-    3) Florida",
-    size = 20,
-    fontface = "italic",
-    color = "#a50f15",
-    vjust = 0
-  )
+  ) 
 
-## Creating 2016 Shooting Intensity plot for Alaska which will be annotated in usa map
-plot2 <- ggplot() +
-  geom_polygon(data = merge_2016_alaska,
-               aes(x = long, y = lat,group=group), fill = "#a50f15",
-               color = "white", size = 0.2) +
-  expand_limits(x = merge_2016_alaska$long, y = merge_2016_alaska$lat) +
-  geom_label_repel(data = alaska_label, aes(x = long, y = lat, label = paste(STATE,":\n",round(intensity_2016,1))), size = 20) +
-  theme_void() +
-  theme(legend.position = "none") + 
-  coord_cartesian(xlim = c(-180, 0), ylim = c(0, 90))
-
-
-## Creating 2016 Shooting Intensity plot for USA 
-plot_2016_map <- ggplot() +
-  geom_polygon(data = merge_2016_us,
-               aes(x = long, y = lat, group = group, fill = intensity),
-               color = "white", size = 0.2) +
-  scale_fill_gradient(low = "#fee5d9", high = "#a50f15", na.value = "grey50",
-                      name = "Intensity") +
-  geom_label_repel(data = label_data %>% filter(intensity_2016 > 3), aes(x = long, y = lat, label = paste(STATE,":\n",round(intensity_2016,1))), size = 20) +
-  expand_limits(x = merge_2016_us$long, y = merge_2016_us$lat) +
-  labs(title = "Shooting Intensity by State : 2016",
-       subtitle = "Per Million of Population",
-       caption = paste("Highlighted states have shooting intensity > 3 : #", length(fatalities_population_2016$intensity[fatalities_population_2016$intensity>3]),
-                       "\n Grey states indicate no fatalties in that year")
-       ) +
-  annotation_custom(ggplotGrob(plot2),xmin = -130, xmax = -70, ymin = 0, ymax = 40) + theme_void() +
-  theme(
-    legend.position = "bottom",
-    legend.key.size = unit(4, "cm"),
-    legend.title = element_text(size = 48),
-    legend.text = element_text(size = 48),
-    plot.title = element_text(hjust = 0.5, size = 96, face = "bold"),
-    plot.subtitle = element_text(hjust = 0.5, size = 80),
-    plot.caption = element_text(size = 40)
-  ) + 
+plot_2016_map <- 
+  plot_shooting_intensity(fatalities_population, us_map_data, 2016, label_data) + 
   annotate(
     "text",
     x = -80,
@@ -1011,61 +952,14 @@ plot_2016_map <- ggplot() +
     1) New Mexico
     2) Alaska
     3) District of Columbia",
-    size = 20,
+    size = 5,
     fontface = "italic",
     color = "#a50f15",
     vjust = 0
-  ) + 
-  annotate(
-    "text",
-    x = -75,
-    y = 30,
-    label = "Top 3 by Total Fatalities:
-    1) California
-    2) Texas
-    3) Florida",
-    size = 20,
-    fontface = "italic",
-    color = "#a50f15",
-    vjust = 0
-  )
+  ) 
 
-## Creating 2017 Shooting Intensity plot for Alaska which will be annotated in usa map
-plot3 <- ggplot() +
-  geom_polygon(data = merge_2017_alaska,
-               aes(x = long, y = lat,group=group), fill = "#a50f15",
-               color = "white", size = 0.2) +
-  expand_limits(x = merge_2017_alaska$long, y = merge_2017_alaska$lat) +
-  geom_label_repel(data = alaska_label, aes(x = long, y = lat, label = paste(STATE,":\n",round(intensity_2017_up,1))), size = 20) +
-  theme_void() +
-  theme(legend.position = "none") + 
-  coord_cartesian(xlim = c(-180, 0), ylim = c(0, 90))
-
-## Creating 2017 Shooting Intensity plot for USA 
-plot_2017_map <- ggplot() +
-  geom_polygon(data = merge_2017_us,
-               aes(x = long, y = lat, group = group, fill = intensity),
-               color = "white", size = 0.2) +
-  scale_fill_gradient(low = "#fee5d9", high = "#a50f15", na.value = "grey50",
-                      name = "Intensity") +
-  geom_label_repel(data = label_data %>% filter(intensity_2017_up > 3), aes(x = long, y = lat, label = paste(STATE,"\n",round(intensity_2017_up,1))), size = 20) +
-  expand_limits(x = merge_2017_us$long, y = merge_2017_us$lat) +
-  labs(title = "Shooting Intensity by State : 2017",
-       subtitle = "Per Million of Population",
-       caption = paste("Highlighted states have shooting intensity > 3 : #", length(fatalities_population_2017$intensity[fatalities_population_2017$intensity>1.75]),
-                       "\n data scaled by 1.75 times, original data was till July 2017",
-                       "\n Grey states indicate no fatalties in that year")
-  ) +
-  annotation_custom(ggplotGrob(plot3),xmin = -130, xmax = -70, ymin = 0, ymax = 40) + theme_void() +
-  theme(
-    legend.position = "bottom",
-    legend.key.size = unit(4, "cm"),
-    legend.title = element_text(size = 48),
-    legend.text = element_text(size = 48),
-    plot.title = element_text(hjust = 0.5, size = 96, face = "bold"),
-    plot.subtitle = element_text(hjust = 0.5, size = 80),
-    plot.caption = element_text(size = 40)
-  ) + 
+plot_2017_map <- 
+  plot_shooting_intensity(fatalities_population, us_map_data, 2017, label_data) +
   annotate(
     "text",
     x = -80,
@@ -1074,26 +968,14 @@ plot_2017_map <- ggplot() +
     1) Maine
     2) Alaska
     3) Oklahoma",
-    size = 20,
+    size = 5,
     fontface = "italic",
     color = "#a50f15",
     vjust = 0
-  ) + 
-  annotate(
-    "text",
-    x = -75,
-    y = 30,
-    label = "Top 3 by Total Fatalities:
-    1) California
-    2) Texas
-    3) Florida",
-    size = 20,
-    fontface = "italic",
-    color = "#a50f15",
-    vjust = 0
-  )
+  ) 
 
-# Creating an animation for above map plots with better resolution
+
+
 animation::saveGIF(
   expr = {
     plot(plot_2015_map)
@@ -1102,17 +984,17 @@ animation::saveGIF(
   },
   movie.name = "shooting_intensity.gif",
   interval = 4,
-  ani.width = 4800,
-  ani.height = 3000,
+  ani.width = 1200,
+  ani.height = 700,
   ani.dev = "png",
   ani.type = "cairo",
-  res = 200,
+  res = 300,
   ani.x = "in",
   ani.y = "in",
   ani.unit = "in",
   ani.bg = "white",
   ani.fps = 3
-  )
+)
 
 ```
 
