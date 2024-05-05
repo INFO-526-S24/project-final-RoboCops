@@ -358,7 +358,120 @@ How do socioeconomic factors such as median income, poverty rates, and education
 
 ## Plot 1a
 
+```{r}
+#| label: Q1-plot1
+#| warning: FALSE
+
+# supp_data
+supp_data <- na.omit(supp_data)
+
+# Ensure the column names are correctly formatted before merging
+fatality$city <- as.character(fatality$city)
+fatality$state <- as.character(fatality$state)
+supp_data$City <- as.character(supp_data$City)
+supp_data$State <- as.character(supp_data$State)
+
+# Merge the main fatality data with the supplementary socio-economic data
+analysis_data <- merge(fatality,
+                       supp_data,
+                       by.x = c("city", "state"),
+                       by.y = c("City", "State"))
+
+# Convert Poverty from character to numeric to handle in quantile calculation
+analysis_data$Poverty <- as.numeric(as.character(analysis_data$Poverty))
+
+# Check for NA in Poverty which might disrupt quantile calculation
+if (any(is.na(analysis_data$Poverty))) {
+  analysis_data$Poverty[is.na(analysis_data$Poverty)] <- median(analysis_data$Poverty, na.rm = TRUE)
+}
+
+# Ensure Poverty is numeric
+analysis_data$Poverty <- as.numeric(as.character(analysis_data$Poverty))
+
+# Convert HSDegree to numeric, coercing non-numeric values to NA
+analysis_data$HSDegree <- as.numeric(as.character(analysis_data$HSDegree))
+
+# Calculate the range for Poverty and HSDegree
+range_poverty <- max(analysis_data$Poverty, na.rm = TRUE) - min(analysis_data$Poverty, na.rm = TRUE)
+range_hsdegree <- max(analysis_data$HSDegree, na.rm = TRUE) - min(analysis_data$HSDegree, na.rm = TRUE)
+
+# Define consistent breaks based on the range
+number_of_brackets <- 5 # For example, 5 equal brackets
+breaks_poverty <- seq(min(analysis_data$Poverty, na.rm = TRUE), 
+                      max(analysis_data$Poverty, na.rm = TRUE), 
+                      length.out = number_of_brackets + 1)
+
+breaks_hsdegree <- seq(min(analysis_data$HSDegree, na.rm = TRUE), 
+                       max(analysis_data$HSDegree, na.rm = TRUE), 
+                       length.out = number_of_brackets + 1)
+
+# Function to create labels based on breaks
+create_labels <- function(breaks) {
+  labels <- c()
+  for (i in 1:(length(breaks) - 1)) {
+    labels <- c(labels, paste(formatC(breaks[i], format = "f", digits = 0), "-", formatC(breaks[i+1], format = "f", digits = 0), "%"))
+  }
+  return(labels)
+}
+
+# Use these breaks to make the cuts consistent
+analysis_data$poverty_bracket <- cut(analysis_data$Poverty,
+                                     breaks = breaks_poverty,
+                                     include.lowest = TRUE,
+                                     labels = create_labels(breaks_poverty))
+
+analysis_data$edu_bracket <- cut(analysis_data$HSDegree,
+                                 breaks = breaks_hsdegree,
+                                 include.lowest = TRUE,
+                                 labels = create_labels(breaks_hsdegree))
+
+analysis_data$threat_level <- str_to_title(analysis_data$threat_level)
+
+# Plotting for Poverty Bracket
+poverty_plot  <- ggplot(analysis_data, aes(x = poverty_bracket, fill = threat_level)) +
+  geom_bar(position = "identity", width = 0.5) +
+  scale_fill_brewer(palette = 'Set3') + 
+  theme_minimal() +
+  labs(title = "Distribution of Threat Levels by Poverty Bracket",
+       x = "Percentage of Population Below Poverty Line",
+       y = "Count of Incidents",
+       fill = "Threat Level") + 
+  theme(legend.position = 'right')  # Adjusted theme settings here
+poverty_plot
+```
+
 ## Plot 1b
+
+```{r}
+#| label: Q1-plot2
+#| warning: FALSE
+
+# Plotting for Educational Bracket
+education_plot <- ggplot(analysis_data, aes(x = edu_bracket, fill = threat_level)) +
+  geom_bar(position = "identity", width = 0.5) +
+  scale_fill_brewer(palette = 'Set3') + 
+  theme_minimal() +
+  labs(title = "Distribution of Threat Levels by High School Pass Rate",
+       x = "Percentage of Population with High School Degree",
+       y = "Count of Incidents",
+       fill = "Threat Level") + 
+  theme(legend.position = 'right')  # Adjusted theme settings here
+
+education_plot
+
+```
+
+## Insights and Knowledge Inferred {style="font-size: 80%"}
+
+- Cities with over 75% high school graduates and poverty levels between 18-25% experience the highest number of shootings, predominantly with a threat level categorized as "Attack."
+
+- Most shootings across the board are recorded with a threat level of "Attack" or "Other," with only a few incidents left undetermined, indicating that officers generally report a justification for using their weapon.
+
+- The correlation between higher shootings and areas with more educated populations alongside a notable poverty rate might be influenced by large urban areas like New York City and Chicago, which have significant population densities and economic disparities.
+
+- Areas with lower percentages of high school graduates appear to be exceptions within the overall dataset, possibly acting as outliers.
+
+<!--------------------------------------------------------------->
 
 ## Plot 2a
 
@@ -558,19 +671,17 @@ In what ways do the analyses of hotspot states, hotspot cities, and racial distr
 ## Analysis Approach
 
 ::: {style="font-size: 60%;"}
-
 **State and City Hotspots Analysis**:
 
--  Identifies regions and major urban areas with heightened police incidents using the shooting intensity metric, providing a nuanced understanding of localized dynamics.
--  Utilizes shooting intensity per million people to highlight states and cities with high incidents.
--  Incorporates customer annotation techniques to ensure clarity and comprehensive representation, including strategic labeling for Alaska on the maps.
+-   Identifies regions and major urban areas with heightened police incidents using the shooting intensity metric, providing a nuanced understanding of localized dynamics.
+-   Utilizes shooting intensity per million people to highlight states and cities with high incidents.
+-   Incorporates customer annotation techniques to ensure clarity and comprehensive representation, including strategic labeling for Alaska on the maps.
 
 **Racial Intensity Heatmap**:
 
--  Applies the same shooting intensity metric per million people to highlight racial disparities in police incidents across states.
--  Visualizes racial disparities in police incidents across states using color gradients.
--  Utilizes transitions to illustrate evolving racial dynamics over the years.
-
+-   Applies the same shooting intensity metric per million people to highlight racial disparities in police incidents across states.
+-   Visualizes racial disparities in police incidents across states using color gradients.
+-   Utilizes transitions to illustrate evolving racial dynamics over the years.
 :::
 
 ## Plot 1
