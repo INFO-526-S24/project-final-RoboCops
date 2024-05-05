@@ -70,9 +70,6 @@ city_pop <- read.csv("data/us-cities-top-1k-multi-year.csv")
 state_pop <- read.csv("data/Population_Estimate_data_Statewise_2010-2023.csv")
 ```
 
-
-
-
 ```{r}
 #| label: data-setup
 #| message: false

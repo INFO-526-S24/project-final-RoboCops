@@ -389,15 +389,11 @@ By incorporating these additional factors, correlations and patterns can be unco
 
 1.  How do socioeconomic factors such as median income, poverty rates, and education relate with incidents of police use of force?
 
-### Description of Analysis
+### Description of Analysis: Bar Plots
 
-For the bar plot which illustrates the socio-economic backdrop of fatal police encounters is classified meticulously by poverty and education levels. The underlying data, standardized for consistency, undergoes a transformation to quantify both poverty rates and high school completion rates, subsequently binned into quintiles for a granular analysis. The methodology ensures that each bracket spans an equal range of the data, capturing a full spectrum of socio-economic statuses. These brackets are then labeled with intuitive percentage ranges, setting the stage for the ensuing visual assessment. This careful numerical and categorical preparation underpins the creation of two bar charts, which, through the nuanced lens of ggplot2, lay bare the stark contrasts in threat level distributions across different socio-economic strata, painting a telling picture of the intersection between socio-economic factors and lethal police interventions.
+#### Plot 1a
 
-For the density ridge plots, the population for each race was calculated from the supplemental datasets by multiplying the 2015 city population estimate with the estimated racial proportion of the city and divided by 100. The police shooting dataset, median income dataset, and the cities race estimates were concatenated according to city and state. The merged data was then subsetted to only include incidents with a median income and race estimates. The first ridge plot, which is organized by the total count of fatalities by race, refactorized the race levels according to the total counts and used a geom_density_ridge() with the median income as the horizontal axis and the race as the vertical axis.
-
-The second density ridge plot, which is organized by the race's relative proportion of fatalities (ie the number of fatalities divided by the estimated race's total population). The race's population estimate was calculated by summing the estimated race's population for all cities included in the subsetted data. The data race levels were refactorized according to the proportions with Other and Unknown set to the bottom of the plot. Other and Unknown were set to the bottom of the plot since the interest of this analysis is focused on the potential difference in incidence when race is considered.
-
-### Plot 1a
+For the bar plot which illustrates the socioeconomic backdrop of fatal police encounters is classified meticulously by poverty and education levels. The underlying data, standardized for consistency, undergoes a transformation to quantify both poverty rates and high school completion rates, subsequently binned into quintiles for a granular analysis. The methodology ensures that each bracket spans an equal range of the data, capturing a full spectrum of socio-economic statuses. These brackets are then labeled with intuitive percentage ranges, setting the stage for the ensuing visual assessment. This careful numerical and categorical preparation underpins the creation of two bar charts, which, through the nuanced lens of ggplot2, lay bare the stark contrasts in threat level distributions across different socio-economic strata, painting a telling picture of the intersection between socio-economic factors and lethal police interventions.
 
 ```{r}
 #| label: Q1-plot1
@@ -484,7 +480,7 @@ poverty_plot  <- ggplot(analysis_data, aes(x = poverty_bracket, fill = threat_le
 poverty_plot
 ```
 
-### Plot 1b
+#### Plot 1b
 
 ```{r}
 #| label: Q1-plot2
@@ -508,7 +504,11 @@ education_plot
 
 ```
 
-### Racial Shooting Density Across Median Income
+### Description of Analysis: Density Plots
+
+#### Plot 1c
+
+For the density ridge plots, the population for each race was calculated from the supplemental datasets by multiplying the 2015 city population estimate with the estimated racial proportion of the city and divided by 100. The police shooting dataset, median income dataset, and the cities race estimates were concatenated according to city and state. The merged data was then subsetted to only include incidents with a median income and race estimates.
 
 ```{r}
 #| label: Q1-plot2a
@@ -582,7 +582,11 @@ ggplot(merged_data, aes(x = Median, y = Race)) +
   theme_minimal()
 ```
 
-### Median Insights
+The first density plot, which is organized by the total count of fatalities by race, shows whites having the largest numbers of incidences with black following afterwards. This does not align with known race population proportions.
+
+#### Plot 1d
+
+A regression plot was generated to check the proportions of the races across the median incomes.
 
 ```{r}
 #| label: Q1-median
@@ -640,7 +644,11 @@ ggplot(data = distinct_city,
 
 ```
 
-### Adjusted Density Plot
+As suspected, the white population makes up the most of the population but the black population is a clear minority. Because of this discrepancy between the plots, the metrics used to organize the density plot is changed to reflect the population differences.
+
+#### Plot 1e
+
+The second density ridge plot is organized by the race's relative proportion of fatalities (ie the number of fatalities divided by the estimated race's total population).
 
 ```{r}
 #| label: Q1-plot2b
@@ -695,11 +703,13 @@ ggplot(merged_data, aes(x = Median, y = Race)) +
   theme_minimal()
 ```
 
+After adjusting the order according to the percentages, the plot now indicates that the black population is the most likely to be involved in a fatal shooting incident and the white population dropped significantly in the ranking.
+
 ### Discussion
 
 The above visualizations focus on the distribution of shootings across three demographic categories: median income, percent high school graduates, and poverty level. Plot 1a and 1b take this further by breaking down the shootings by threat level across poverty level and percent high school graduates. Looking further at Plot 1a and 1b, two major observations can be made: cities with greater than 75% high school graduates and poverty levels between 18-25% experience the most shootings with roughly half of all incidents showing a threat level of "Attack", meaning the shooting officer felt their safety was at risk via the suspect. Additionally, most shootings had a threat level of "Attack" or "Other", and a minority of the shootings are undetermined, meaning most officers recorded a reason for discharging their weapon. These observations suggest that cities with more high school edcuated individuals and a poverty level that is twice the US average will experience more shootings. One explanation for this is very large US cities like New York City and Chicago. These cities have large populations and a large wage gap between class levels, so the high school graduate percentage is supplemented by higher income classes and the poverty level is driven up by lower income classes, and because of the sheer size of these large cities, there are more cases of shootings, even if the rate per count of population is the same as other cities. Additionally, it can be safely assumed that the lower percentages of high school graduate cities are outliers in the dataset.
 
-Plot 2a breaks down these incidents by raw count of victims in each race population, and Plot 2b takes these raw counts and converts them to overall percent of victims per total population of each race. These plots show these representations across the median income of each city where the shooting occurred. From these plots, a few insights can be gained. First, most shootings occur in cities where the median income is roughly between \$40k - \$50k per year, with more shootings at the higher end of that range. Second, out of all races in a given city, white people are shot the most, with the highest raw count. To further contextualize these raw counts, a plot of race percentage of American cities by median income helps to understand the breakdown of each race in each city. Thus, when compared to the overall population of each race, black are shot the most, at 0.0014% of the black population being shot, the equivalent of 1 in every 71,429 black people being shot by the police. In contrast, white people have a 0.0003% chance of being shot by the police, or 1 in every 333,334 white people. That means that black people are 4.7 times more likely to be shot by police, a striking statistic. Finally, the last major observation that can be made is that most native Americans are shot in cities where the median income is roughly \$45k per year, based on the large spike at the \$45k mark.
+Plot 1c breaks down these incidents by raw count of victims in each race population, and Plot 1e takes these raw counts and converts them to overall percent of victims per total population of each race. These plots show these representations across the median income of each city where the shooting occurred. From these plots, a few insights can be gained. First, most shootings occur in cities where the median income is roughly between \$40k - \$50k per year. Second, out of all races in a given city, white people are shot the most, with the highest raw count. However, when compared to the overall population of each race, black are shot the most, at 0.0014% of the black population being shot, the equivalent of 1 in every 71,429 black people being shot by the police. In contrast, white people have a 0.0003% chance of being shot by the police, or 1 in every 333,334 white people. That means that black people are 4.7 times more likely to be shot by the police. Finally, the last major observation that can be made is that most Native Americans are shot in cities where the median income is roughly \$45k per year, based on the large spike at the \$45k mark.
 
 ## Question 2
 
