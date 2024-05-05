@@ -1,5 +1,5 @@
 ---
-title: "Project Title"
+title: "Analysis and Visualization of Police Shootings in the United States"
 subtitle: "INFO 526 - Final Project"
 author: 
   - name: "RoboCops - Peter, Sachin, Arun, Surajit, Christian, Valerie"
