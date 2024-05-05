@@ -290,7 +290,7 @@ supp_data <- left_join(supp_data, city_pop_2015,
 
 How do socioeconomic factors such as median income, poverty rates, and education relate with incidents of police use of force?
 
-## Plot 1a
+## Distribution of Threat Levels by Poverty Bracket
 
 ```{r}
 #| label: Q1-plot1
@@ -366,15 +366,15 @@ poverty_plot  <- ggplot(analysis_data, aes(x = poverty_bracket, fill = threat_le
   geom_bar(position = "identity", width = 0.5) +
   scale_fill_brewer(palette = 'Set3') + 
   theme_minimal() +
-  labs(title = "Distribution of Threat Levels by Poverty Bracket",
-       x = "Percentage of Population Below Poverty Line",
+  labs(x = "Percentage of Population Below Poverty Line",
        y = "Count of Incidents",
        fill = "Threat Level") + 
   theme(legend.position = 'right')  # Adjusted theme settings here
 poverty_plot
 ```
 
-## Plot 1b
+## Distribution of Threat Levels by High School Pass Rate
+       
 
 ```{r}
 #| label: Q1-plot2
@@ -385,8 +385,7 @@ education_plot <- ggplot(analysis_data, aes(x = edu_bracket, fill = threat_level
   geom_bar(position = "identity", width = 0.5) +
   scale_fill_brewer(palette = 'Set3') + 
   theme_minimal() +
-  labs(title = "Distribution of Threat Levels by High School Pass Rate",
-       x = "Percentage of Population with High School Degree",
+  labs(x = "Percentage of Population with High School Degree",
        y = "Count of Incidents",
        fill = "Threat Level") + 
   theme(legend.position = 'right')  # Adjusted theme settings here
