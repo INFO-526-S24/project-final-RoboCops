@@ -1,6 +1,6 @@
 ---
 title: "Analysis and Visualization of Police Shootings in the United States"
-subtitle: "INFO 526 - Fall 2023 - Project Final"
+subtitle: "INFO 526 - Spring 2024 - Project Final"
 author: "Peter Yeh, Sachin Pandurang Patil, Arun Koundinya Parasa, Surajit Pal, Christian Ortmann, Valérie Naa Dei Okine"
 title-slide-attributes:
   data-background-image: images/skyline_pic.jpg
@@ -271,7 +271,6 @@ supp_data <- left_join(supp_data, city_pop_2015,
 
 ## Dataset Variables {style="font-size: 55%"}
 ```{r}
-
 #| label: dataset-table
 #| echo: false
 #| message: false
@@ -344,10 +343,9 @@ my_table
 <!--------------------------------------------------------------->
 # Data Summary with Dashboard
 
-
 # Question 1
 
-How do socioeconomic factors such as median income, poverty rates, and educational relate with incidents of police use of force across different geographic areas?
+How do socioeconomic factors such as median income, poverty rates, and education relate with incidents of police use of force?
 
 ## Plot 1a
 
