@@ -571,7 +571,8 @@ ggplot(merged_data, aes(x = Median, y = Race)) +
   ylab("Race") +
   theme_minimal()
 ```
- <!--------------------------------------------------------------->
+
+<!--------------------------------------------------------------->
 
 # Question 2
 
@@ -1306,13 +1307,20 @@ anim_save("images/racial_intensity_heatmap.gif")
 
 ![](images/racial_intensity_heatmap.gif){fig-align="center" width="1080"}
 
-## Insights and Knowledge Inferred
+## Conclusion
 
 ::: {style="font-size: 60%;"}
--   *Plot 1*: Maps shooting intensity across all US states from 2015 to 2017, revealing varying levels of intensity with darker shades indicating higher rates and lighter shades lower rates, while gray marks states with no fatalities. Top states for shooting intensity and total fatalities are highlighted annually.
--   *Plot 2*: Depicts police shooting intensity and fatalities in major US cities for 2015-2017 per million population. Cities with higher intensity are represented by larger dots, with labels identifying those exceeding an intensity of 28, notably including Chicago and Los Angeles in multiple years.
--   *Plot 3*: Examines state-wise shootings by racial demographics, uncovering disparities in intensity. While white and Hispanic populations experience lower intensity, black and Native American communities consistently demonstrate higher levels, with an exception in Asian demographics in South Dakota in 2017.
--   *Discussion Summary*: Analyses of hotspot states, cities, and racial distribution offer insights into the intersection of police use of force incidents across diverse geographic areas, revealing dynamic shifts, urban significance, and racial disparities. These insights contribute to a nuanced understanding of localized dynamics and broader discussions on social equity and justice.
+-   **Absolute fatalities:**
+
+    -   **Educational and Economic Factors:** Cities with higher education levels (over 75% high school graduates) and moderate poverty rates (18-25%,\~50K\$) report the highest number of police shootings.
+
+    -   **Racial Disparities:** Despite white individuals having the highest count of being shot, black individuals are disproportionately affected when adjusted for population size. Black people are 4.7 times more likely to be shot by police compared to white people
+
+-   **Proportional fatalities (Per Million) :**
+
+    -   **Geographic Variations:** Urban centers and certain states display notably higher rates of police shootings, with significant variations in racial impact across different states and cities.
+
+    First Scenario Explains 'what' is happening and other is about 'how 'its happened
 :::
 
 # THANK YOU {background-image="images/thankyoubackground.png" background-size="1200px"}
